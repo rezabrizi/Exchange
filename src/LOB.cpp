@@ -149,19 +149,19 @@ void LOB::Execute() {
     }
 }
 
-int LOB::GetBidVolumeAtLimit(double limit) {
-    return (buyMap.find(limit) != buyMap.end()) ? buyMap[limit]->GetLimitVolume() : -1;
+int LOB::GetBidVolumeAtLimit(double limit) const {
+    return (buyMap.find(limit) != buyMap.end()) ? buyMap.at(limit)->GetLimitVolume() : -1;
 }
 
-int LOB::GetAskVolumeAtLimit(double limit) {
-    return (sellMap.find(limit) != sellMap.end()) ? sellMap[limit]->GetLimitVolume() : -1;
+int LOB::GetAskVolumeAtLimit(double limit) const {
+    return (sellMap.find(limit) != sellMap.end()) ? sellMap.at(limit)->GetLimitVolume() : -1;
 }
 
-double LOB::GetBestBid() {
+double LOB::GetBestBid() const {
     return (bestBid != nullptr) ? bestBid->GetLimitPrice() : 0.00;
 }
 
-double LOB::GetBestAsk() {
+double LOB::GetBestAsk() const {
     return (bestAsk != nullptr) ? bestAsk->GetLimitPrice() : 0.00;
 }
 
