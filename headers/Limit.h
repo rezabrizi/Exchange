@@ -22,7 +22,6 @@ public:
     int GetLimitSize() const;
     int GetLimitVolume() const;
     Order* GetTopOrder() const;
-
 };
 
 #endif //LIMITORDERBOOK_LIMIT_H

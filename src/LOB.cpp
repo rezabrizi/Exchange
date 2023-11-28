@@ -4,11 +4,14 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <utility>
 #include "../headers/LOB.h"
 
+// you cannot make a match if the orders are by the same company
+// best bid and best ask are both by janestreet, this match cannot be made
 
-void LOB::AddLimitOrder(bool bidOrAsk, int quantity, double limitPrice, int entryTime) {
-    Order* newOrder = new Order(curr_id, bidOrAsk, quantity, limitPrice, entryTime);
+void LOB::AddLimitOrder(std::string instrument, std::string owner, bool bidOrAsk, int quantity, double limitPrice, int entryTime) {
+    Order* newOrder = new Order(curr_id, std::move(instrument), std::move(owner), bidOrAsk, quantity, limitPrice, entryTime);
 
     if (bidOrAsk) {
         if(buyMap.find(limitPrice) != buyMap.end()){
@@ -119,15 +122,6 @@ void LOB::RemoveLimitOrder(int orderId) {
         }
     }
     orders.erase(orderId);
-/**
-    std::cout << "-------cancelling an order--------" << std::endl;
-    std::cout << "order id to cancel: " << orderId << std::endl;
-    if (bestBid != nullptr) {
-        std::cout << "Best Bid now is: $" << bestBid->GetLimitPrice()<< std::endl;
-    }else {
-        std::cout << "The Bid Book is empty, so there are no best bids"<< std::endl;
-    }
-    */
 }
 
 void LOB::Execute() {
@@ -135,6 +129,10 @@ void LOB::Execute() {
             Order* topBidOrder = bestBid->GetTopOrder();
             Order* topAskOrder = bestAsk->GetTopOrder();
 
+            WalkBook(&topBidOrder, &topAskOrder);
+            if (topBidOrder->owner == topAskOrder->owner){
+                break;
+            }
             if (topBidOrder->quantity > topAskOrder->quantity){
                 bestBid->ReduceOrder(topBidOrder, topAskOrder->quantity);
                 RemoveLimitOrder(topAskOrder->id);
@@ -147,6 +145,108 @@ void LOB::Execute() {
                 RemoveLimitOrder(topAskOrder->id);
             }
     }
+}
+
+void LOB::WalkLimits(Order **topBidOrder, Order **topAskOrder) {
+    // top ask is $88  if there are 3 asks
+    // js:1 js:2 js:3
+    // your top bid is $90 if there are 7 orders at 90
+    // js:4  js:6 js:7 js:7
+    Order* tempTopBidOrder = (*topBidOrder);
+    Order* tempTopAskOrder = (*topAskOrder);
+
+    // Ensure initial pointers are not null
+    if (tempTopBidOrder == nullptr || tempTopAskOrder == nullptr) {
+        return;
+    }
+
+    while ((tempTopBidOrder->owner == tempTopAskOrder->owner) &&
+           (tempTopBidOrder->nextOrder != nullptr || tempTopAskOrder->nextOrder != nullptr )){
+        if (tempTopBidOrder->nextOrder != nullptr && tempTopAskOrder->nextOrder != nullptr){
+            // we are making an assumption that to orders will not have the exact same time
+            if (tempTopBidOrder->nextOrder->entryTime <= tempTopAskOrder->nextOrder->entryTime){
+                tempTopBidOrder = tempTopBidOrder->nextOrder;
+            } else {
+                tempTopAskOrder = tempTopAskOrder->nextOrder;
+            }
+        }
+        else {
+            if (tempTopBidOrder->nextOrder != nullptr){
+                tempTopBidOrder = tempTopBidOrder->nextOrder;
+            }else {
+                tempTopAskOrder = tempTopAskOrder->nextOrder;
+            }
+        }
+    }
+
+    if (tempTopBidOrder->owner != tempTopAskOrder->owner) {
+        (*topBidOrder) = tempTopBidOrder;
+        (*topAskOrder) = tempTopAskOrder;
+    }
+}
+
+void LOB::WalkBook(Order **topBidOrder, Order **topAskOrder) {
+    if ((*topBidOrder) == nullptr || (*topAskOrder) == nullptr) {
+        return;
+    }
+
+    Order* tempTopBidOrder = (*topBidOrder);
+    Order* tempTopAskOrder = (*topAskOrder);
+
+    while (tempTopBidOrder->owner == tempTopAskOrder->owner){
+        WalkLimits (&tempTopBidOrder, &tempTopAskOrder);
+        if (tempTopBidOrder->owner == tempTopAskOrder->owner){
+            Limit* nextBestBid = FindNextHighestLimit (buyTree, tempTopBidOrder->limit);
+            Limit* nextBestAsk = FindNextLowestLimit(sellTree, tempTopAskOrder->limit);
+            if (nextBestBid == nullptr && nextBestAsk == nullptr) {
+                break;
+            }
+
+            if (tempTopBidOrder->entryTime <= tempTopAskOrder->entryTime && nextBestAsk != nullptr && tempTopBidOrder->limit >= nextBestAsk->GetLimitPrice()){
+                tempTopAskOrder = nextBestAsk->GetTopOrder();
+            } else if (tempTopBidOrder->entryTime <= tempTopAskOrder->entryTime && nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->limit){
+                tempTopBidOrder = nextBestBid->GetTopOrder();
+            } else if (tempTopBidOrder->entryTime >= tempTopAskOrder->entryTime && nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->limit) {
+                tempTopBidOrder = nextBestBid->GetTopOrder();
+            }else if (tempTopBidOrder->entryTime >= tempTopAskOrder->entryTime && nextBestAsk != nullptr && tempTopBidOrder->limit >= nextBestAsk->GetLimitPrice()){
+                tempTopAskOrder = nextBestAsk->GetTopOrder();
+            }
+        }
+    }
+    if (tempTopBidOrder->owner != tempTopAskOrder->owner){
+        (*topBidOrder) = tempTopBidOrder;
+        (*topAskOrder) = tempTopAskOrder;
+    }
+}
+
+Limit* LOB::FindNextLowestLimit(const std::map<double, Limit*>& tree, const double& bestPrice){
+    auto it = tree.find(bestPrice);
+
+    // Check if the iterator is not the first element and is valid
+    if (it != tree.begin() && it != tree.end()) {
+        --it; // Move to the previous element
+        return it->second; // Return the Limit* for the next lowest price
+    }
+
+    // If bestBid is at the beginning or not found, return nullptr
+    return nullptr;
+};
+
+Limit* LOB::FindNextHighestLimit(const std::map<double, Limit*>& tree, const double& bestPrice) {
+    auto it = tree.find(bestPrice);
+
+    // Check if the iterator is valid and not the last element
+    if (it != tree.end()) {
+        ++it; // Move to the next element
+
+        // Check if we have not reached the end of the map
+        if (it != tree.end()) {
+            return it->second; // Return the Limit* for the next highest price
+        }
+    }
+
+    // If bestBid is at the end or not found, return nullptr
+    return nullptr;
 }
 
 int LOB::GetBidVolumeAtLimit(double limit) const {

@@ -24,20 +24,21 @@ class LOB{
 
 public:
     LOB(): curr_id(0), bestBid(nullptr), bestAsk(nullptr){};
-    void AddLimitOrder(bool bidOrAsk, int quantity, double limitPrice, int entryTime);
+    void AddLimitOrder(std::string instrument, std::string owner, bool bidOrAsk, int quantity, double limitPrice, int entryTime);
     void RemoveLimitOrder(int orderId);
     void Execute();
-    int GetBidVolumeAtLimit (double limit) const;
-    int GetAskVolumeAtLimit (double limit) const;
-    double GetBestBid () const;
-    double GetBestAsk () const;
+    static void WalkLimits(Order** topBidOrder, Order** topAskOrder);
+    void WalkBook(Order** topBidOrder, Order** topAskOrder);
+    static Limit* FindNextLowestLimit(const std::map<double, Limit*>& tree, const double& bestPrice);
+    static Limit* FindNextHighestLimit(const std::map<double, Limit*>& tree, const double& bestPrice);
+    [[nodiscard]] int GetBidVolumeAtLimit (double limit) const;
+    [[nodiscard]] int GetAskVolumeAtLimit (double limit) const;
+    [[nodiscard]] double GetBestBid () const;
+    [[nodiscard]] double GetBestAsk () const;
     void PrintBidBook ();
     void PrintAskBook ();
     bool VolumeValidation (int Volume);
     void PriceValidation (double limitPrice, double marketPrice);
-
-
-
 };
 
 #endif //LIMITORDERBOOK_LOB_H
