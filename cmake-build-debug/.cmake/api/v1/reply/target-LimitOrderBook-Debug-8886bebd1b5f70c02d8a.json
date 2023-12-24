@@ -98,15 +98,7 @@
 				4,
 				6,
 				7,
-				8,
-				9,
-				10,
-				11,
-				12,
-				13,
-				14,
-				15,
-				16
+				8
 			]
 		}
 	],
@@ -147,42 +139,7 @@
 		},
 		{
 			"backtrace" : 1,
-			"path" : "headers/LOBLogger.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "headers/Execution.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "headers/OrderLog.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "headers/ExecutionLog.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "headers/Books.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
 			"path" : "headers/Exchange.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "headers/MessagingSystem.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "headers/Message.h",
 			"sourceGroupIndex" : 1
 		},
 		{
@@ -193,11 +150,6 @@
 		{
 			"backtrace" : 1,
 			"path" : "headers/ISubject.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "headers/Firm.h",
 			"sourceGroupIndex" : 1
 		}
 	],

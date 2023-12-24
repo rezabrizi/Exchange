@@ -9,15 +9,7 @@ add_executable(LimitOrderBook main.cpp
         src/Limit.cpp
         headers/LOB.h
         src/LOB.cpp
-        headers/LOBLogger.h
-        headers/Execution.h
-        headers/OrderLog.h
-        headers/ExecutionLog.h
-        headers/Books.h
         headers/Exchange.h
-        headers/MessagingSystem.h
-        headers/Message.h
         headers/IObserver.h
         headers/ISubject.h
-        headers/Firm.h
 )

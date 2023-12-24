@@ -5,34 +5,34 @@
 #include <string>
 #include <iomanip>
 #include <utility>
+#include <cstdlib>
 #include "../headers/LOB.h"
 
-// you cannot make a match if the orders are by the same company
-// best bid and best ask are both by janestreet, this match cannot be made
+
+ActiveLOBMapAndTree LOB::GetActiveMapAndTree(bool bidOrAsk){
+    ActiveLOBMapAndTree mat{};
+    mat.activeMapPtr = (bidOrAsk) ? &buyMap : &sellMap;
+    mat.activeTreePtr = (bidOrAsk) ? &buyTree : &sellTree;
+    return mat;
+}
+
 
 void LOB::AddLimitOrder(std::string instrument, std::string owner, bool bidOrAsk, int quantity, double limitPrice, int entryTime) {
     Order* newOrder = new Order(curr_id, std::move(instrument), std::move(owner), bidOrAsk, quantity, limitPrice, entryTime);
+    ActiveLOBMapAndTree mat = GetActiveMapAndTree(bidOrAsk);
 
-    if (bidOrAsk) {
-        if(buyMap.find(limitPrice) != buyMap.end()){
-            buyMap[limitPrice]->AddOrder(newOrder);
-        }else{
-            Limit* newLimit = new Limit(limitPrice);
-            newLimit->AddOrder(newOrder);
-            buyTree[limitPrice] = newLimit;
-            buyMap[limitPrice] = newLimit;
+    if (mat.activeMapPtr->find(limitPrice) != mat.activeMapPtr->end()){
+        (*mat.activeMapPtr)[limitPrice]->AddOrder(newOrder);
+    }else{
+        Limit* newLimit = new Limit(limitPrice);
+        newLimit->AddOrder(newOrder);
+        (*mat.activeTreePtr)[limitPrice] = newLimit;
+        (*mat.activeMapPtr)[limitPrice] = newLimit;
+        if (bidOrAsk){
             if (bestBid == nullptr || bestBid->GetLimitPrice() < limitPrice){
                 bestBid = newLimit;
             }
-        }
-    }else{
-        if(sellMap.find(limitPrice) != sellMap.end()){
-            sellMap[limitPrice]->AddOrder(newOrder);
-        }else{
-            Limit* newLimit = new Limit(limitPrice);
-            newLimit->AddOrder(newOrder);
-            sellTree[limitPrice] = newLimit;
-            sellMap[limitPrice] = newLimit;
+        }else {
             if (bestAsk == nullptr || bestAsk->GetLimitPrice() > limitPrice){
                 bestAsk = newLimit;
             }
@@ -56,11 +56,10 @@ void LOB::AddLimitOrder(std::string instrument, std::string owner, bool bidOrAsk
 
     std::cout << "--------DONE---------" << std::endl;
 
-
     orders[curr_id] = newOrder;
     curr_id++;
-
 }
+
 
 void LOB::RemoveLimitOrder(int orderId) {
     // If the order doesn't exist exit out of the function
@@ -68,61 +67,30 @@ void LOB::RemoveLimitOrder(int orderId) {
 
     // Find the Order pointer for the order that is being removed
     Order* orderToCancel = orders[orderId];
-    Limit* parentLimit = nullptr;
+    ActiveLOBMapAndTree mat = GetActiveMapAndTree(orderToCancel->bidOrAsk);
+    Limit* parentLimit = (*mat.activeMapPtr)[orderToCancel->limit];
+    double parentLimitPrice = parentLimit->GetLimitPrice();
 
-    // if the order is a bid
-    if (orderToCancel->bidOrAsk){
+    parentLimit->RemoveOrder(orderToCancel);
 
-        // parentLimit is the corresponding doublyLinkedList limit
-        parentLimit = buyMap[orderToCancel->limit];
-        double parentLimitPrice = parentLimit->GetLimitPrice();
+    if (parentLimit->GetLimitSize() == 0){
+        mat.activeMapPtr->erase(parentLimitPrice);
+        mat.activeTreePtr->erase(parentLimitPrice);
 
-        // RemoveOrder removes the order and deletes the order object
-        parentLimit->RemoveOrder(orderToCancel);
-
-        /**
-         * if the size of the limit of the order is now empty due to the removal of the order
-         * then additional steps are required
-         */
-        if (parentLimit->GetLimitSize() == 0){
-            // remove the limit from the limit hashmap
-            buyMap.erase(parentLimitPrice);
-            // remove the limit from the limit tree
-            buyTree.erase(parentLimitPrice);
-            /**
-             * there is the possibility of the best bid/ask changing
-             * if the limit that was removed was the best bid/ask then find the new best bid/ask
-             */
-            if (bestBid->GetLimitPrice() == parentLimitPrice)
-                bestBid = !buyTree.empty() ? (*(buyTree.rbegin())).second : nullptr;
-            delete parentLimit;
+        if (orderToCancel->bidOrAsk){
+            if (bestBid->GetLimitPrice() == parentLimitPrice){
+                bestBid = (!mat.activeTreePtr->empty()) ? (*(mat.activeTreePtr->rbegin())).second : nullptr;
+            }
+        } else {
+            if (bestAsk->GetLimitPrice() == parentLimitPrice){
+                bestAsk = (!mat.activeTreePtr->empty()) ? (*(mat.activeTreePtr->begin())).second : nullptr;
+            }
         }
-    // if the order is an ask
-    }else{
-        // parentLimit is the corresponding doublyLinkedList limit
-        parentLimit = sellMap[orderToCancel->limit];
-        double parentLimitPrice = parentLimit->GetLimitPrice();
-
-        // RemoveOrder removes the order and deletes the order object
-        parentLimit->RemoveOrder(orderToCancel);
-        /**
-         * if the size of the limit of the order is now empty due to the removal of the order
-         * then additional steps are required
-         */
-        if (parentLimit->GetLimitSize() == 0){
-            sellMap.erase(parentLimitPrice);
-            sellTree.erase(parentLimitPrice);
-            /**
-             * there is the possibility of the best bid/ask changing
-             * if the limit that was removed was the best bid/ask then find the new best bid/ask
-             */
-            if (bestAsk->GetLimitPrice() == parentLimitPrice)
-                bestAsk = !sellTree.empty() ? (*(sellTree.begin())).second : nullptr;
-            delete parentLimit;
-        }
+        delete parentLimit;
     }
     orders.erase(orderId);
 }
+
 
 void LOB::Execute() {
     while (bestBid != nullptr && bestAsk != nullptr && bestBid->GetLimitPrice() >= bestAsk->GetLimitPrice()){
@@ -146,6 +114,7 @@ void LOB::Execute() {
             }
     }
 }
+
 
 void LOB::WalkLimits(Order **topBidOrder, Order **topAskOrder) {
     // top ask is $88  if there are 3 asks
@@ -185,6 +154,7 @@ void LOB::WalkLimits(Order **topBidOrder, Order **topAskOrder) {
     }
 }
 
+
 void LOB::WalkBook(Order **topBidOrder, Order **topAskOrder) {
     if ((*topBidOrder) == nullptr || (*topAskOrder) == nullptr) {
         return;
@@ -219,18 +189,20 @@ void LOB::WalkBook(Order **topBidOrder, Order **topAskOrder) {
     }
 }
 
-Limit* LOB::FindNextLowestLimit(const std::map<double, Limit*>& tree, const double& bestPrice){
+
+Limit* LOB::FindNextLowestLimit(const std::map<double, Limit*>& tree, const double& bestPrice) {
     auto it = tree.find(bestPrice);
 
-    // Check if the iterator is not the first element and is valid
-    if (it != tree.begin() && it != tree.end()) {
-        --it; // Move to the previous element
-        return it->second; // Return the Limit* for the next lowest price
+    // If bestPrice is not found or it is the first element, return nullptr
+    if (it == tree.end() || it == tree.begin()) {
+        return nullptr;
     }
 
-    // If bestBid is at the beginning or not found, return nullptr
-    return nullptr;
-};
+    // Move to the previous element (which exists since it is not at the beginning)
+    --it;
+    return it->second; // Return the Limit* for the next lowest price
+}
+
 
 Limit* LOB::FindNextHighestLimit(const std::map<double, Limit*>& tree, const double& bestPrice) {
     auto it = tree.find(bestPrice);
@@ -249,21 +221,26 @@ Limit* LOB::FindNextHighestLimit(const std::map<double, Limit*>& tree, const dou
     return nullptr;
 }
 
+
 int LOB::GetBidVolumeAtLimit(double limit) const {
     return (buyMap.find(limit) != buyMap.end()) ? buyMap.at(limit)->GetLimitVolume() : -1;
 }
+
 
 int LOB::GetAskVolumeAtLimit(double limit) const {
     return (sellMap.find(limit) != sellMap.end()) ? sellMap.at(limit)->GetLimitVolume() : -1;
 }
 
+
 double LOB::GetBestBid() const {
     return (bestBid != nullptr) ? bestBid->GetLimitPrice() : 0.00;
 }
 
+
 double LOB::GetBestAsk() const {
     return (bestAsk != nullptr) ? bestAsk->GetLimitPrice() : 0.00;
 }
+
 
 void LOB::PrintBidBook() {
     std::cout << "----- Bid Book -----" << std::endl;
@@ -280,6 +257,7 @@ void LOB::PrintBidBook() {
         std::cout << std::setw(10) << price << std::setw(15) << totalQuantity << std::setw(15) << totalOrders << std::endl;
     }
 }
+
 
 void LOB::PrintAskBook() {
     std::cout << "----- Ask Book -----" << std::endl;

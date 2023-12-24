@@ -1,5 +1,10 @@
 # ninja log v5
-672	713	1701103196000629769	LimitOrderBook	90e57a2d656bb69d
-3	319	1701102818616013342	CMakeFiles/LimitOrderBook.dir/main.cpp.o	3def51da35016252
-4	672	1701103195955941865	CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o	a557255da7628f83
 4	437	1701102775894966871	CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o	a4976f8b6fdeff48
+4	2119	1703188215396039542	CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o	a557255da7628f83
+3	2063	1703188215340432324	CMakeFiles/LimitOrderBook.dir/main.cpp.o	3def51da35016252
+2119	2314	1703188215595552581	LimitOrderBook	90e57a2d656bb69d
+0	59	1703447352883742806	build.ninja	5ef0da84c9931677
+2	402	1703447353289986511	CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o	a4976f8b6fdeff48
+2	499	1703447353386781066	CMakeFiles/LimitOrderBook.dir/main.cpp.o	3def51da35016252
+2	568	1703447353456661791	CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o	a557255da7628f83
+568	744	1703447353635498755	LimitOrderBook	90e57a2d656bb69d
