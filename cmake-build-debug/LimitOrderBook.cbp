@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="LimitOrderBook"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/rezatabrizi/Repos/Exchange/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="LimitOrderBook">
+				<Option output="/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/LimitOrderBook" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/rezatabrizi/Repos/Exchange/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 LimitOrderBook"/>
+					<CompileFile command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="LimitOrderBook/fast">
+				<Option output="/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/LimitOrderBook" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/rezatabrizi/Repos/Exchange/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 LimitOrderBook/fast"/>
+					<CompileFile command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/rezatabrizi/Repos/Exchange/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/rezatabrizi/Repos/Exchange/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j11 -f &quot;/Users/rezatabrizi/Repos/Exchange/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/CentralMessageSystem.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Exchange.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/IObserver.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/ISubject.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/LOB.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Limit.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Message.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/MessagingQueue.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Order.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/OrderBookManager.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/main.cpp">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/LOB.cpp">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/Limit.cpp">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/MessagingQueue.cpp">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/OrderBookManager.cpp">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

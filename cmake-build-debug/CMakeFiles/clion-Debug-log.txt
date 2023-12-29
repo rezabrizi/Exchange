@@ -1,4 +1,13 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/rezatabrizi/CLionProjects/LimitOrderBook -B /Users/rezatabrizi/CLionProjects/LimitOrderBook/cmake-build-debug
+/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -S /Users/rezatabrizi/Repos/Exchange -B /Users/rezatabrizi/Repos/Exchange/cmake-build-debug
+CMake Deprecation Warning:
+  Support for "Extra Generators" like
+
+    CodeBlocks
+
+  is deprecated and will be removed from a future version of CMake.  IDEs may
+  use the cmake-file-api(7) to view CMake-generated project build trees.
+
+
 -- Configuring done (0.0s)
 -- Generating done (0.0s)
--- Build files have been written to: /Users/rezatabrizi/CLionProjects/LimitOrderBook/cmake-build-debug
+-- Build files have been written to: /Users/rezatabrizi/Repos/Exchange/cmake-build-debug

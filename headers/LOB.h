@@ -40,8 +40,6 @@ public:
     [[nodiscard]] double GetBestAsk () const;
     void PrintBidBook ();
     void PrintAskBook ();
-    bool VolumeValidation (int Volume);
-    void PriceValidation (double limitPrice, double marketPrice);
 };
 
 #endif //LIMITORDERBOOK_LOB_H

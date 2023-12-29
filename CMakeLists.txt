@@ -12,4 +12,10 @@ add_executable(LimitOrderBook main.cpp
         headers/Exchange.h
         headers/IObserver.h
         headers/ISubject.h
+        headers/OrderBookManager.h
+        src/OrderBookManager.cpp
+        headers/CentralMessageSystem.h
+        headers/MessagingQueue.h
+        headers/Message.h
+        src/MessagingQueue.cpp
 )
