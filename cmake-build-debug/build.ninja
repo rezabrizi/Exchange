@@ -67,6 +67,24 @@ build CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o: CXX_COMPILER__LimitOrderBook_
   OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
   OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
 
+build CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/LimitOrderBook/src/OrderBookManager.cpp || cmake_object_order_depends_target_LimitOrderBook
+  DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
+  OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
+
+build CMakeFiles/LimitOrderBook.dir/src/MessagingQueue.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/LimitOrderBook/src/MessagingQueue.cpp || cmake_object_order_depends_target_LimitOrderBook
+  DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/MessagingQueue.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
+  OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
+
+build CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/LimitOrderBook/src/CentralMessageSystem.cpp || cmake_object_order_depends_target_LimitOrderBook
+  DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
+  OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target LimitOrderBook
@@ -75,7 +93,7 @@ build CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o: CXX_COMPILER__LimitOrderBook_
 #############################################
 # Link the executable LimitOrderBook
 
-build LimitOrderBook: CXX_EXECUTABLE_LINKER__LimitOrderBook_Debug CMakeFiles/LimitOrderBook.dir/main.cpp.o CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o
+build LimitOrderBook: CXX_EXECUTABLE_LINKER__LimitOrderBook_Debug CMakeFiles/LimitOrderBook.dir/main.cpp.o CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o CMakeFiles/LimitOrderBook.dir/src/MessagingQueue.cpp.o CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
   POST_BUILD = :

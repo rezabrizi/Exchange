@@ -68,7 +68,7 @@ void LOB::RemoveLimitOrder(int orderId) {
     // Find the Order pointer for the order that is being removed
     Order* orderToCancel = orders[orderId];
     ActiveLOBMapAndTree mat = GetActiveMapAndTree(orderToCancel->bidOrAsk);
-    Limit* parentLimit = (*mat.activeMapPtr)[orderToCancel->limit];
+    Limit* parentLimit = (*mat.activeMapPtr)[orderToCancel->price];
     double parentLimitPrice = parentLimit->GetLimitPrice();
 
     parentLimit->RemoveOrder(orderToCancel);
@@ -98,7 +98,7 @@ void LOB::Execute() {
             Order* topAskOrder = bestAsk->GetTopOrder();
 
             WalkBook(&topBidOrder, &topAskOrder);
-            if (topBidOrder->owner == topAskOrder->owner){
+            if (topBidOrder->clientId == topAskOrder->clientId){
                 break;
             }
             if (topBidOrder->quantity > topAskOrder->quantity){
@@ -129,7 +129,7 @@ void LOB::WalkLimits(Order **topBidOrder, Order **topAskOrder) {
         return;
     }
 
-    while ((tempTopBidOrder->owner == tempTopAskOrder->owner) &&
+    while ((tempTopBidOrder->clientId == tempTopAskOrder->clientId) &&
            (tempTopBidOrder->nextOrder != nullptr || tempTopAskOrder->nextOrder != nullptr )){
         if (tempTopBidOrder->nextOrder != nullptr && tempTopAskOrder->nextOrder != nullptr){
             // we are making an assumption that to orders will not have the exact same time
@@ -148,7 +148,7 @@ void LOB::WalkLimits(Order **topBidOrder, Order **topAskOrder) {
         }
     }
 
-    if (tempTopBidOrder->owner != tempTopAskOrder->owner) {
+    if (tempTopBidOrder->clientId != tempTopAskOrder->clientId) {
         (*topBidOrder) = tempTopBidOrder;
         (*topAskOrder) = tempTopAskOrder;
     }
@@ -163,27 +163,27 @@ void LOB::WalkBook(Order **topBidOrder, Order **topAskOrder) {
     Order* tempTopBidOrder = (*topBidOrder);
     Order* tempTopAskOrder = (*topAskOrder);
 
-    while (tempTopBidOrder->owner == tempTopAskOrder->owner){
+    while (tempTopBidOrder->clientId == tempTopAskOrder->clientId){
         WalkLimits (&tempTopBidOrder, &tempTopAskOrder);
-        if (tempTopBidOrder->owner == tempTopAskOrder->owner){
-            Limit* nextBestBid = FindNextHighestLimit (buyTree, tempTopBidOrder->limit);
-            Limit* nextBestAsk = FindNextLowestLimit(sellTree, tempTopAskOrder->limit);
+        if (tempTopBidOrder->clientId == tempTopAskOrder->clientId){
+            Limit* nextBestBid = FindNextHighestLimit (buyTree, tempTopBidOrder->price);
+            Limit* nextBestAsk = FindNextLowestLimit(sellTree, tempTopAskOrder->price);
             if (nextBestBid == nullptr && nextBestAsk == nullptr) {
                 break;
             }
 
-            if (tempTopBidOrder->entryTime <= tempTopAskOrder->entryTime && nextBestAsk != nullptr && tempTopBidOrder->limit >= nextBestAsk->GetLimitPrice()){
+            if (tempTopBidOrder->entryTime <= tempTopAskOrder->entryTime && nextBestAsk != nullptr && tempTopBidOrder->price >= nextBestAsk->GetLimitPrice()){
                 tempTopAskOrder = nextBestAsk->GetTopOrder();
-            } else if (tempTopBidOrder->entryTime <= tempTopAskOrder->entryTime && nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->limit){
+            } else if (tempTopBidOrder->entryTime <= tempTopAskOrder->entryTime && nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->price){
                 tempTopBidOrder = nextBestBid->GetTopOrder();
-            } else if (tempTopBidOrder->entryTime >= tempTopAskOrder->entryTime && nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->limit) {
+            } else if (tempTopBidOrder->entryTime >= tempTopAskOrder->entryTime && nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->price){
                 tempTopBidOrder = nextBestBid->GetTopOrder();
-            }else if (tempTopBidOrder->entryTime >= tempTopAskOrder->entryTime && nextBestAsk != nullptr && tempTopBidOrder->limit >= nextBestAsk->GetLimitPrice()){
+            }else if (tempTopBidOrder->entryTime >= tempTopAskOrder->entryTime && nextBestAsk != nullptr && tempTopBidOrder->price >= nextBestAsk->GetLimitPrice()){
                 tempTopAskOrder = nextBestAsk->GetTopOrder();
             }
         }
     }
-    if (tempTopBidOrder->owner != tempTopAskOrder->owner){
+    if (tempTopBidOrder->clientId != tempTopAskOrder->clientId){
         (*topBidOrder) = tempTopBidOrder;
         (*topAskOrder) = tempTopAskOrder;
     }

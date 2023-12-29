@@ -18,4 +18,5 @@ add_executable(LimitOrderBook main.cpp
         headers/MessagingQueue.h
         headers/Message.h
         src/MessagingQueue.cpp
+        src/CentralMessageSystem.cpp
 )

@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "LimitOrderBook::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-LimitOrderBook-Debug-a5c8137dd6830d1d9bde.json",
+					"jsonFile" : "target-LimitOrderBook-Debug-5d953bd3d697729a8ce9.json",
 					"name" : "LimitOrderBook",
 					"projectIndex" : 0
 				}
@@ -49,12 +49,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/rezatabrizi/Repos/Exchange/cmake-build-debug",
-		"source" : "/Users/rezatabrizi/Repos/Exchange"
+		"build" : "/Users/rezatabrizi/CLionProjects/LimitOrderBook/cmake-build-debug",
+		"source" : "/Users/rezatabrizi/CLionProjects/LimitOrderBook"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 6
+		"minor" : 5
 	}
 }

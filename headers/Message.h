@@ -7,9 +7,8 @@
 
 
 struct BaseMessage{
+    virtual ~BaseMessage() = default;
     int messageId;
-
-
     std::string messageType;
     long long timestamp;
 };
@@ -27,7 +26,24 @@ struct AddOrderMessage : public OrderMessage{
 };
 
 struct CancelOrderMessage : public OrderMessage{
-    int orderid;
+    int orderId;
+};
+
+struct TradeExecutionMessage: public BaseMessage{
+    int orderId;
+    std::string clientId;
+    std::string instrumentId;
+    double price;
+    int quantity;
+};
+
+struct OrderConfirmationMessage: public AddOrderMessage{
+    int orderId;
+};
+
+struct AlertMessage: public BaseMessage{
+    std::string instrumentId;
+    std::string alert;
 };
 
 

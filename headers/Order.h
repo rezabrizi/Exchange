@@ -8,18 +8,19 @@
 
 class Order{
 public:
+    // need to add type (market, limit, etc..), status, cancelTime
     int id;
-    std::string instrument;
-    std::string owner;
+    std::string instrumentId;
+    std::string clientId;
     bool bidOrAsk;
     int quantity;
-    double limit;
+    double price;
     long long entryTime;
     Order* nextOrder;
     Order* prevOrder;
 
 
-    Order(int id, std::string instrument, std::string  owner, bool bidOrAsk, int quantity, double limit, long long entryTime): id(id), instrument(std::move(instrument)), owner(std::move(owner)), bidOrAsk(bidOrAsk), quantity(quantity), limit(limit), entryTime(entryTime), nextOrder(nullptr), prevOrder(nullptr){};
+    Order(int id, std::string instrument, std::string  owner, bool bidOrAsk, int quantity, double limit, long long entryTime): id(id), instrumentId(std::move(instrument)), clientId(std::move(owner)), bidOrAsk(bidOrAsk), quantity(quantity), price(limit), entryTime(entryTime), nextOrder(nullptr), prevOrder(nullptr){};
 };
 
 #endif //LIMITORDERBOOK_ORDER_H

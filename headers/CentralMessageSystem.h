@@ -8,16 +8,19 @@
 #ifndef LIMITORDERBOOK_CENTRALMESSAGESYSTEM_H
 #define LIMITORDERBOOK_CENTRALMESSAGESYSTEM_H
 
-using SubscriberCallback = std::function<void (const std::string& message)>;
+using SubscriberCallback = std::function<void (const BaseMessage& message)>;
 
 class CentralMessageSystem{
     MessagingQueue systemQueue;
-    std::vector <std::thread> workers;
     std::unordered_map <std::string, std::vector<SubscriberCallback>> subscribers;
     bool running;
 
+    void Worker();
+    void HandleMessage(std::unique_ptr <BaseMessage> message);
+
 public:
-    void publish (const BaseMessage& message);
-    void subscribe (const std::string& topic, SubscriberCallback callback);
+    CentralMessageSystem();
+    void Publish (std::unique_ptr<BaseMessage> message);
+    void Subscribe (const std::string& topic, const SubscriberCallback& callback);
 };
 #endif //LIMITORDERBOOK_CENTRALMESSAGESYSTEM_H
