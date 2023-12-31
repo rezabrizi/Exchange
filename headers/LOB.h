@@ -5,6 +5,7 @@
 #include <map>
 #include <queue>
 #include "Message.h"
+#include <chrono>
 #include "Limit.h"
 #include "Execution.h"
 
@@ -17,14 +18,10 @@ struct ActiveLOBMapAndTree{
     std::map<double, Limit*>* activeTreePtr;
 };
 
-struct OrderAndExecutionConfirmation{
-    std::vector<Order*> orderConfirmation;
-    std::vector<Execution*> executionConfirmation;
-};
-
 
 class LOB{
-    int curr_id;
+    int currentOrderId;
+    int currentExecutionId;
     Limit* bestBid;
     Limit* bestAsk;
     std::queue <Order*> marketOrderBuyQueue;
@@ -34,24 +31,29 @@ class LOB{
     std::unordered_map <double, Limit*> sellMap;
     std::map <double, Limit*> buyTree;
     std::map <double, Limit*> sellTree;
+
+
+    ActiveLOBMapAndTree GetActiveMapAndTree(bool bidOrAsk);
+    long long GetTimeStamp ();
     void AddMarketOrder(Order* order);
     void AddLimitOrder(Order* order);
-    void CreateOrder(Order* order);
-    void CreateExecution(Execution* execution);
-
-public:
-    LOB(): curr_id(0), bestBid(nullptr), bestAsk(nullptr){};
-    ActiveLOBMapAndTree GetActiveMapAndTree(bool bidOrAsk);
-    OrderAndExecutionConfirmation AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, long long cancelTime);
+    void WriteOrderToDB(Order* order);
+    void WriteExecuteToDB(Execution* execution);
     void RemoveLimitOrder(int orderId);
-    void ExecuteLimitOrders();
-    void ExecuteMarketOrders(bool bidOrAsk);
+    void MatchMarketOrders(std::vector<Execution*> &executions);
+    void MatchLimitOrders(std::vector<Execution*> &executions);
     static void WalkLimits(Order** topBidOrder, Order** topAskOrder);
     static void WalkOneLimit(Order** topOrder, Order* marketOrder);
     void WalkBook(Order** topBidOrder, Order** topAskOrder);
-    void WalkOneBook(bool bidOrAsk, Order** topOrder, Order* marketOrder);
+    void WalkOneBook(bool bidOrAsk, Order** topLimitOrder, Order* marketOrder);
     static Limit* FindNextLowestLimit(const std::map<double, Limit*>& tree, const double& bestPrice);
     static Limit* FindNextHighestLimit(const std::map<double, Limit*>& tree, const double& bestPrice);
+
+public:
+    LOB(): currentOrderId(0), currentExecutionId(0), bestBid(nullptr), bestAsk(nullptr){};
+    Order* AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, long long cancelTime);
+    std::vector<Execution*> Execute();
+    Order* CancelOrder(int orderId);
     [[nodiscard]] int GetBidVolumeAtLimit (double limit) const;
     [[nodiscard]] int GetAskVolumeAtLimit (double limit) const;
     [[nodiscard]] double GetBestBid () const;

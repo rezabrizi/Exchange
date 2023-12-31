@@ -17,15 +17,23 @@ ActiveLOBMapAndTree LOB::GetActiveMapAndTree(bool bidOrAsk){
 }
 
 
+long long LOB::GetTimeStamp() {
+    auto now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+
+    return millis;
+}
+
+
 void LOB::AddMarketOrder(Order* newOrder) {
     if (newOrder->bidOrAsk){
         marketOrderBuyQueue.push(newOrder);
     }else{
         marketOrderSellQueue.push(newOrder);
     }
-    orders[curr_id] = newOrder;
-    curr_id++;
-    ExecuteMarketOrders(!(newOrder->bidOrAsk));
+    orders[currentOrderId] = newOrder;
+    currentOrderId++;
 }
 
 
@@ -40,25 +48,22 @@ void LOB::AddLimitOrder(Order* newOrder) {
         (*mat.activeTreePtr)[newOrder->price] = newLimit;
         (*mat.activeMapPtr)[newOrder->price] = newLimit;
         if (newOrder->bidOrAsk){
-            if (bestBid == nullptr || bestBid->GetLimitPrice() < newOrder->bidOrAsk){
+            if (bestBid == nullptr || bestBid->GetLimitPrice() < newOrder->price){
                 bestBid = newLimit;
             }
         }else {
-            if (bestAsk == nullptr || bestAsk->GetLimitPrice() > newOrder->bidOrAsk){
+            if (bestAsk == nullptr || bestAsk->GetLimitPrice() > newOrder->price){
                 bestAsk = newLimit;
             }
         }
     }
-    orders[curr_id] = newOrder;
-    curr_id++;
-
-    ExecuteMarketOrders(!(newOrder->bidOrAsk));
-    ExecuteLimitOrders();
+    orders[currentOrderId] = newOrder;
+    currentOrderId++;
 }
 
-//@TODO Make sure to return the order confirmations and executions
-void LOB::AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, long long cancelTime) {
-    Order* newOrder = new Order(curr_id, std::move(instrumentId), std::move(type), std::move(clientId), bidOrAsk, quantity, limitPrice, entryTime, cancelTime);
+
+Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, long long cancelTime) {
+    Order* newOrder = new Order(currentOrderId, std::move(instrumentId), std::move(type), std::move(clientId), bidOrAsk, quantity, limitPrice, entryTime, cancelTime);
 
     if (newOrder->type == "market"){
         AddMarketOrder(newOrder);
@@ -69,7 +74,7 @@ void LOB::AddOrder(std::string instrumentId, std::string type, std::string clien
     // For printing purposes
     std::string type_of_order = (bidOrAsk) ? "bid" : "ask";
     std::cout << "-------ADDING--------" << std::endl;
-    std::cout << "ID:   " << curr_id << " " << type_of_order << "   $" << limitPrice << "   " << quantity << " shares   time   " << entryTime << std::endl;
+    std::cout << "ID:   " << currentOrderId << " " << type_of_order << "   $" << limitPrice << "   " << quantity << " shares   time   " << entryTime << std::endl;
     if (bestBid != nullptr) {
         std::cout << "BEST BID: $" << bestBid->GetLimitPrice() << std::endl;
     }else {
@@ -81,6 +86,8 @@ void LOB::AddOrder(std::string instrumentId, std::string type, std::string clien
         std::cout << "EMPTY BOOK"<< std::endl;
     }
     std::cout << "--------DONE---------" << std::endl;
+
+    return newOrder;
 }
 
 
@@ -89,24 +96,24 @@ void LOB::RemoveLimitOrder(int orderId) {
     if (orders.find(orderId) == orders.end()) return;
 
     // Find the Order pointer for the order that is being removed
-    Order* orderToCancel = orders[orderId];
-    ActiveLOBMapAndTree mat = GetActiveMapAndTree(orderToCancel->bidOrAsk);
-    Limit* parentLimit = (*mat.activeMapPtr)[orderToCancel->price];
+    Order* orderToRemove = orders[orderId];
+    ActiveLOBMapAndTree mat = GetActiveMapAndTree(orderToRemove->bidOrAsk);
+    Limit* parentLimit = (*mat.activeMapPtr)[orderToRemove->price];
     double parentLimitPrice = parentLimit->GetLimitPrice();
 
-    parentLimit->RemoveOrder(orderToCancel);
+    parentLimit->RemoveOrder(orderToRemove);
 
     if (parentLimit->GetLimitSize() == 0){
         mat.activeMapPtr->erase(parentLimitPrice);
         mat.activeTreePtr->erase(parentLimitPrice);
 
-        if (orderToCancel->bidOrAsk){
+        if (orderToRemove->bidOrAsk){
             if (bestBid->GetLimitPrice() == parentLimitPrice){
-                bestBid = (!mat.activeTreePtr->empty()) ? (*(mat.activeTreePtr->rbegin())).second : nullptr;
+                bestBid = FindNextHighestLimit(*mat.activeTreePtr, parentLimitPrice);
             }
         } else {
             if (bestAsk->GetLimitPrice() == parentLimitPrice){
-                bestAsk = (!mat.activeTreePtr->empty()) ? (*(mat.activeTreePtr->begin())).second : nullptr;
+                bestAsk = FindNextLowestLimit(*mat.activeTreePtr, parentLimitPrice);
             }
         }
         delete parentLimit;
@@ -115,59 +122,125 @@ void LOB::RemoveLimitOrder(int orderId) {
 }
 
 
-void LOB::ExecuteLimitOrders() {
+std::vector<Execution*> LOB::Execute(){
+    std::vector<Execution*> executions;
+    MatchMarketOrders(executions);
+    MatchLimitOrders(executions);
+
+    return executions;
+}
+
+
+void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
+    bool matchNotFound = false;
+
+    while(!marketOrderBuyQueue.empty() && !matchNotFound){
+        while (bestAsk != nullptr){
+            Order* currentMarketOrder = marketOrderBuyQueue.front();
+            Order* topLimitOrder = bestAsk->GetTopOrder();
+            WalkOneBook(false, &topLimitOrder, currentMarketOrder);
+            Limit* topLimit = buyTree[topLimitOrder->price];
+
+            if (currentMarketOrder->clientId == topLimitOrder->clientId){
+                matchNotFound = true;
+                break;
+            }
+            // execution is possible now
+            int executionQuantity = (currentMarketOrder->quantity > topLimitOrder->quantity) ?  topLimitOrder->quantity : currentMarketOrder->quantity;
+            long long executionTimeStamp = GetTimeStamp();
+            Execution* marketExecution = new Execution(currentExecutionId, currentMarketOrder->orderId, currentMarketOrder->instrumentId, currentMarketOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
+            Execution* limitExecution = new Execution(currentExecutionId, topLimitOrder->orderId, topLimitOrder->instrumentId, topLimitOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
+            executions.push_back(marketExecution);
+            executions.push_back(limitExecution);
+            currentExecutionId++;
+            if (currentMarketOrder->quantity > topLimitOrder->quantity){
+                currentMarketOrder->quantity -= topLimitOrder->quantity;
+                RemoveLimitOrder(topLimitOrder->orderId);
+            }else if (currentMarketOrder->quantity < topLimitOrder->quantity){
+                topLimit->ReduceOrder(topLimitOrder, currentMarketOrder->quantity);
+                orders.erase(currentMarketOrder->orderId);
+                marketOrderBuyQueue.pop();
+                delete currentMarketOrder;
+            }else{
+                RemoveLimitOrder(topLimitOrder->orderId);
+                orders.erase(currentMarketOrder->orderId);
+                marketOrderBuyQueue.pop();
+                delete currentMarketOrder;
+            }
+        }
+    }
+
+    matchNotFound = false;
+    while(!marketOrderSellQueue.empty() && !matchNotFound){
+        while (bestBid != nullptr){
+            Order* currentMarketOrder = marketOrderSellQueue.front();
+            Order* topLimitOrder = bestBid->GetTopOrder();
+            WalkOneBook(true, &topLimitOrder, currentMarketOrder);
+            Limit* topLimit = sellTree[topLimitOrder->price];
+
+            if (currentMarketOrder->clientId == topLimitOrder->clientId){
+                matchNotFound = true;
+                break;
+            }
+            int executionQuantity = (currentMarketOrder->quantity > topLimitOrder->quantity) ?  topLimitOrder->quantity : currentMarketOrder->quantity;
+            long long executionTimeStamp = GetTimeStamp();
+            Execution* marketExecution = new Execution(currentExecutionId, currentMarketOrder->orderId, currentMarketOrder->instrumentId, currentMarketOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
+            Execution* limitExecution = new Execution(currentExecutionId, topLimitOrder->orderId, topLimitOrder->instrumentId, topLimitOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
+            executions.push_back(marketExecution);
+            executions.push_back(limitExecution);
+            currentExecutionId++;
+            if (currentMarketOrder->quantity > topLimitOrder->quantity){
+                currentMarketOrder->quantity -= topLimitOrder->quantity;
+                RemoveLimitOrder(topLimitOrder->orderId);
+            }else if (currentMarketOrder->quantity < topLimitOrder->quantity){
+                topLimit->ReduceOrder(topLimitOrder, currentMarketOrder->quantity);
+                orders.erase(currentMarketOrder->orderId);
+                marketOrderSellQueue.pop();
+                delete currentMarketOrder;
+            }else{
+                RemoveLimitOrder(topLimitOrder->orderId);
+                orders.erase(currentMarketOrder->orderId);
+                marketOrderSellQueue.pop();
+                delete currentMarketOrder;
+            }
+        }
+    }
+}
+
+
+void LOB::MatchLimitOrders(std::vector<Execution*> &executions) {
     while (bestBid != nullptr && bestAsk != nullptr && bestBid->GetLimitPrice() >= bestAsk->GetLimitPrice()){
             Order* topBidOrder = bestBid->GetTopOrder();
             Order* topAskOrder = bestAsk->GetTopOrder();
+
+            Limit* topBidLimit = buyTree[topBidOrder->price];
+            Limit* topAskLimit = sellTree[topAskOrder->price];
 
             WalkBook(&topBidOrder, &topAskOrder);
             if (topBidOrder->clientId == topAskOrder->clientId){
                 break;
             }
+
+            int executionQuantity = (topBidOrder->quantity > topAskOrder->quantity) ? topAskOrder->quantity : topBidOrder->quantity;
+            double executionPrice = (topBidOrder->entryTime < topAskOrder->entryTime) ? (topBidOrder->price) : (topAskOrder->price);
+            long long executionTimeStamp = GetTimeStamp();
+            Execution* bidLimitExecution = new Execution(currentExecutionId, topBidOrder->orderId, topBidOrder->instrumentId, topBidOrder->clientId, executionPrice, executionQuantity, executionTimeStamp);
+            Execution* askLimitExecution = new Execution(currentExecutionId, topAskOrder->orderId, topAskOrder->instrumentId, topAskOrder->clientId, executionPrice, executionQuantity, executionTimeStamp);
+            currentExecutionId++;
+            executions.push_back(bidLimitExecution);
+            executions.push_back(askLimitExecution);
             // Here there is a match and an execution needs to be created
             if (topBidOrder->quantity > topAskOrder->quantity){
-                bestBid->ReduceOrder(topBidOrder, topAskOrder->quantity);
+                topBidLimit->ReduceOrder(topBidOrder, topAskOrder->quantity);
                 RemoveLimitOrder(topAskOrder->orderId);
             }
             else if (topBidOrder->quantity < topAskOrder->quantity){
-                bestAsk->ReduceOrder(topAskOrder, topBidOrder->quantity);
+                topAskLimit->ReduceOrder(topAskOrder, topBidOrder->quantity);
                 RemoveLimitOrder(topBidOrder->orderId);
             }else{
                 RemoveLimitOrder(topBidOrder->orderId);
                 RemoveLimitOrder(topAskOrder->orderId);
             }
-    }
-}
-
-
-void LOB::ExecuteMarketOrders(bool bidOrAsk){
-    std::queue <Order*>* marketOrderQueue;
-    marketOrderQueue = (bidOrAsk) ? &marketOrderBuyQueue : &marketOrderSellQueue;
-
-    while (!marketOrderQueue->empty()){
-        Order* currentOrder = marketOrderQueue->front();
-        ActiveLOBMapAndTree mat = GetActiveMapAndTree(!bidOrAsk);
-        Limit* BestMatchedLimit = (bidOrAsk) ? bestAsk : bestBid;
-
-        while (BestMatchedLimit != nullptr){
-
-            Order* topLimitOrder = BestMatchedLimit->GetTopOrder();
-            //@TODO Implement WalkOneBook()
-            WalkOneBook(!bidOrAsk, &topLimitOrder, currentOrder);
-            if (currentOrder->clientId == topLimitOrder->clientId){
-                break;
-            }
-            if (currentOrder->quantity > topLimitOrder->quantity){
-                currentOrder->quantity -= topLimitOrder->quantity;
-                RemoveLimitOrder(topLimitOrder->orderId);
-            } else if (currentOrder->quantity < topLimitOrder->quantity){
-                BestMatchedLimit->ReduceOrder(topLimitOrder, currentOrder->quantity);
-                orders.erase(currentOrder->orderId);
-            }else{
-                RemoveLimitOrder(topLimitOrder->orderId);
-                orders.erase(currentOrder->orderId);
-            }
-        }
     }
 }
 
@@ -222,6 +295,7 @@ void LOB::WalkOneLimit(Order **topOrder, Order *marketOrder) {
         tempTopLimitOrder = tempTopLimitOrder->nextOrder;
     }
 
+    // we could still end up with a topOrder with the same clientId as the marketOrder
     if (tempTopLimitOrder->clientId != marketOrder->clientId){
         (*topOrder) = tempTopLimitOrder;
     }
@@ -263,12 +337,14 @@ void LOB::WalkBook(Order **topBidOrder, Order **topAskOrder) {
 }
 
 
-void LOB::WalkOneBook(bool bidOrAsk, Order **topOrder, Order* marketOrder) {
-    if ((*topOrder) == nullptr) {
+void LOB::WalkOneBook(bool bidOrAsk, Order **topLimitOrder, Order* marketOrder) {
+
+    // Theoretically should never happen
+    if ((*topLimitOrder) == nullptr) {
         return;
     }
 
-    Order* tempTopLimitOrder = (*topOrder);
+    Order* tempTopLimitOrder = (*topLimitOrder);
     ActiveLOBMapAndTree mat = GetActiveMapAndTree(bidOrAsk);
 
     while (tempTopLimitOrder->clientId == marketOrder->clientId){
@@ -281,30 +357,16 @@ void LOB::WalkOneBook(bool bidOrAsk, Order **topOrder, Order* marketOrder) {
                 break;
             }
 
-            tempTopLimitOrder = nextBestLimit->GetTopOrder();
+            tempTopLimitOrder = nextBestLimit->GetTopOrder ();
         }
     }
     if (tempTopLimitOrder->clientId != marketOrder->clientId){
-        (*topOrder) = tempTopLimitOrder;
+        (*topLimitOrder) = tempTopLimitOrder;
     }
 }
 
 
 Limit* LOB::FindNextLowestLimit(const std::map<double, Limit*>& tree, const double& bestPrice) {
-    auto it = tree.find(bestPrice);
-
-    // If bestPrice is not found Or it is the first element, return nullptr
-    if (it == tree.end() || it == tree.begin()) {
-        return nullptr;
-    }
-
-    // Move to the previous element (which exists since it is not at the beginning)
-    --it;
-    return it->second; // Return the Limit* for the next lowest price
-}
-
-
-Limit* LOB::FindNextHighestLimit(const std::map<double, Limit*>& tree, const double& bestPrice) {
     auto it = tree.find(bestPrice);
 
     // Check if the iterator is valid and not the last element
@@ -319,6 +381,20 @@ Limit* LOB::FindNextHighestLimit(const std::map<double, Limit*>& tree, const dou
 
     // If bestBid is at the end or not found, return nullptr
     return nullptr;
+}
+
+
+Limit* LOB::FindNextHighestLimit(const std::map<double, Limit*>& tree, const double& bestPrice) {
+    auto it = tree.find(bestPrice);
+
+    // If bestPrice is not found Or it is the first element, return nullptr
+    if (it == tree.end() || it == tree.begin()) {
+        return nullptr;
+    }
+
+    // Move to the previous element (which exists since it is not at the beginning)
+    --it;
+    return it->second; // Return the Limit* for the next lowest price
 }
 
 

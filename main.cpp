@@ -22,7 +22,7 @@ int main() {
     std::cout << std::endl;
     TSLA.PrintAskBook();
 
-    TSLA.ExecuteLimitOrders();
+    TSLA.MatchLimitOrders();
 
     std::cout << std::endl;
     TSLA.PrintBidBook();
