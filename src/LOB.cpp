@@ -91,6 +91,17 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
 }
 
 
+void LOB::RemoveMarketOrder(int orderId) {
+    Order* orderToRemove = orders[orderId];
+    if (orderToRemove->bidOrAsk){
+        // So obviously we can't find the market order like this, all that can be done is remove the order ?
+        //@TODO BIG ISSUE AND NEED TO FIX
+        marketOrderBuyQueue[]
+    }
+
+}
+
+
 void LOB::RemoveLimitOrder(int orderId) {
     // If the order doesn't exist exit out of the function
     if (orders.find(orderId) == orders.end()) return;
@@ -122,12 +133,32 @@ void LOB::RemoveLimitOrder(int orderId) {
 }
 
 
-std::vector<Execution*> LOB::Execute(){
+std::vector<Execution*> LOB::Execute(bool isLimit = true){
     std::vector<Execution*> executions;
     MatchMarketOrders(executions);
-    MatchLimitOrders(executions);
-
+    if (isLimit){
+        MatchLimitOrders(executions);
+    }
     return executions;
+}
+
+
+Order* LOB::CancelOrder(int orderId) {
+    if (orders.find(orderId) == orders.end()) {
+        throw std::runtime_error("Order not found");
+    }
+
+    Order* orderToCancel = orders[orderId];
+    long long cancelTime = GetTimeStamp();
+    orderToCancel->cancelTime = cancelTime;
+
+    //@TODO Update the database too
+    if (orderToCancel->type == "market") {
+
+    }
+    if (orderToCancel->type == "limit"){
+        RemoveLimitOrder(orderId);
+    }
 }
 
 

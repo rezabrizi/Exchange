@@ -4,8 +4,9 @@
 #include <unordered_map>
 #include <map>
 #include <queue>
-#include "Message.h"
+#include <stdexcept>
 #include <chrono>
+#include "Message.h"
 #include "Limit.h"
 #include "Execution.h"
 
@@ -39,6 +40,7 @@ class LOB{
     void AddLimitOrder(Order* order);
     void WriteOrderToDB(Order* order);
     void WriteExecuteToDB(Execution* execution);
+    void RemoveMarketOrder(int orderId);
     void RemoveLimitOrder(int orderId);
     void MatchMarketOrders(std::vector<Execution*> &executions);
     void MatchLimitOrders(std::vector<Execution*> &executions);
@@ -52,7 +54,7 @@ class LOB{
 public:
     LOB(): currentOrderId(0), currentExecutionId(0), bestBid(nullptr), bestAsk(nullptr){};
     Order* AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, long long cancelTime);
-    std::vector<Execution*> Execute();
+    std::vector<Execution*> Execute(bool isLimit);
     Order* CancelOrder(int orderId);
     [[nodiscard]] int GetBidVolumeAtLimit (double limit) const;
     [[nodiscard]] int GetAskVolumeAtLimit (double limit) const;
