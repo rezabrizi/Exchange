@@ -82,6 +82,9 @@
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Exchange.h">
 			<Option target="LimitOrderBook"/>
 		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Execution.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/IObserver.h">
 			<Option target="LimitOrderBook"/>
 		</Unit>
@@ -107,6 +110,9 @@
 			<Option target="LimitOrderBook"/>
 		</Unit>
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/main.cpp">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/CentralMessageSystem.cpp">
 			<Option target="LimitOrderBook"/>
 		</Unit>
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/LOB.cpp">

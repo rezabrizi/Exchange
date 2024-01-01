@@ -153,6 +153,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/CentralMessageSystem.o: src/CentralMessageSystem.cpp.o
+.PHONY : src/CentralMessageSystem.o
+
+# target to build an object file
+src/CentralMessageSystem.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o
+.PHONY : src/CentralMessageSystem.cpp.o
+
+src/CentralMessageSystem.i: src/CentralMessageSystem.cpp.i
+.PHONY : src/CentralMessageSystem.i
+
+# target to preprocess a source file
+src/CentralMessageSystem.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.i
+.PHONY : src/CentralMessageSystem.cpp.i
+
+src/CentralMessageSystem.s: src/CentralMessageSystem.cpp.s
+.PHONY : src/CentralMessageSystem.s
+
+# target to generate assembly for a file
+src/CentralMessageSystem.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.s
+.PHONY : src/CentralMessageSystem.cpp.s
+
 src/LOB.o: src/LOB.cpp.o
 .PHONY : src/LOB.o
 
@@ -261,6 +285,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/CentralMessageSystem.o"
+	@echo "... src/CentralMessageSystem.i"
+	@echo "... src/CentralMessageSystem.s"
 	@echo "... src/LOB.o"
 	@echo "... src/LOB.i"
 	@echo "... src/LOB.s"
