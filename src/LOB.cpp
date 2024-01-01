@@ -1,11 +1,6 @@
 //
 // Created by Reza Tabrizi on 11/23/23.
 //
-#include <iostream>
-#include <string>
-#include <iomanip>
-#include <utility>
-#include <cstdlib>
 #include "../headers/LOB.h"
 
 
@@ -18,6 +13,8 @@ ActiveLOBMapAndTree LOB::GetActiveMapAndTree(bool bidOrAsk){
 
 
 long long LOB::GetTimeStamp() {
+    /
+
     auto now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
@@ -62,8 +59,8 @@ void LOB::AddLimitOrder(Order* newOrder) {
 }
 
 
-Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, long long cancelTime) {
-    Order* newOrder = new Order(currentOrderId, std::move(instrumentId), std::move(type), std::move(clientId), bidOrAsk, quantity, limitPrice, entryTime, cancelTime);
+Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime) {
+    Order* newOrder = new Order(currentOrderId, std::move(instrumentId), std::move(type), std::move(clientId), bidOrAsk, quantity, limitPrice, entryTime, -1);
 
     if (newOrder->type == "market"){
         AddMarketOrder(newOrder);
@@ -88,17 +85,6 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
     std::cout << "--------DONE---------" << std::endl;
 
     return newOrder;
-}
-
-
-void LOB::RemoveMarketOrder(int orderId) {
-    Order* orderToRemove = orders[orderId];
-    if (orderToRemove->bidOrAsk){
-        // So obviously we can't find the market order like this, all that can be done is remove the order ?
-        //@TODO BIG ISSUE AND NEED TO FIX
-        marketOrderBuyQueue[]
-    }
-
 }
 
 
@@ -168,6 +154,14 @@ void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
     while(!marketOrderBuyQueue.empty() && !matchNotFound){
         while (bestAsk != nullptr){
             Order* currentMarketOrder = marketOrderBuyQueue.front();
+
+            // handle a cancelled market order
+            if (currentMarketOrder->cancelTime != -1){
+                marketOrderBuyQueue.pop();
+                orders.erase(currentMarketOrder->orderId);
+                delete currentMarketOrder;
+                continue;
+            }
             Order* topLimitOrder = bestAsk->GetTopOrder();
             WalkOneBook(false, &topLimitOrder, currentMarketOrder);
             Limit* topLimit = buyTree[topLimitOrder->price];
@@ -205,6 +199,13 @@ void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
     while(!marketOrderSellQueue.empty() && !matchNotFound){
         while (bestBid != nullptr){
             Order* currentMarketOrder = marketOrderSellQueue.front();
+            // handle a cancelled market order
+            if (currentMarketOrder->cancelTime != -1){
+                marketOrderSellQueue.pop();
+                orders.erase(currentMarketOrder->orderId);
+                delete currentMarketOrder;
+                continue;
+            }
             Order* topLimitOrder = bestBid->GetTopOrder();
             WalkOneBook(true, &topLimitOrder, currentMarketOrder);
             Limit* topLimit = sellTree[topLimitOrder->price];

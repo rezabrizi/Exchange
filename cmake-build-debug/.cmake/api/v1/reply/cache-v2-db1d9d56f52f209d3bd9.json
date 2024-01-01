@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/rezatabrizi/CLionProjects/LimitOrderBook/cmake-build-debug"
+			"value" : "/Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -479,7 +479,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/rezatabrizi/CLionProjects/LimitOrderBook/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "/Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -539,7 +539,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/rezatabrizi/CLionProjects/LimitOrderBook"
+			"value" : "/Users/rezatabrizi/CLionProjects/Exchange"
 		},
 		{
 			"name" : "CMAKE_INSTALL_NAME_TOOL",
@@ -1111,7 +1111,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/rezatabrizi/CLionProjects/LimitOrderBook/cmake-build-debug"
+			"value" : "/Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug"
 		},
 		{
 			"name" : "LimitOrderBook_IS_TOP_LEVEL",
@@ -1135,7 +1135,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/rezatabrizi/CLionProjects/LimitOrderBook"
+			"value" : "/Users/rezatabrizi/CLionProjects/Exchange"
 		}
 	],
 	"kind" : "cache",

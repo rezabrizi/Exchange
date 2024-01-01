@@ -5,7 +5,11 @@
 #include <map>
 #include <queue>
 #include <stdexcept>
+#include <iostream>
+#include <cstdlib>
+#include <utility>
 #include <chrono>
+#include <iomanip>
 #include "Message.h"
 #include "Limit.h"
 #include "Execution.h"
@@ -14,12 +18,24 @@
 #ifndef LIMITORDERBOOK_LOB_H
 #define LIMITORDERBOOK_LOB_H
 
+
+/**
+ * @file LOB.h
+ * @brief Singular Limit Order Book for one financial instrument
+ */
+
+/**
+ * @struct ActiveLobMapAndTree
+ * @brief Provide pointers to the active binary tree and hashmap for bid or ask orders
+ */
 struct ActiveLOBMapAndTree{
     std::unordered_map<double, Limit*>* activeMapPtr;
     std::map<double, Limit*>* activeTreePtr;
 };
 
-
+/**
+ *
+ */
 class LOB{
     int currentOrderId;
     int currentExecutionId;
@@ -35,12 +51,11 @@ class LOB{
 
 
     ActiveLOBMapAndTree GetActiveMapAndTree(bool bidOrAsk);
-    long long GetTimeStamp ();
+    static long long GetTimeStamp ();
     void AddMarketOrder(Order* order);
     void AddLimitOrder(Order* order);
     void WriteOrderToDB(Order* order);
     void WriteExecuteToDB(Execution* execution);
-    void RemoveMarketOrder(int orderId);
     void RemoveLimitOrder(int orderId);
     void MatchMarketOrders(std::vector<Execution*> &executions);
     void MatchLimitOrders(std::vector<Execution*> &executions);
@@ -53,7 +68,7 @@ class LOB{
 
 public:
     LOB(): currentOrderId(0), currentExecutionId(0), bestBid(nullptr), bestAsk(nullptr){};
-    Order* AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, long long cancelTime);
+    Order* AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime);
     std::vector<Execution*> Execute(bool isLimit);
     Order* CancelOrder(int orderId);
     [[nodiscard]] int GetBidVolumeAtLimit (double limit) const;

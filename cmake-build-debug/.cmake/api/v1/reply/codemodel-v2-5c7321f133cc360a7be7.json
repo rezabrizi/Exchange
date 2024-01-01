@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/rezatabrizi/CLionProjects/LimitOrderBook/cmake-build-debug",
-		"source" : "/Users/rezatabrizi/CLionProjects/LimitOrderBook"
+		"build" : "/Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug",
+		"source" : "/Users/rezatabrizi/CLionProjects/Exchange"
 	},
 	"version" : 
 	{
