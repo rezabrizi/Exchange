@@ -58,6 +58,7 @@ void LOB::AddLimitOrder(Order* newOrder) {
 
 
 Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime) {
+    std::cout << "-------ADDING--------" << std::endl;
     Order* newOrder = new Order(currentOrderId, std::move(instrumentId), std::move(type), std::move(clientId), bidOrAsk, quantity, limitPrice, entryTime, -1);
 
     if (newOrder->type == "market"){
@@ -68,17 +69,16 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
 
     // For printing purposes
     std::string type_of_order = (bidOrAsk) ? "bid" : "ask";
-    std::cout << "-------ADDING--------" << std::endl;
-    std::cout << "ID:   " << currentOrderId << " " << type_of_order << "   $" << limitPrice << "   " << quantity << " shares   time   " << entryTime << std::endl;
+    std::cout << "ID:   " << currentOrderId << "    " << newOrder->type << "    " << type_of_order << "    $" << limitPrice << "    " << quantity << "  shares    order time " << entryTime << std::endl;
     if (bestBid != nullptr) {
-        std::cout << "BEST BID: $" << bestBid->GetLimitPrice() << std::endl;
+        std::cout << "BEST BID: $" << bestBid->GetLimitPrice() << " by "  << bestBid->GetTopOrder()->clientId << std::endl;
     }else {
-        std::cout << "EMPTY BOOK"<< std::endl;
+        std::cout << "EMPTY BID BOOK"<< std::endl;
     }
     if (bestAsk != nullptr) {
         std::cout << "BEST ASK: $" << bestAsk->GetLimitPrice() << std::endl;
     }else {
-        std::cout << "EMPTY BOOK"<< std::endl;
+        std::cout << "EMPTY ASK BOOK"<< std::endl;
     }
     std::cout << "--------DONE---------" << std::endl;
 
@@ -99,9 +99,6 @@ void LOB::RemoveLimitOrder(int orderId) {
     parentLimit->RemoveOrder(orderToRemove);
 
     if (parentLimit->GetLimitSize() == 0){
-        mat.activeMapPtr->erase(parentLimitPrice);
-        mat.activeTreePtr->erase(parentLimitPrice);
-
         if (orderToRemove->bidOrAsk){
             if (bestBid->GetLimitPrice() == parentLimitPrice){
                 bestBid = FindNextHighestLimit(*mat.activeTreePtr, parentLimitPrice);
@@ -111,6 +108,9 @@ void LOB::RemoveLimitOrder(int orderId) {
                 bestAsk = FindNextLowestLimit(*mat.activeTreePtr, parentLimitPrice);
             }
         }
+        mat.activeMapPtr->erase(parentLimitPrice);
+        mat.activeTreePtr->erase(parentLimitPrice);
+        delete orderToRemove;
         delete parentLimit;
     }
     orders.erase(orderId);
@@ -119,10 +119,12 @@ void LOB::RemoveLimitOrder(int orderId) {
 
 std::vector<Execution*> LOB::Execute(bool isLimit = true){
     std::vector<Execution*> executions;
+
     MatchMarketOrders(executions);
     if (isLimit){
         MatchLimitOrders(executions);
     }
+
     return executions;
 }
 
@@ -135,142 +137,141 @@ Order* LOB::CancelOrder(int orderId) {
     Order* orderToCancel = orders[orderId];
     long long cancelTime = GetTimeStamp();
     orderToCancel->cancelTime = cancelTime;
+    Order* orderCopy = new Order (*orderToCancel);
 
-    //@TODO Update the database too
     if (orderToCancel->type == "market") {
 
     }
     if (orderToCancel->type == "limit"){
         RemoveLimitOrder(orderId);
     }
+    return orderCopy;
 }
 
 
 void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
     bool matchNotFound = false;
 
-    while(!marketOrderBuyQueue.empty() && !matchNotFound){
-        while (bestAsk != nullptr){
-            Order* currentMarketOrder = marketOrderBuyQueue.front();
+    while(!marketOrderBuyQueue.empty() && bestAsk != nullptr){
+        Order* currentMarketOrder = marketOrderBuyQueue.front();
 
-            // handle a cancelled market order
-            if (currentMarketOrder->cancelTime != -1){
-                marketOrderBuyQueue.pop();
-                orders.erase(currentMarketOrder->orderId);
-                delete currentMarketOrder;
-                continue;
-            }
-            Order* topLimitOrder = bestAsk->GetTopOrder();
-            WalkOneBook(false, &topLimitOrder, currentMarketOrder);
-            Limit* topLimit = buyTree[topLimitOrder->price];
+        // handle a cancelled market order
+        if (currentMarketOrder->cancelTime != -1){
+            marketOrderBuyQueue.pop();
+            orders.erase(currentMarketOrder->orderId);
+            delete currentMarketOrder;
+            continue;
+        }
+        Order* topLimitOrder = bestAsk->GetTopOrder();
+        WalkOneBook(false, &topLimitOrder, currentMarketOrder);
+        Limit* topLimit = sellTree[topLimitOrder->price];
 
-            if (currentMarketOrder->clientId == topLimitOrder->clientId){
-                matchNotFound = true;
-                break;
-            }
-            // execution is possible now
-            int executionQuantity = (currentMarketOrder->quantity > topLimitOrder->quantity) ?  topLimitOrder->quantity : currentMarketOrder->quantity;
-            long long executionTimeStamp = GetTimeStamp();
-            Execution* marketExecution = new Execution(currentExecutionId, currentMarketOrder->orderId, currentMarketOrder->instrumentId, currentMarketOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
-            Execution* limitExecution = new Execution(currentExecutionId, topLimitOrder->orderId, topLimitOrder->instrumentId, topLimitOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
-            executions.push_back(marketExecution);
-            executions.push_back(limitExecution);
-            currentExecutionId++;
-            if (currentMarketOrder->quantity > topLimitOrder->quantity){
-                currentMarketOrder->quantity -= topLimitOrder->quantity;
-                RemoveLimitOrder(topLimitOrder->orderId);
-            }else if (currentMarketOrder->quantity < topLimitOrder->quantity){
-                topLimit->ReduceOrder(topLimitOrder, currentMarketOrder->quantity);
-                orders.erase(currentMarketOrder->orderId);
-                marketOrderBuyQueue.pop();
-                delete currentMarketOrder;
-            }else{
-                RemoveLimitOrder(topLimitOrder->orderId);
-                orders.erase(currentMarketOrder->orderId);
-                marketOrderBuyQueue.pop();
-                delete currentMarketOrder;
-            }
+        if (currentMarketOrder->clientId == topLimitOrder->clientId){
+            break;
+        }
+        // execution is possible now
+        int executionQuantity = (currentMarketOrder->quantity > topLimitOrder->quantity) ?  topLimitOrder->quantity : currentMarketOrder->quantity;
+        long long executionTimeStamp = GetTimeStamp();
+        Execution* marketExecution = new Execution(currentExecutionId, currentMarketOrder->orderId, currentMarketOrder->instrumentId, currentMarketOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
+        Execution* limitExecution = new Execution(currentExecutionId, topLimitOrder->orderId, topLimitOrder->instrumentId, topLimitOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
+        executions.push_back(marketExecution);
+        executions.push_back(limitExecution);
+        currentExecutionId++;
+        if (currentMarketOrder->quantity > topLimitOrder->quantity){
+            currentMarketOrder->quantity -= topLimitOrder->quantity;
+            RemoveLimitOrder(topLimitOrder->orderId);
+        }else if (currentMarketOrder->quantity < topLimitOrder->quantity){
+            topLimit->ReduceOrder(topLimitOrder, currentMarketOrder->quantity);
+            orders.erase(currentMarketOrder->orderId);
+            marketOrderBuyQueue.pop();
+            delete currentMarketOrder;
+        }else{
+            RemoveLimitOrder(topLimitOrder->orderId);
+            orders.erase(currentMarketOrder->orderId);
+            marketOrderBuyQueue.pop();
+            delete currentMarketOrder;
         }
     }
 
     matchNotFound = false;
-    while(!marketOrderSellQueue.empty() && !matchNotFound){
-        while (bestBid != nullptr){
-            Order* currentMarketOrder = marketOrderSellQueue.front();
-            // handle a cancelled market order
-            if (currentMarketOrder->cancelTime != -1){
-                marketOrderSellQueue.pop();
-                orders.erase(currentMarketOrder->orderId);
-                delete currentMarketOrder;
-                continue;
-            }
-            Order* topLimitOrder = bestBid->GetTopOrder();
-            WalkOneBook(true, &topLimitOrder, currentMarketOrder);
-            Limit* topLimit = sellTree[topLimitOrder->price];
+    while(!marketOrderSellQueue.empty() && bestBid != nullptr){
+        Order* currentMarketOrder = marketOrderSellQueue.front();
+        // handle a cancelled market order
+        if (currentMarketOrder->cancelTime != -1){
+            marketOrderSellQueue.pop();
+            orders.erase(currentMarketOrder->orderId);
+            delete currentMarketOrder;
+            continue;
+        }
+        Order* topLimitOrder = bestBid->GetTopOrder();
+        WalkOneBook(true, &topLimitOrder, currentMarketOrder);
+        Limit* topLimit = buyTree[topLimitOrder->price];
 
-            if (currentMarketOrder->clientId == topLimitOrder->clientId){
-                matchNotFound = true;
-                break;
-            }
-            int executionQuantity = (currentMarketOrder->quantity > topLimitOrder->quantity) ?  topLimitOrder->quantity : currentMarketOrder->quantity;
-            long long executionTimeStamp = GetTimeStamp();
-            Execution* marketExecution = new Execution(currentExecutionId, currentMarketOrder->orderId, currentMarketOrder->instrumentId, currentMarketOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
-            Execution* limitExecution = new Execution(currentExecutionId, topLimitOrder->orderId, topLimitOrder->instrumentId, topLimitOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
-            executions.push_back(marketExecution);
-            executions.push_back(limitExecution);
-            currentExecutionId++;
-            if (currentMarketOrder->quantity > topLimitOrder->quantity){
-                currentMarketOrder->quantity -= topLimitOrder->quantity;
-                RemoveLimitOrder(topLimitOrder->orderId);
-            }else if (currentMarketOrder->quantity < topLimitOrder->quantity){
-                topLimit->ReduceOrder(topLimitOrder, currentMarketOrder->quantity);
-                orders.erase(currentMarketOrder->orderId);
-                marketOrderSellQueue.pop();
-                delete currentMarketOrder;
-            }else{
-                RemoveLimitOrder(topLimitOrder->orderId);
-                orders.erase(currentMarketOrder->orderId);
-                marketOrderSellQueue.pop();
-                delete currentMarketOrder;
-            }
+        if (currentMarketOrder->clientId == topLimitOrder->clientId){
+            break;
+        }
+        int executionQuantity = (currentMarketOrder->quantity > topLimitOrder->quantity) ?  topLimitOrder->quantity : currentMarketOrder->quantity;
+
+        long long executionTimeStamp = GetTimeStamp();
+        Execution* marketExecution = new Execution(currentExecutionId, currentMarketOrder->orderId, currentMarketOrder->instrumentId, currentMarketOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
+        Execution* limitExecution = new Execution(currentExecutionId, topLimitOrder->orderId, topLimitOrder->instrumentId, topLimitOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
+        executions.push_back(marketExecution);
+        executions.push_back(limitExecution);
+        currentExecutionId++;
+        if (currentMarketOrder->quantity > topLimitOrder->quantity){
+            currentMarketOrder->quantity -= topLimitOrder->quantity;
+            RemoveLimitOrder(topLimitOrder->orderId);
+        }else if (currentMarketOrder->quantity < topLimitOrder->quantity){
+            topLimit->ReduceOrder(topLimitOrder, currentMarketOrder->quantity);
+            orders.erase(currentMarketOrder->orderId);
+            marketOrderSellQueue.pop();
+            delete currentMarketOrder;
+        }else{
+            RemoveLimitOrder(topLimitOrder->orderId);
+            orders.erase(currentMarketOrder->orderId);
+            marketOrderSellQueue.pop();
+            delete currentMarketOrder;
         }
     }
 }
 
 
 void LOB::MatchLimitOrders(std::vector<Execution*> &executions) {
-    while (bestBid != nullptr && bestAsk != nullptr && bestBid->GetLimitPrice() >= bestAsk->GetLimitPrice()){
-            Order* topBidOrder = bestBid->GetTopOrder();
-            Order* topAskOrder = bestAsk->GetTopOrder();
+    while (bestBid != nullptr && bestAsk != nullptr){
+        Order* topBidOrder = bestBid->GetTopOrder();
+        Order* topAskOrder = bestAsk->GetTopOrder();
 
-            Limit* topBidLimit = buyTree[topBidOrder->price];
-            Limit* topAskLimit = sellTree[topAskOrder->price];
+        Limit* topBidLimit = buyTree[topBidOrder->price];
+        Limit* topAskLimit = sellTree[topAskOrder->price];
 
-            WalkBook(&topBidOrder, &topAskOrder);
-            if (topBidOrder->clientId == topAskOrder->clientId){
-                break;
-            }
 
-            int executionQuantity = (topBidOrder->quantity > topAskOrder->quantity) ? topAskOrder->quantity : topBidOrder->quantity;
-            double executionPrice = (topBidOrder->entryTime < topAskOrder->entryTime) ? (topBidOrder->price) : (topAskOrder->price);
-            long long executionTimeStamp = GetTimeStamp();
-            Execution* bidLimitExecution = new Execution(currentExecutionId, topBidOrder->orderId, topBidOrder->instrumentId, topBidOrder->clientId, executionPrice, executionQuantity, executionTimeStamp);
-            Execution* askLimitExecution = new Execution(currentExecutionId, topAskOrder->orderId, topAskOrder->instrumentId, topAskOrder->clientId, executionPrice, executionQuantity, executionTimeStamp);
-            currentExecutionId++;
-            executions.push_back(bidLimitExecution);
-            executions.push_back(askLimitExecution);
-            // Here there is a match and an execution needs to be created
-            if (topBidOrder->quantity > topAskOrder->quantity){
-                topBidLimit->ReduceOrder(topBidOrder, topAskOrder->quantity);
-                RemoveLimitOrder(topAskOrder->orderId);
-            }
-            else if (topBidOrder->quantity < topAskOrder->quantity){
-                topAskLimit->ReduceOrder(topAskOrder, topBidOrder->quantity);
-                RemoveLimitOrder(topBidOrder->orderId);
-            }else{
-                RemoveLimitOrder(topBidOrder->orderId);
-                RemoveLimitOrder(topAskOrder->orderId);
-            }
+        WalkBook(&topBidOrder, &topAskOrder);
+
+        if ((topBidOrder->clientId == topAskOrder->clientId )|| topBidOrder->price< topAskOrder->price){
+            break;
+        }
+
+        int executionQuantity = (topBidOrder->quantity > topAskOrder->quantity) ? topAskOrder->quantity : topBidOrder->quantity;
+        double executionPrice = (topBidOrder->entryTime < topAskOrder->entryTime) ? (topBidOrder->price) : (topAskOrder->price);
+        long long executionTimeStamp = GetTimeStamp();
+        Execution* bidLimitExecution = new Execution(currentExecutionId, topBidOrder->orderId, topBidOrder->instrumentId, topBidOrder->clientId, executionPrice, executionQuantity, executionTimeStamp);
+        Execution* askLimitExecution = new Execution(currentExecutionId, topAskOrder->orderId, topAskOrder->instrumentId, topAskOrder->clientId, executionPrice, executionQuantity, executionTimeStamp);
+        currentExecutionId++;
+        executions.push_back(bidLimitExecution);
+        executions.push_back(askLimitExecution);
+        // Here there is a match and an execution needs to be created
+        if (topBidOrder->quantity > topAskOrder->quantity){
+            topBidLimit->ReduceOrder(topBidOrder, topAskOrder->quantity);
+            RemoveLimitOrder(topAskOrder->orderId);
+        }
+        else if (topBidOrder->quantity < topAskOrder->quantity){
+            topAskLimit->ReduceOrder(topAskOrder, topBidOrder->quantity);
+            RemoveLimitOrder(topBidOrder->orderId);
+
+        }else{
+            RemoveLimitOrder(topBidOrder->orderId);
+            RemoveLimitOrder(topAskOrder->orderId);
+        }
     }
 }
 
@@ -341,10 +342,12 @@ void LOB::WalkBook(Order **topBidOrder, Order **topAskOrder) {
     Order* tempTopAskOrder = (*topAskOrder);
 
     while (tempTopBidOrder->clientId == tempTopAskOrder->clientId){
-        WalkLimits (&tempTopBidOrder, &tempTopAskOrder);
+        WalkLimits (&tempTopBidOrder, &tempTopAskOrder);\
+
         if (tempTopBidOrder->clientId == tempTopAskOrder->clientId){
             Limit* nextBestBid = FindNextHighestLimit (buyTree, tempTopBidOrder->price);
             Limit* nextBestAsk = FindNextLowestLimit(sellTree, tempTopAskOrder->price);
+
             if (nextBestBid == nullptr && nextBestAsk == nullptr) {
                 break;
             }
@@ -357,6 +360,10 @@ void LOB::WalkBook(Order **topBidOrder, Order **topAskOrder) {
                 tempTopBidOrder = nextBestBid->GetTopOrder();
             }else if (tempTopBidOrder->entryTime >= tempTopAskOrder->entryTime && nextBestAsk != nullptr && tempTopBidOrder->price >= nextBestAsk->GetLimitPrice()){
                 tempTopAskOrder = nextBestAsk->GetTopOrder();
+            }else if (nextBestBid != nullptr && nextBestBid->GetLimitPrice() < tempTopAskOrder->price){
+                break;
+            }else if (nextBestAsk != nullptr && tempTopBidOrder->price < nextBestAsk->GetLimitPrice()){
+                break;
             }
         }
     }
@@ -460,8 +467,9 @@ void LOB::PrintBidBook() {
         int totalQuantity = limit->GetLimitVolume(); // Assuming GetTotalQuantity() returns the total quantity of orders at this price
 
         std::cout << std::setfill(' ') << std::left;
-        std::cout << std::setw(10) << price << std::setw(15) << totalQuantity << std::setw(15) << totalOrders << std::endl;
+        std::cout << std::setw(10) << price << std::setw(15) << totalQuantity << std::setw(15) << totalOrders << std::endl;\
     }
+    std::cout << std::endl;
 }
 
 
@@ -479,6 +487,7 @@ void LOB::PrintAskBook() {
         std::cout << std::setfill(' ') << std::left;
         std::cout << std::setw(10) << price << std::setw(15) << totalQuantity << std::setw(15) << totalOrders << std::endl;
     }
+    std::cout << std::endl;
 }
 
 

@@ -1,32 +1,44 @@
 #include <iostream>
 #include "headers/LOB.h"
 
+
 int main() {
     LOB TSLA;
-    TSLA.AddOrder("TSLA", "JS", true, 20, 97, 1);
-    TSLA.AddOrder("TSLA", "JS", true, 50, 100, 2);
-    TSLA.AddOrder("TSLA", "JS", true, 40, 99, 3);
-    TSLA.AddOrder("TSLA", "JS", true, 60, 100, 5);
-    TSLA.AddOrder("TSLA", "JS", true, 80, 100, 4);
+    TSLA.AddOrder("TSLA", "limit", "JS", true, 100, 95, 10);
+    TSLA.AddOrder("TSLA", "limit", "GS", true, 100, 95, 11);
+    TSLA.AddOrder("TSLA", "limit", "FID", true, 100, 95, 12);
+    TSLA.AddOrder("TSLA", "limit", "GS", true, 80, 100, 13);
+    TSLA.AddOrder("TSLA", "limit", "FID", true, 100, 100, 14);
+    TSLA.AddOrder("TSLA", "limit", "JS", true, 100, 95, 15);
 
 
-    TSLA.AddOrder("TSLA", "JS", false, 90, 99, 3);
-    TSLA.AddOrder("TSLA", "JS", false, 40, 98, 5);
-    TSLA.AddOrder("TSLA", "JS", false, 30, 100, 7);
-    TSLA.AddOrder("TSLA", "JS", false, 60, 99, 6);
-    TSLA.AddOrder("TSLA", "JS", false, 80, 99, 8);
+    TSLA.AddOrder("TSLA", "limit", "GS", false, 100, 105, 10);
+    TSLA.AddOrder("TSLA", "limit", "GS", false, 100, 103, 11);
+    TSLA.AddOrder("TSLA", "limit", "FID", false, 100, 103, 12);
+    TSLA.AddOrder("TSLA", "limit", "JS", false, 100, 100, 13);
+    TSLA.AddOrder("TSLA", "limit", "FID", false, 100, 98, 14);
+    TSLA.AddOrder("TSLA", "limit", "JS", false, 100, 95, 15);
 
 
+
+    std::vector<Execution*> executions = TSLA.Execute(true);
+
+    for (const auto& exec: executions){
+        std::cout << "Exec ID: " << exec->GetExecutionId() << "   Order ID: " << exec->GetOrderId() << "   Instrument ID: " << exec->GetInstrumentId() <<
+        "   Client ID: " << exec->GetClientId() << "   Price: $" << exec->GetPrice() << "    shares: " << exec->GetQuantity() <<  "   timestamp: " << exec->GetTimestamp() << std::endl;
+    }
+    std::cout << std::endl;
+
+
+    TSLA.AddOrder("TSLA", "market", "JS", true, 50, -1, 16);
+    std::vector<Execution*> executionsMarket = TSLA.Execute(false);
+
+    for (const auto& exec: executionsMarket){
+        std::cout << "Exec ID: " << exec->GetExecutionId() << "   Order ID: " << exec->GetOrderId() << "   Instrument ID: " << exec->GetInstrumentId() <<
+                  "   Client ID: " << exec->GetClientId() << "   Price: $" << exec->GetPrice() << "    shares: " << exec->GetQuantity() <<  "   timestamp: " << exec->GetTimestamp() << std::endl;
+    }
+    std::cout << std::endl;
 
     TSLA.PrintBidBook();
-    std::cout << std::endl;
     TSLA.PrintAskBook();
-
-    TSLA.MatchLimitOrders();
-
-    std::cout << std::endl;
-    TSLA.PrintBidBook();
-    std::cout << std::endl;
-    TSLA.PrintAskBook();
-
 }

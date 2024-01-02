@@ -16,7 +16,6 @@ public:
     int quantity;
     double price;
     long long entryTime;
-    //@TODO need to add cancelling and cancel time logic
     long long cancelTime;
     Order* nextOrder;
     Order* prevOrder;
