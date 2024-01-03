@@ -352,17 +352,25 @@ void LOB::WalkBook(Order **topBidOrder, Order **topAskOrder) {
                 break;
             }
 
-            if (tempTopBidOrder->entryTime <= tempTopAskOrder->entryTime && nextBestAsk != nullptr && tempTopBidOrder->price >= nextBestAsk->GetLimitPrice()){
-                tempTopAskOrder = nextBestAsk->GetTopOrder();
-            } else if (tempTopBidOrder->entryTime <= tempTopAskOrder->entryTime && nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->price){
-                tempTopBidOrder = nextBestBid->GetTopOrder();
-            } else if (tempTopBidOrder->entryTime >= tempTopAskOrder->entryTime && nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->price){
-                tempTopBidOrder = nextBestBid->GetTopOrder();
-            }else if (tempTopBidOrder->entryTime >= tempTopAskOrder->entryTime && nextBestAsk != nullptr && tempTopBidOrder->price >= nextBestAsk->GetLimitPrice()){
-                tempTopAskOrder = nextBestAsk->GetTopOrder();
-            }else if (nextBestBid != nullptr && nextBestBid->GetLimitPrice() < tempTopAskOrder->price){
-                break;
-            }else if (nextBestAsk != nullptr && tempTopBidOrder->price < nextBestAsk->GetLimitPrice()){
+            bool bidTimeLessOrEqual = tempTopBidOrder->entryTime <= tempTopAskOrder->entryTime;
+            bool bidTimeGreater = tempTopBidOrder->entryTime > tempTopAskOrder->entryTime;
+
+            if (bidTimeLessOrEqual) {
+                if (nextBestAsk != nullptr && tempTopBidOrder->price >= nextBestAsk->GetLimitPrice()) {
+                    tempTopAskOrder = nextBestAsk->GetTopOrder();
+                } else if (nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->price) {
+                    tempTopBidOrder = nextBestBid->GetTopOrder();
+                }
+            } else if (bidTimeGreater) {
+                if (nextBestBid != nullptr && nextBestBid->GetLimitPrice() >= tempTopAskOrder->price) {
+                    tempTopBidOrder = nextBestBid->GetTopOrder();
+                } else if (nextBestAsk != nullptr && tempTopBidOrder->price >= nextBestAsk->GetLimitPrice()) {
+                    tempTopAskOrder = nextBestAsk->GetTopOrder();
+                }
+            }
+
+            if ((nextBestBid != nullptr && nextBestBid->GetLimitPrice() < tempTopAskOrder->price) ||
+                (nextBestAsk != nullptr && tempTopBidOrder->price < nextBestAsk->GetLimitPrice())) {
                 break;
             }
         }
