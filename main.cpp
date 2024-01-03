@@ -38,7 +38,6 @@ int main() {
                   "   Client ID: " << exec->GetClientId() << "   Price: $" << exec->GetPrice() << "    shares: " << exec->GetQuantity() <<  "   timestamp: " << exec->GetTimestamp() << std::endl;
     }
     std::cout << std::endl;
-
     TSLA.PrintBidBook();
     TSLA.PrintAskBook();
 }

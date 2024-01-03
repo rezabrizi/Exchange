@@ -69,7 +69,7 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
 
     // For printing purposes
     std::string type_of_order = (bidOrAsk) ? "bid" : "ask";
-    std::cout << "ID:   " << currentOrderId << "    " << newOrder->type << "    " << type_of_order << "    $" << limitPrice << "    " << quantity << "  shares    order time " << entryTime << std::endl;
+    std::cout << "ID:   " << currentOrderId << "    " << newOrder->clientId << "   " << newOrder->type << "    " << type_of_order << "    $" << limitPrice << "    " << quantity << "  shares    order time " << entryTime << std::endl;
     if (bestBid != nullptr) {
         std::cout << "BEST BID: $" << bestBid->GetLimitPrice() << " by "  << bestBid->GetTopOrder()->clientId << std::endl;
     }else {
@@ -163,6 +163,7 @@ void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
             continue;
         }
         Order* topLimitOrder = bestAsk->GetTopOrder();
+        std::cout << topLimitOrder->clientId<< std::endl;
         WalkOneBook(false, &topLimitOrder, currentMarketOrder);
         Limit* topLimit = sellTree[topLimitOrder->price];
 
@@ -170,7 +171,10 @@ void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
             break;
         }
         // execution is possible now
+
         int executionQuantity = (currentMarketOrder->quantity > topLimitOrder->quantity) ?  topLimitOrder->quantity : currentMarketOrder->quantity;
+        std::cout << topLimitOrder->quantity << std::endl;
+        std::cout << executionQuantity << std::endl;
         long long executionTimeStamp = GetTimeStamp();
         Execution* marketExecution = new Execution(currentExecutionId, currentMarketOrder->orderId, currentMarketOrder->instrumentId, currentMarketOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
         Execution* limitExecution = new Execution(currentExecutionId, topLimitOrder->orderId, topLimitOrder->instrumentId, topLimitOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
@@ -246,6 +250,9 @@ void LOB::MatchLimitOrders(std::vector<Execution*> &executions) {
 
 
         WalkBook(&topBidOrder, &topAskOrder);
+
+        topBidLimit = buyTree[topBidOrder->price];
+        topAskLimit = sellTree[topAskOrder->price];
 
         if ((topBidOrder->clientId == topAskOrder->clientId )|| topBidOrder->price< topAskOrder->price){
             break;
