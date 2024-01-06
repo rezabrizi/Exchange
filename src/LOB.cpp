@@ -69,7 +69,7 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
 
     // For printing purposes
     std::string type_of_order = (bidOrAsk) ? "bid" : "ask";
-    std::cout << "ID:   " << currentOrderId << "    " << newOrder->clientId << "   " << newOrder->type << "    " << type_of_order << "    $" << limitPrice << "    " << quantity << "  shares    order time " << entryTime << std::endl;
+    std::cout << "ID:   " << newOrder->orderId << "    " << newOrder->clientId << "   " << newOrder->type << "    " << type_of_order << "    $" << limitPrice << "    " << quantity << "  shares    order time " << entryTime << std::endl;
     if (bestBid != nullptr) {
         std::cout << "BEST BID: $" << bestBid->GetLimitPrice() << " by "  << bestBid->GetTopOrder()->clientId << std::endl;
     }else {
@@ -110,10 +110,10 @@ void LOB::RemoveLimitOrder(int orderId) {
         }
         mat.activeMapPtr->erase(parentLimitPrice);
         mat.activeTreePtr->erase(parentLimitPrice);
-        delete orderToRemove;
         delete parentLimit;
     }
     orders.erase(orderId);
+    delete orderToRemove;
 }
 
 
@@ -139,9 +139,6 @@ Order* LOB::CancelOrder(int orderId) {
     orderToCancel->cancelTime = cancelTime;
     Order* orderCopy = new Order (*orderToCancel);
 
-    if (orderToCancel->type == "market") {
-
-    }
     if (orderToCancel->type == "limit"){
         RemoveLimitOrder(orderId);
     }
@@ -150,8 +147,6 @@ Order* LOB::CancelOrder(int orderId) {
 
 
 void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
-    bool matchNotFound = false;
-
     while(!marketOrderBuyQueue.empty() && bestAsk != nullptr){
         Order* currentMarketOrder = marketOrderBuyQueue.front();
 
@@ -197,7 +192,6 @@ void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
         }
     }
 
-    matchNotFound = false;
     while(!marketOrderSellQueue.empty() && bestBid != nullptr){
         Order* currentMarketOrder = marketOrderSellQueue.front();
         // handle a cancelled market order
@@ -284,10 +278,7 @@ void LOB::MatchLimitOrders(std::vector<Execution*> &executions) {
 
 
 void LOB::WalkLimits(Order **topBidOrder, Order **topAskOrder) {
-    // top ask is $88  if there are 3 asks
-    // js:1 js:2 js:3
-    // your top bid is $90 if there are 7 orders at 90
-    // js:4  js:6 js:7 js:7
+
     Order* tempTopBidOrder = (*topBidOrder);
     Order* tempTopAskOrder = (*topAskOrder);
 

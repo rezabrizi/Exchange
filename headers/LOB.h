@@ -10,6 +10,8 @@
 #include <utility>
 #include <chrono>
 #include <iomanip>
+
+#include "DBConnection.h"
 #include "Message.h"
 #include "Limit.h"
 #include "Execution.h"

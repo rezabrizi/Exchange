@@ -28,7 +28,7 @@ CMAKE_BUILD_TYPE:STRING=Debug
 CMAKE_COLOR_DIAGNOSTICS:BOOL=ON
 
 //CXX compiler
-CMAKE_CXX_COMPILER:STRING=/Library/Developer/CommandLineTools/usr/bin/c++
+CMAKE_CXX_COMPILER:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/c++
 
 //Flags used by the CXX compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
@@ -46,7 +46,7 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //C compiler
-CMAKE_C_COMPILER:STRING=/Library/Developer/CommandLineTools/usr/bin/cc
+CMAKE_C_COMPILER:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/cc
 
 //Flags used by the C compiler during all build types.
 CMAKE_C_FLAGS:STRING=
@@ -219,6 +219,36 @@ LimitOrderBook_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 LimitOrderBook_SOURCE_DIR:STATIC=/Users/rezatabrizi/CLionProjects/Exchange
 
+//Arguments to supply to pkg-config
+PKG_CONFIG_ARGN:STRING=
+
+//pkg-config executable
+PKG_CONFIG_EXECUTABLE:FILEPATH=/opt/homebrew/bin/pkg-config
+
+//The Set the PostgreSQL_INCLUDE_DIR cmake cache entry to the top-level
+// directory containing the PostgreSQL include directories. E.g
+// /usr/local/include/PostgreSQL/8.4 or C:/Program Files/PostgreSQL/8.4/include
+PostgreSQL_INCLUDE_DIR:PATH=/opt/homebrew/include/postgresql@14
+
+//The Set the PostgreSQL_LIBRARY_DIR cmake cache entry to the top-level
+// directory containing the PostgreSQL libraries.
+PostgreSQL_LIBRARY_DEBUG:FILEPATH=PostgreSQL_LIBRARY_DEBUG-NOTFOUND
+
+//The Set the PostgreSQL_LIBRARY_DIR cmake cache entry to the top-level
+// directory containing the PostgreSQL libraries.
+PostgreSQL_LIBRARY_RELEASE:FILEPATH=/opt/homebrew/lib/postgresql@14/libpq.dylib
+
+//The Set the PostgreSQL_INCLUDE_DIR cmake cache entry to the top-level
+// directory containing the PostgreSQL include directories. E.g
+// /usr/local/include/PostgreSQL/8.4 or C:/Program Files/PostgreSQL/8.4/include
+PostgreSQL_TYPE_INCLUDE_DIR:PATH=/opt/homebrew/include/postgresql@14/server
+
+//The directory containing a CMake configuration file for libpqxx.
+libpqxx_DIR:PATH=libpqxx_DIR-NOTFOUND
+
+//Path to a library.
+pkgcfg_lib_PQXX_pqxx:FILEPATH=/opt/homebrew/Cellar/libpqxx/7.8.1/lib/libpqxx.dylib
+
 
 ########################
 # INTERNAL cache entries
@@ -355,4 +385,60 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Details about finding PkgConfig
+FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/opt/homebrew/bin/pkg-config][v0.29.2()]
+//Details about finding PostgreSQL
+FIND_PACKAGE_MESSAGE_DETAILS_PostgreSQL:INTERNAL=[/opt/homebrew/lib/postgresql@14/libpq.dylib][/opt/homebrew/include/postgresql@14][c ][v14.10()]
+//ADVANCED property for variable: PKG_CONFIG_ARGN
+PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
+PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
+PQXX_CFLAGS:INTERNAL=-I/opt/homebrew/Cellar/libpqxx/7.8.1/include
+PQXX_CFLAGS_I:INTERNAL=
+PQXX_CFLAGS_OTHER:INTERNAL=
+PQXX_FOUND:INTERNAL=1
+PQXX_INCLUDEDIR:INTERNAL=/opt/homebrew/Cellar/libpqxx/7.8.1/include
+PQXX_INCLUDE_DIRS:INTERNAL=/opt/homebrew/Cellar/libpqxx/7.8.1/include
+PQXX_LDFLAGS:INTERNAL=-L/opt/homebrew/Cellar/libpqxx/7.8.1/lib;-lpqxx
+PQXX_LDFLAGS_OTHER:INTERNAL=
+PQXX_LIBDIR:INTERNAL=/opt/homebrew/Cellar/libpqxx/7.8.1/lib
+PQXX_LIBRARIES:INTERNAL=pqxx
+PQXX_LIBRARY_DIRS:INTERNAL=/opt/homebrew/Cellar/libpqxx/7.8.1/lib
+PQXX_LIBS:INTERNAL=
+PQXX_LIBS_L:INTERNAL=
+PQXX_LIBS_OTHER:INTERNAL=
+PQXX_LIBS_PATHS:INTERNAL=
+PQXX_MODULE_NAME:INTERNAL=libpqxx
+PQXX_PREFIX:INTERNAL=/opt/homebrew/Cellar/libpqxx/7.8.1
+PQXX_STATIC_CFLAGS:INTERNAL=-I/opt/homebrew/Cellar/libpqxx/7.8.1/include
+PQXX_STATIC_CFLAGS_I:INTERNAL=
+PQXX_STATIC_CFLAGS_OTHER:INTERNAL=
+PQXX_STATIC_INCLUDE_DIRS:INTERNAL=/opt/homebrew/Cellar/libpqxx/7.8.1/include
+PQXX_STATIC_LDFLAGS:INTERNAL=-L/opt/homebrew/Cellar/libpqxx/7.8.1/lib;-lpqxx
+PQXX_STATIC_LDFLAGS_OTHER:INTERNAL=
+PQXX_STATIC_LIBDIR:INTERNAL=
+PQXX_STATIC_LIBRARIES:INTERNAL=pqxx
+PQXX_STATIC_LIBRARY_DIRS:INTERNAL=/opt/homebrew/Cellar/libpqxx/7.8.1/lib
+PQXX_STATIC_LIBS:INTERNAL=
+PQXX_STATIC_LIBS_L:INTERNAL=
+PQXX_STATIC_LIBS_OTHER:INTERNAL=
+PQXX_STATIC_LIBS_PATHS:INTERNAL=
+PQXX_VERSION:INTERNAL=7.8.1
+PQXX_libpqxx_INCLUDEDIR:INTERNAL=
+PQXX_libpqxx_LIBDIR:INTERNAL=
+PQXX_libpqxx_PREFIX:INTERNAL=
+PQXX_libpqxx_VERSION:INTERNAL=
+//ADVANCED property for variable: PostgreSQL_INCLUDE_DIR
+PostgreSQL_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PostgreSQL_LIBRARY_DEBUG
+PostgreSQL_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PostgreSQL_LIBRARY_RELEASE
+PostgreSQL_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PostgreSQL_TYPE_INCLUDE_DIR
+PostgreSQL_TYPE_INCLUDE_DIR-ADVANCED:INTERNAL=1
+__pkg_config_arguments_PQXX:INTERNAL=REQUIRED;libpqxx
+__pkg_config_checked_PQXX:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_PQXX_pqxx
+pkgcfg_lib_PQXX_pqxx-ADVANCED:INTERNAL=1
+prefix_result:INTERNAL=/opt/homebrew/Cellar/libpqxx/7.8.1/lib
 
