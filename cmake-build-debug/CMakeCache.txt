@@ -148,6 +148,21 @@ CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 //Value Computed by CMake
 CMAKE_PROJECT_NAME:STATIC=LimitOrderBook
 
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION:STATIC=1.0.0
+
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION_MAJOR:STATIC=1
+
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION_MINOR:STATIC=0
+
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION_PATCH:STATIC=0
+
+//Value Computed by CMake
+CMAKE_PROJECT_VERSION_TWEAK:STATIC=
+
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/ranlib
 
@@ -243,17 +258,63 @@ PostgreSQL_LIBRARY_RELEASE:FILEPATH=/opt/homebrew/lib/postgresql@14/libpq.dylib
 // /usr/local/include/PostgreSQL/8.4 or C:/Program Files/PostgreSQL/8.4/include
 PostgreSQL_TYPE_INCLUDE_DIR:PATH=/opt/homebrew/include/postgresql@14/server
 
+//Value Computed by CMake
+antlr4-cpp-runtime_BINARY_DIR:STATIC=/Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug/cpp-dotenv/common/libs/antlr4-cpp-runtime
+
+//Value Computed by CMake
+antlr4-cpp-runtime_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+antlr4-cpp-runtime_SOURCE_DIR:STATIC=/Users/rezatabrizi/CLionProjects/Exchange/cpp-dotenv/common/libs/antlr4-cpp-runtime
+
+//Value Computed by CMake
+cpp-dotenv_BINARY_DIR:STATIC=/Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug/cpp-dotenv
+
+//Value Computed by CMake
+cpp-dotenv_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+cpp-dotenv_SOURCE_DIR:STATIC=/Users/rezatabrizi/CLionProjects/Exchange/cpp-dotenv
+
+//Dependencies for the target
+cpp_dotenv_LIB_DEPENDS:STATIC=general;environ;general;parser;
+
+//Dependencies for the target
+dotenv_generated_LIB_DEPENDS:STATIC=general;antlr4_cpp_runtime;
+
+//Dependencies for the target
+dotenv_listeners_LIB_DEPENDS:STATIC=general;dotenv_generated;general;environ;general;errors;general;structures;
+
+//Dependencies for the target
+errors_LIB_DEPENDS:STATIC=general;antlr4_cpp_runtime;general;logger;
+
+//Dependencies for the target
+escape_LIB_DEPENDS:STATIC=general;antlr4_cpp_runtime;
+
 //The directory containing a CMake configuration file for libpqxx.
 libpqxx_DIR:PATH=libpqxx_DIR-NOTFOUND
 
+//Dependencies for the target
+line_generated_LIB_DEPENDS:STATIC=general;antlr4_cpp_runtime;
+
+//Dependencies for the target
+line_listeners_LIB_DEPENDS:STATIC=general;environ;general;errors;general;escape;general;line_generated;general;structures;
+
+//Dependencies for the target
+parser_LIB_DEPENDS:STATIC=general;antlr4_cpp_runtime;general;dotenv_generated;general;dotenv_listeners;general;environ;general;errors;general;line_generated;general;line_listeners;general;structures;
+
 //Path to a library.
 pkgcfg_lib_PQXX_pqxx:FILEPATH=/opt/homebrew/Cellar/libpqxx/7.8.1/lib/libpqxx.dylib
+
+//Dependencies for the target
+structures_LIB_DEPENDS:STATIC=general;antlr4_cpp_runtime;
 
 
 ########################
 # INTERNAL cache entries
 ########################
 
+ANTLR4_CPP_RUNTIME:INTERNAL=antlr4_cpp_runtime
 //ADVANCED property for variable: CMAKE_ADDR2LINE
 CMAKE_ADDR2LINE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_AR
@@ -385,10 +446,20 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+CPP_DOTENV:INTERNAL=cpp_dotenv
+DOTENV_GENERATED_LIB:INTERNAL=dotenv_generated
+DOTENV_LISTENERS_LIB:INTERNAL=dotenv_listeners
+ENVIRON_LIB:INTERNAL=environ
+ERRORS_LIB:INTERNAL=errors
+ESCAPE_LIB:INTERNAL=escape
 //Details about finding PkgConfig
 FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/opt/homebrew/bin/pkg-config][v0.29.2()]
 //Details about finding PostgreSQL
 FIND_PACKAGE_MESSAGE_DETAILS_PostgreSQL:INTERNAL=[/opt/homebrew/lib/postgresql@14/libpq.dylib][/opt/homebrew/include/postgresql@14][c ][v14.10()]
+LINE_GENERATED_LIB:INTERNAL=line_generated
+LINE_LISTENERS_LIB:INTERNAL=line_listeners
+LOGGER_LIB:INTERNAL=logger
+PARSER_LIB:INTERNAL=parser
 //ADVANCED property for variable: PKG_CONFIG_ARGN
 PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
@@ -436,6 +507,7 @@ PostgreSQL_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 PostgreSQL_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PostgreSQL_TYPE_INCLUDE_DIR
 PostgreSQL_TYPE_INCLUDE_DIR-ADVANCED:INTERNAL=1
+STRUCTURES_LIB:INTERNAL=structures
 __pkg_config_arguments_PQXX:INTERNAL=REQUIRED;libpqxx
 __pkg_config_checked_PQXX:INTERNAL=1
 //ADVANCED property for variable: pkgcfg_lib_PQXX_pqxx

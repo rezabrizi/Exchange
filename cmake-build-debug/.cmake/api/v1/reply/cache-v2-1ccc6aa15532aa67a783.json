@@ -2,6 +2,18 @@
 	"entries" : 
 	[
 		{
+			"name" : "ANTLR4_CPP_RUNTIME",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "antlr4_cpp_runtime"
+		},
+		{
 			"name" : "CMAKE_ADDR2LINE",
 			"properties" : 
 			[
@@ -822,6 +834,66 @@
 			"value" : "LimitOrderBook"
 		},
 		{
+			"name" : "CMAKE_PROJECT_VERSION",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "1.0.0"
+		},
+		{
+			"name" : "CMAKE_PROJECT_VERSION_MAJOR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "1"
+		},
+		{
+			"name" : "CMAKE_PROJECT_VERSION_MINOR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "0"
+		},
+		{
+			"name" : "CMAKE_PROJECT_VERSION_PATCH",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "0"
+		},
+		{
+			"name" : "CMAKE_PROJECT_VERSION_TWEAK",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : ""
+		},
+		{
 			"name" : "CMAKE_RANLIB",
 			"properties" : 
 			[
@@ -1102,6 +1174,78 @@
 			"value" : "FALSE"
 		},
 		{
+			"name" : "CPP_DOTENV",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "cpp_dotenv"
+		},
+		{
+			"name" : "DOTENV_GENERATED_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "dotenv_generated"
+		},
+		{
+			"name" : "DOTENV_LISTENERS_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "dotenv_listeners"
+		},
+		{
+			"name" : "ENVIRON_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "environ"
+		},
+		{
+			"name" : "ERRORS_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "errors"
+		},
+		{
+			"name" : "ESCAPE_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "escape"
+		},
+		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig",
 			"properties" : 
 			[
@@ -1124,6 +1268,42 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "[/opt/homebrew/lib/postgresql@14/libpq.dylib][/opt/homebrew/include/postgresql@14][c ][v14.10()]"
+		},
+		{
+			"name" : "LINE_GENERATED_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "line_generated"
+		},
+		{
+			"name" : "LINE_LISTENERS_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "line_listeners"
+		},
+		{
+			"name" : "LOGGER_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "logger"
 		},
 		{
 			"name" : "LimitOrderBook_BINARY_DIR",
@@ -1160,6 +1340,18 @@
 			],
 			"type" : "STATIC",
 			"value" : "/Users/rezatabrizi/CLionProjects/Exchange"
+		},
+		{
+			"name" : "PARSER_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "parser"
 		},
 		{
 			"name" : "PKG_CONFIG_ARGN",
@@ -1678,6 +1870,18 @@
 			"value" : "/opt/homebrew/include/postgresql@14/server"
 		},
 		{
+			"name" : "STRUCTURES_LIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "structures"
+		},
+		{
 			"name" : "__pkg_config_arguments_PQXX",
 			"properties" : 
 			[
@@ -1702,6 +1906,138 @@
 			"value" : "1"
 		},
 		{
+			"name" : "antlr4-cpp-runtime_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug/cpp-dotenv/common/libs/antlr4-cpp-runtime"
+		},
+		{
+			"name" : "antlr4-cpp-runtime_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "OFF"
+		},
+		{
+			"name" : "antlr4-cpp-runtime_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/Users/rezatabrizi/CLionProjects/Exchange/cpp-dotenv/common/libs/antlr4-cpp-runtime"
+		},
+		{
+			"name" : "cpp-dotenv_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug/cpp-dotenv"
+		},
+		{
+			"name" : "cpp-dotenv_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "OFF"
+		},
+		{
+			"name" : "cpp-dotenv_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/Users/rezatabrizi/CLionProjects/Exchange/cpp-dotenv"
+		},
+		{
+			"name" : "cpp_dotenv_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;environ;general;parser;"
+		},
+		{
+			"name" : "dotenv_generated_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;antlr4_cpp_runtime;"
+		},
+		{
+			"name" : "dotenv_listeners_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;dotenv_generated;general;environ;general;errors;general;structures;"
+		},
+		{
+			"name" : "errors_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;antlr4_cpp_runtime;general;logger;"
+		},
+		{
+			"name" : "escape_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;antlr4_cpp_runtime;"
+		},
+		{
 			"name" : "libpqxx_DIR",
 			"properties" : 
 			[
@@ -1712,6 +2048,42 @@
 			],
 			"type" : "PATH",
 			"value" : "libpqxx_DIR-NOTFOUND"
+		},
+		{
+			"name" : "line_generated_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;antlr4_cpp_runtime;"
+		},
+		{
+			"name" : "line_listeners_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;environ;general;errors;general;escape;general;line_generated;general;structures;"
+		},
+		{
+			"name" : "parser_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;antlr4_cpp_runtime;general;dotenv_generated;general;dotenv_listeners;general;environ;general;errors;general;line_generated;general;line_listeners;general;structures;"
 		},
 		{
 			"name" : "pkgcfg_lib_PQXX_pqxx",
@@ -1740,6 +2112,18 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "/opt/homebrew/Cellar/libpqxx/7.8.1/lib"
+		},
+		{
+			"name" : "structures_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;antlr4_cpp_runtime;"
 		}
 	],
 	"kind" : "cache",

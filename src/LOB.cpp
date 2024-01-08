@@ -86,6 +86,60 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
 }
 
 
+void LOB::WriteOrderToDB(Order* order){
+    try {
+        std::string orderKey = order->instrumentId+std::to_string(order->orderId);
+        std::string orderQuery = "INSERT INTO Orders (OrderKey, OrderID, InstrumentID, ClientID, Price, Quantity, Type, EntryTime, CancelTime) VALUES ('"
+                                 + orderKey + "', "
+                                 + std::to_string(order->orderId) + ", '"
+                                 + order->instrumentId + "', '"
+                                 + order->clientId + "', "
+                                 + std::to_string(order->price) + ", "
+                                 + std::to_string(order->quantity) + ", '"
+                                 + order->type + "', "
+                                 + std::to_string(order->entryTime) + ", "
+                                 + ((order->cancelTime!= -1) ? std::to_string(order->cancelTime) : "NULL")
+                                 + ")";
+        db.query(orderQuery);
+    } catch (const std::exception& e) {
+        std::cerr << "Database query failed: " << e.what() << std::endl;
+    }
+}
+
+
+void LOB::WriteExecutionToDB(Execution* execution){
+    try {
+        std::string orderKey = execution->GetInstrumentId()+std::to_string(execution->GetOrderId());
+        std::string executionQuery = "INSERT INTO Executions (ExecutionID, OrderKey, ExecutionTime, Price, Quantity) VALUES ("
+                                     + std::to_string(execution->GetExecutionId()) + ", '"
+                                     + orderKey + "', "
+                                     + std::to_string(execution->GetTimestamp()) + ", "
+                                     + std::to_string(execution->GetPrice()) + ", "
+                                     + std::to_string(execution->GetQuantity())
+                                     + ")";
+        db.query(executionQuery);
+    } catch (const std::exception& e) {
+        std::cerr << "Database query failed: " << e.what() << std::endl;
+    }
+}
+
+
+void LOB::CancelOrderInDB(const std::string &instrumentId, int orderId, long long cancelTime) {
+    try {
+        std::string orderkey = instrumentId + std::to_string(orderId);
+        std::string updateOrderQuery = "UPDATE Orders SET CancelTime = "
+                                       + std::to_string(cancelTime)
+                                       + " WHERE OrderKey = '"
+                                       + orderkey
+                                       + "'";
+
+        db.query(updateOrderQuery);
+    } catch (const std::exception& e) {
+        std::cerr << "Database query failed: " << e.what() << std::endl;
+    }
+}
+
+
 void LOB::RemoveLimitOrder(int orderId) {
     // If the order doesn't exist exit out of the function
     if (orders.find(orderId) == orders.end()) return;
@@ -137,6 +191,7 @@ Order* LOB::CancelOrder(int orderId) {
     Order* orderToCancel = orders[orderId];
     long long cancelTime = GetTimeStamp();
     orderToCancel->cancelTime = cancelTime;
+    CancelOrderInDB (orderToCancel->instrumentId, orderToCancel->orderId, cancelTime);
     Order* orderCopy = new Order (*orderToCancel);
 
     if (orderToCancel->type == "limit"){
