@@ -51,7 +51,7 @@ class LOB{
     std::unordered_map <double, Limit*> sellMap;
     std::map <double, Limit*> buyTree;
     std::map <double, Limit*> sellTree;
-    DBConnection& db = DBConnection::getInstance("dbname=exchange user=myuser password=1123 host=localhost port=5432");
+    DBConnection& db = DBConnection::getInstance("dbname=exchange user=rezatabrizi password=1123 host=localhost port=5432");
 
     /**
      * @brief provide the respective binary tree and hashmap for limit orders
@@ -82,13 +82,13 @@ class LOB{
      * @brief write a new order to the database
      * @param order order to save to the database
      */
-    void WriteOrderToDB(Order* order);
+    void WriteOrderToDB(const Order* order);
 
     /**
      * @brief write a new execution to the database
      * @param execution executions to save to the database
      */
-    void WriteExecutionToDB(Execution* execution);
+    void WriteExecutionToDB(const Execution* execution);
 
 
     void CancelOrderInDB(const std::string& instrumentId, int orderId, long long cancelTime);

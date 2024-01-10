@@ -66,6 +66,7 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
     } else if (newOrder->type == "limit"){
         AddLimitOrder(newOrder);
     }
+    WriteOrderToDB(newOrder);
 
     // For printing purposes
     std::string type_of_order = (bidOrAsk) ? "bid" : "ask";
@@ -86,7 +87,7 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
 }
 
 
-void LOB::WriteOrderToDB(Order* order){
+void LOB::WriteOrderToDB(const Order* order){
     try {
         std::string orderKey = order->instrumentId+std::to_string(order->orderId);
         std::string orderQuery = "INSERT INTO Orders (OrderKey, OrderID, InstrumentID, ClientID, Price, Quantity, Type, EntryTime, CancelTime) VALUES ('"
@@ -107,7 +108,7 @@ void LOB::WriteOrderToDB(Order* order){
 }
 
 
-void LOB::WriteExecutionToDB(Execution* execution){
+void LOB::WriteExecutionToDB(const Execution* execution){
     try {
         std::string orderKey = execution->GetInstrumentId()+std::to_string(execution->GetOrderId());
         std::string executionQuery = "INSERT INTO Executions (ExecutionID, OrderKey, ExecutionTime, Price, Quantity) VALUES ("
@@ -177,6 +178,10 @@ std::vector<Execution*> LOB::Execute(bool isLimit = true){
     MatchMarketOrders(executions);
     if (isLimit){
         MatchLimitOrders(executions);
+    }
+
+    for (const auto& execution: executions){
+        WriteExecutionToDB(execution);
     }
 
     return executions;

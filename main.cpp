@@ -1,25 +1,33 @@
 #include <iostream>
 #include "headers/LOB.h"
-#include "headers/DBConnection.h"
-
 
 
 int main() {
-    // Connection string for the PostgreSQL database
-    DBConnection& db = DBConnection::getInstance("dbname=exchange user=myuser password=1123 host=localhost port=5432");
-    std::string insertSql = "INSERT INTO my_table (name, age) VALUES ('John Doe', 30), ('Jane Doe', 25);";
+    LOB TSLA;
+    TSLA.AddOrder("TSLA", "limit", "JS", true, 100, 95, 10);
+    TSLA.AddOrder("TSLA", "limit", "GS", true, 100, 95, 11);
+    TSLA.AddOrder("TSLA", "limit", "FID", true, 100, 95, 12);
+    TSLA.AddOrder("TSLA", "limit", "GS", true, 80, 100, 13);
+    TSLA.AddOrder("TSLA", "limit", "FID", true, 100, 100, 14);
+    TSLA.AddOrder("TSLA", "limit", "JS", true, 100, 95, 15);
 
-    db.query(insertSql);
 
-    std::string selectSql = "SELECT id, name, age FROM my_table;";
-    pqxx::result res = db.query(selectSql);
+    TSLA.AddOrder("TSLA", "limit", "GS", false, 100, 105, 10);
+    TSLA.AddOrder("TSLA", "limit", "GS", false, 100, 103, 11);
+    TSLA.AddOrder("TSLA", "limit", "FID", false, 100, 103, 12);
+    TSLA.AddOrder("TSLA", "limit", "JS", false, 100, 100, 13);
+    TSLA.AddOrder("TSLA", "limit", "FID", false, 100, 98, 14);
+    TSLA.AddOrder("TSLA", "limit", "JS", false, 100, 95, 15);
 
-    for (auto row : res) {
-        int id = row["id"].as<int>();
-        std::string name = row["name"].as<std::string>();
-        int age = row["age"].as<int>();
-        std::cout << "ID: " << id << ", Name: " << name << ", Age: " << age << std::endl;
+
+    std::vector<Execution*> executions = TSLA.Execute(true);
+
+    for (const auto& exec: executions){
+        std::cout << "Exec ID: " << exec->GetExecutionId() << "   Order ID: " << exec->GetOrderId() << "   Instrument ID: " << exec->GetInstrumentId() <<
+                  "   Client ID: " << exec->GetClientId() << "   Price: $" << exec->GetPrice() << "    shares: " << exec->GetQuantity() <<  "   timestamp: " << exec->GetTimestamp() << std::endl;
     }
+    std::cout << std::endl;
 
-    return 0;
+    TSLA.PrintBidBook();
+    TSLA.PrintAskBook();
 }

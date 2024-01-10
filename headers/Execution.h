@@ -21,13 +21,13 @@ public:
     executionId(executionId), orderId(orderId), instrumentId(std::move(instrumentId)), clientId(std::move(clientId)), price(price),
     quantity(quantity), timestamp(timestamp){};
 
-    int GetExecutionId() {return executionId;}
-    int GetOrderId() {return orderId;}
-    std::string GetInstrumentId () {return instrumentId;}
-    std::string GetClientId () {return clientId;}
-    double GetPrice () {return price;}
-    int GetQuantity() {return quantity;}
-    long long GetTimestamp() {return timestamp;}
+    int GetExecutionId() const {return executionId;}
+    int GetOrderId() const {return orderId;}
+    std::string GetInstrumentId () const {return instrumentId;}
+    std::string GetClientId () const {return clientId;}
+    double GetPrice () const {return price;}
+    int GetQuantity() const {return quantity;}
+    long long GetTimestamp() const {return timestamp;}
 
 
 
