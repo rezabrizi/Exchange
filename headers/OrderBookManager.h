@@ -14,7 +14,7 @@
 
 class OrderBookManager{
     CentralMessageSystem& CMS;
-    std::unordered_map<std::string, LOB> OrderBook;
+    std::unordered_map<std::string, LOB*> OrderBook;
 
 
 public:
@@ -29,12 +29,12 @@ public:
      * if the order book doesn't exist create an order book object. If it does exist, then just add the order to it. and call check for matches on that security.
      * return
      */
-    void AddNewOrder();
+    OrderConfirmationMessage AddOrder(const AddOrderMessage& message);
     /**
      * call the execute function.
      */
-    void CancelOrder();
-    void CheckForMatch();
+    OrderConfirmationMessage CancelOrder(int orderId);
+    std::vector<TradeExecutionMessage> CheckForMatch(std::string instrumentId);
 };
 
 #endif //LIMITORDERBOOK_ORDERBOOKMANAGER_H

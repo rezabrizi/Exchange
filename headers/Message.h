@@ -20,6 +20,7 @@ struct OrderMessage : public BaseMessage{
 };
 
 struct AddOrderMessage : public OrderMessage{
+    bool bidOrAsk;
     double limit;
     int quantity;
     std::string type;
