@@ -5,6 +5,7 @@
 #include <map>
 #include <queue>
 #include <stdexcept>
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
 #include <utility>
@@ -59,12 +60,6 @@ class LOB{
      * @return active tree and hashmap (ActiveLOBMapAndTree)
      */
     ActiveLOBMapAndTree GetActiveMapAndTree(bool bidOrAsk);
-
-    /**
-     * @brief current time with millisecond precision
-     * @return current time (long long)
-     */
-    static long long GetTimeStamp ();
 
     /**
      * @brief add a market order to the book
@@ -173,7 +168,7 @@ public:
      * @param entryTime
      * @return Order Object
      */
-    Order* AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime);
+    Order* AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, int orderId = -1);
 
     /**
      * @brief execute all possible matches
@@ -183,11 +178,21 @@ public:
     std::vector<Execution*> Execute(bool isLimit);
 
     /**
+     * @brief current time with millisecond precision
+     * @return current time (long long)
+     */
+    static long long GetTimeStamp ();
+
+    /**
      * @brief cancelling an individual order
      * @param orderId the id of the order to cancel
      * @return the order object that was cancelled
      */
-    Order* CancelOrder(int orderId);
+    Order* CancelOrder(int orderId, long long cancelTime);
+
+
+    void UpdateCurrentOrderId(int orderId);
+
 
     /**
      * @brief get the bid volume at a limit price

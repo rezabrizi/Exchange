@@ -3,6 +3,7 @@
 //
 #include "MessagingQueue.h"
 #include "Message.h"
+#include <thread>
 
 
 #ifndef LIMITORDERBOOK_CENTRALMESSAGESYSTEM_H
@@ -11,6 +12,9 @@
 using SubscriberCallback = std::function<void (const BaseMessage& message)>;
 
 class CentralMessageSystem{
+    std::thread workerThread;
+
+    int currentId;
     MessagingQueue systemQueue;
     std::unordered_map <std::string, std::vector<SubscriberCallback>> subscribers;
     bool running;
@@ -20,6 +24,8 @@ class CentralMessageSystem{
 
 public:
     CentralMessageSystem();
+    ~CentralMessageSystem();
+    int AssignMessageId();
     void Publish (std::unique_ptr<BaseMessage> message);
     void Subscribe (const std::string& topic, const SubscriberCallback& callback);
 };

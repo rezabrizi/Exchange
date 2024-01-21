@@ -57,8 +57,10 @@ void LOB::AddLimitOrder(Order* newOrder) {
 }
 
 
-Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime) {
+Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, int orderId) {
     std::cout << "-------ADDING--------" << std::endl;
+    currentOrderId = (orderId != -1) ? orderId : currentOrderId;
+
     Order* newOrder = new Order(currentOrderId, std::move(instrumentId), std::move(type), std::move(clientId), bidOrAsk, quantity, limitPrice, entryTime, -1);
 
     if (newOrder->type == "market"){
@@ -66,7 +68,6 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
     } else if (newOrder->type == "limit"){
         AddLimitOrder(newOrder);
     }
-    WriteOrderToDB(newOrder);
 
     // For printing purposes
     std::string type_of_order = (bidOrAsk) ? "bid" : "ask";
@@ -84,60 +85,6 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
     std::cout << "--------DONE---------" << std::endl;
 
     return newOrder;
-}
-
-
-void LOB::WriteOrderToDB(const Order* order){
-    try {
-        std::string orderKey = order->instrumentId+std::to_string(order->orderId);
-        std::string orderQuery = "INSERT INTO Orders (OrderKey, OrderID, InstrumentID, ClientID, Price, Quantity, Type, EntryTime, CancelTime) VALUES ('"
-                                 + orderKey + "', "
-                                 + std::to_string(order->orderId) + ", '"
-                                 + order->instrumentId + "', '"
-                                 + order->clientId + "', "
-                                 + std::to_string(order->price) + ", "
-                                 + std::to_string(order->quantity) + ", '"
-                                 + order->type + "', "
-                                 + std::to_string(order->entryTime) + ", "
-                                 + ((order->cancelTime!= -1) ? std::to_string(order->cancelTime) : "NULL")
-                                 + ")";
-        db.query(orderQuery);
-    } catch (const std::exception& e) {
-        std::cerr << "Database query failed: " << e.what() << std::endl;
-    }
-}
-
-
-void LOB::WriteExecutionToDB(const Execution* execution){
-    try {
-        std::string orderKey = execution->GetInstrumentId()+std::to_string(execution->GetOrderId());
-        std::string executionQuery = "INSERT INTO Executions (ExecutionID, OrderKey, ExecutionTime, Price, Quantity) VALUES ("
-                                     + std::to_string(execution->GetExecutionId()) + ", '"
-                                     + orderKey + "', "
-                                     + std::to_string(execution->GetTimestamp()) + ", "
-                                     + std::to_string(execution->GetPrice()) + ", "
-                                     + std::to_string(execution->GetQuantity())
-                                     + ")";
-        db.query(executionQuery);
-    } catch (const std::exception& e) {
-        std::cerr << "Database query failed: " << e.what() << std::endl;
-    }
-}
-
-
-void LOB::CancelOrderInDB(const std::string &instrumentId, int orderId, long long cancelTime) {
-    try {
-        std::string orderkey = instrumentId + std::to_string(orderId);
-        std::string updateOrderQuery = "UPDATE Orders SET CancelTime = "
-                                       + std::to_string(cancelTime)
-                                       + " WHERE OrderKey = '"
-                                       + orderkey
-                                       + "'";
-
-        db.query(updateOrderQuery);
-    } catch (const std::exception& e) {
-        std::cerr << "Database query failed: " << e.what() << std::endl;
-    }
 }
 
 
@@ -180,29 +127,28 @@ std::vector<Execution*> LOB::Execute(bool isLimit = true){
         MatchLimitOrders(executions);
     }
 
-    for (const auto& execution: executions){
-        WriteExecutionToDB(execution);
-    }
-
     return executions;
 }
 
 
-Order* LOB::CancelOrder(int orderId) {
+Order* LOB::CancelOrder(int orderId, long long cancelTime) {
     if (orders.find(orderId) == orders.end()) {
         throw std::runtime_error("Order not found");
     }
 
     Order* orderToCancel = orders[orderId];
-    long long cancelTime = GetTimeStamp();
     orderToCancel->cancelTime = cancelTime;
-    CancelOrderInDB (orderToCancel->instrumentId, orderToCancel->orderId, cancelTime);
     Order* orderCopy = new Order (*orderToCancel);
 
     if (orderToCancel->type == "limit"){
         RemoveLimitOrder(orderId);
     }
     return orderCopy;
+}
+
+
+void LOB::UpdateCurrentOrderId(int orderId) {
+    currentOrderId = std::max(orderId, currentOrderId);
 }
 
 
@@ -498,6 +444,19 @@ Limit* LOB::FindNextHighestLimit(const std::map<double, Limit*>& tree, const dou
     // Move to the previous element (which exists since it is not at the beginning)
     --it;
     return it->second; // Return the Limit* for the next lowest price
+}
+
+
+void LOB::LoadLOBFromDB(){
+    /**
+     * 0- OrderBookManager reads the entire database
+     * 1- has the order been fully executed yet ?
+     * 2- if yes --> just increment the LOB's currentOrderId
+     * 3- if no --> do an AddOrder on the instrument's LOB
+     * 4- find the limit in the
+     *  create an order object,
+     * add it to the correct limit list
+     */
 }
 
 

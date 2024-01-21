@@ -11,7 +11,6 @@
 #ifndef LIMITORDERBOOK_MESSAGINGQUEUE_H
 #define LIMITORDERBOOK_MESSAGINGQUEUE_H
 
-
 class MessagingQueue{
     std::queue <std::unique_ptr<BaseMessage>> queue;
     std::mutex mtx;
