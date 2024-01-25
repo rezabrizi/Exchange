@@ -16,6 +16,7 @@ OrderBookManager::OrderBookManager(CentralMessageSystem &CMS) : CMS(CMS) {
 
 
 void OrderBookManager::StartUpOrderBook() {
+    std::lock_guard<std::mutex> lock(orderBookMutex);
     std::string ordersQuery = R"(SELECT o.orderid,
                                     o.quantity,
                                     o.clientid,
@@ -31,9 +32,6 @@ void OrderBookManager::StartUpOrderBook() {
                                 GROUP BY o.orderkey)";
 
     pqxx::result R = db.query(ordersQuery);
-    /**
-     * @brief store the most recent order id of each instrument for having a correct limit order book
-     */
     std::unordered_map<std::string, int> currOrderIds;
 
     for (auto row: R){
@@ -64,26 +62,36 @@ void OrderBookManager::StartUpOrderBook() {
         currOrderIds[instrumentId] = std::max(currOrderIds[instrumentId], orderId);
     }
 
+
+
+
     for (const auto& item: currOrderIds){
         LOB* currentLOB = orderBook[item.first];
         currentLOB->UpdateCurrentOrderId(item.second);
     }
+
 }
 
 
 void OrderBookManager::ProcessMessage(const BaseMessage &message) {
-    std::cout<< "received a message from CMS" << std::endl;
+
     if (message.messageType == "AddOrderMessage") {
         // we use a pointer to not have to worry about exception checking as the cast will result in a nullptr
         // if it is not valid
         // alternatively we could use a reference but we have to use a try catch blocks in case of a failed cast
-        std::cout<< "DOGGGG" << std::endl;
-        if (const AddOrderMessage *newOrderMessage = dynamic_cast <const AddOrderMessage *>(&message)) {
-            std::cout<< "CATTT" << std::endl;
-            if (orderBook.find(newOrderMessage->instrumentId) == orderBook.end()) {
-                orderBook[newOrderMessage->instrumentId] = new LOB();
+        const AddOrderMessage *newOrderMessage = dynamic_cast <const AddOrderMessage *>(&message);
+
+        if (newOrderMessage != nullptr) {
+            try {
+                if (orderBook.find(newOrderMessage->instrumentId) == orderBook.end()) {
+                    std::cout<<newOrderMessage->instrumentId  << std::endl;
+                    orderBook[newOrderMessage->instrumentId] = new LOB();
+                }
+            } catch (const std::exception& e) {
+                std::cerr << "Exception caught: " << e.what() << std::endl;
             }
-            std::cout<< "xcasdasd" << std::endl;
+
+
             std::unique_ptr<BaseMessage> confirmedOrderMessage = AddOrder(newOrderMessage);
             CMS.Publish(std::move(confirmedOrderMessage));
 
@@ -107,7 +115,6 @@ void OrderBookManager::ProcessMessage(const BaseMessage &message) {
 
 
 std::unique_ptr<OrderConfirmationMessage> OrderBookManager::AddOrder(const AddOrderMessage *message) {
-    std::cout << "adding the new order" << std::endl;
     LOB* currentLOB = orderBook[message->instrumentId];
     Order* newOrder = currentLOB->AddOrder(message->instrumentId, message->orderType, message->clientId, message->bidOrAsk, message->quantity, message->limit, message->timestamp);
     WriteOrderToDB(newOrder);
@@ -180,7 +187,6 @@ std::vector<std::unique_ptr<TradeExecutionMessage>> OrderBookManager::CheckForMa
     }
 
     return executionMessages;
-
 }
 
 

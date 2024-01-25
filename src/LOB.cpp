@@ -58,7 +58,7 @@ void LOB::AddLimitOrder(Order* newOrder) {
 
 
 Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limitPrice, long long entryTime, int orderId) {
-    std::cout << "-------ADDING--------" << std::endl;
+
     currentOrderId = (orderId != -1) ? orderId : currentOrderId;
 
     Order* newOrder = new Order(currentOrderId, std::move(instrumentId), std::move(type), std::move(clientId), bidOrAsk, quantity, limitPrice, entryTime, -1);
@@ -70,6 +70,7 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
     }
 
     // For printing purposes
+    std::cout << "-------ADDING--------" << std::endl;
     std::string type_of_order = (bidOrAsk) ? "bid" : "ask";
     std::cout << "ID:   " << newOrder->orderId << "    " << newOrder->clientId << "   " << newOrder->type << "    " << type_of_order << "    $" << limitPrice << "    " << quantity << "  shares    order time " << entryTime << std::endl;
     if (bestBid != nullptr) {
@@ -148,7 +149,7 @@ Order* LOB::CancelOrder(int orderId, long long cancelTime) {
 
 
 void LOB::UpdateCurrentOrderId(int orderId) {
-    currentOrderId = std::max(orderId, currentOrderId);
+    currentOrderId = std::max(orderId+1, currentOrderId);
 }
 
 

@@ -17,7 +17,9 @@ class CentralMessageSystem{
     int currentId;
     MessagingQueue systemQueue;
     std::unordered_map <std::string, std::vector<SubscriberCallback>> subscribers;
-    bool running;
+    bool queueEmpty;
+    std::mutex mtx;
+    std::condition_variable cv;
 
     void Worker();
     void HandleMessage(std::unique_ptr <BaseMessage> message);
@@ -28,5 +30,6 @@ public:
     int AssignMessageId();
     void Publish (std::unique_ptr<BaseMessage> message);
     void Subscribe (const std::string& topic, const SubscriberCallback& callback);
+    void Shutdown();
 };
 #endif //LIMITORDERBOOK_CENTRALMESSAGESYSTEM_H

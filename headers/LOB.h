@@ -52,7 +52,6 @@ class LOB{
     std::unordered_map <double, Limit*> sellMap;
     std::map <double, Limit*> buyTree;
     std::map <double, Limit*> sellTree;
-    DBConnection& db = DBConnection::getInstance("dbname=exchange user=rezatabrizi password=1123 host=localhost port=5432");
 
     /**
      * @brief provide the respective binary tree and hashmap for limit orders

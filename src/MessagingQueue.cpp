@@ -20,3 +20,8 @@ bool MessagingQueue::pop(std::unique_ptr<BaseMessage>& message){
     queue.pop();
     return true;
 }
+
+bool MessagingQueue::empty()  {
+    std::lock_guard<std::mutex> lock(mtx);
+    return queue.empty();
+}

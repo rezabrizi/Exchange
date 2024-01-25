@@ -19,6 +19,7 @@ class MessagingQueue{
 public:
     void push (std::unique_ptr<BaseMessage> message);
     bool pop(std::unique_ptr<BaseMessage>& message);
+    bool empty();
 };
 
 #endif //LIMITORDERBOOK_MESSAGINGQUEUE_H

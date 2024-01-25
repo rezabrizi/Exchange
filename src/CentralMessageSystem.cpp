@@ -4,7 +4,7 @@
 #include "../headers/CentralMessageSystem.h"
 #include <iostream>
 
-CentralMessageSystem::CentralMessageSystem() : running(true), currentId(0){
+CentralMessageSystem::CentralMessageSystem() : queueEmpty(false), currentId(0){
     subscribers["AddOrderMessage"];
     subscribers["CancelOrderMessage"];
     subscribers["TradeExecutionMessage"];
@@ -14,7 +14,24 @@ CentralMessageSystem::CentralMessageSystem() : running(true), currentId(0){
     workerThread = std::thread(&CentralMessageSystem::Worker, this);
 }
 
+
 CentralMessageSystem::~CentralMessageSystem() {
+
+    if (workerThread.joinable()) {
+        workerThread.join();
+    }
+}
+
+
+void CentralMessageSystem::Shutdown() {
+
+    {
+        std::unique_lock<std::mutex> lock(mtx);
+        queueEmpty = true;
+        cv.notify_one();
+    }
+
+
     if (workerThread.joinable()) {
         workerThread.join();
     }
@@ -27,15 +44,23 @@ int CentralMessageSystem::AssignMessageId() {
 
 
 void CentralMessageSystem::Worker(){
-    while (running){
-        std::cout << "in worker method" << std::endl;
+    while (true){
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [this]{
+            return !systemQueue.empty() || queueEmpty;
+        });
+
+        if (queueEmpty && systemQueue.empty()){
+            break;
+        }
+
         std::unique_ptr<BaseMessage> message;
         if (systemQueue.pop(message)){
-            std::cout << "popped" << std::endl;
             HandleMessage(std::move(message));
         }
     }
 }
+
 
 void CentralMessageSystem::HandleMessage(std::unique_ptr<BaseMessage> message) {
     BaseMessage* messageToSend = nullptr;
@@ -60,17 +85,16 @@ void CentralMessageSystem::HandleMessage(std::unique_ptr<BaseMessage> message) {
     }
 }
 
+
 void CentralMessageSystem::Publish(std::unique_ptr<BaseMessage> message) {
     std::string messageType = message->messageType;
-    std::cout << "message with topic: " << messageType << " was received" << std::endl;
     auto messageSubscribers = subscribers.find(messageType);
 
     if (messageSubscribers != subscribers.end()){
-        std::cout << "trying to push to queue"<< std::endl;
         systemQueue.push(std::move(message));
-
     }
 }
+
 
 void CentralMessageSystem::Subscribe(const std::string &topic, const SubscriberCallback& callback) {
     auto messageSubscribers = subscribers.find(topic);
