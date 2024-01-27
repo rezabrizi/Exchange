@@ -77,13 +77,6 @@ build CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o: CXX_COMPILER__Li
   OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
   OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
 
-build CMakeFiles/LimitOrderBook.dir/src/MessagingQueue.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/Exchange/src/MessagingQueue.cpp || cmake_object_order_depends_target_LimitOrderBook
-  DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/MessagingQueue.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/opt/homebrew/include
-  OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
-  OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
-
 build CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/Exchange/src/CentralMessageSystem.cpp || cmake_object_order_depends_target_LimitOrderBook
   DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
@@ -106,7 +99,7 @@ build CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.o: CXX_COMPILER__LimitO
 #############################################
 # Link the executable LimitOrderBook
 
-build LimitOrderBook: CXX_EXECUTABLE_LINKER__LimitOrderBook_Debug CMakeFiles/LimitOrderBook.dir/main.cpp.o CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o CMakeFiles/LimitOrderBook.dir/src/MessagingQueue.cpp.o CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.o | /opt/homebrew/lib/postgresql@14/libpq.dylib
+build LimitOrderBook: CXX_EXECUTABLE_LINKER__LimitOrderBook_Debug CMakeFiles/LimitOrderBook.dir/main.cpp.o CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.o | /opt/homebrew/lib/postgresql@14/libpq.dylib
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   LINK_LIBRARIES = -Wl,-rpath,/opt/homebrew/lib  /opt/homebrew/lib/postgresql@14/libpq.dylib  -lpqxx
   LINK_PATH = -L/opt/homebrew/lib

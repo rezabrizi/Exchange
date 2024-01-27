@@ -46,7 +46,7 @@ void LOB::AddLimitOrder(Order* newOrder) {
             if (bestBid == nullptr || bestBid->GetLimitPrice() < newOrder->price){
                 bestBid = newLimit;
             }
-        }else {
+        }else{
             if (bestAsk == nullptr || bestAsk->GetLimitPrice() > newOrder->price){
                 bestAsk = newLimit;
             }

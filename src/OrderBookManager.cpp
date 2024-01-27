@@ -29,7 +29,8 @@ void OrderBookManager::StartUpOrderBook() {
                                     COALESCE(SUM(e.quantity), 0) as executed_quantity
                                 FROM orders o
                                 LEFT JOIN executions e ON o.orderkey = e.orderkey
-                                GROUP BY o.orderkey)";
+                                GROUP BY o.orderkey
+                                ORDER BY o.entrytime ASC)";
 
     pqxx::result R = db.query(ordersQuery);
     std::unordered_map<std::string, int> currOrderIds;

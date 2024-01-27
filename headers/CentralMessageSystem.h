@@ -15,11 +15,12 @@ class CentralMessageSystem{
     std::thread workerThread;
 
     int currentId;
-    MessagingQueue systemQueue;
+    MessagingQueue<std::unique_ptr<BaseMessage>> systemQueue;
     std::unordered_map <std::string, std::vector<SubscriberCallback>> subscribers;
     bool queueEmpty;
     std::mutex mtx;
     std::condition_variable cv;
+
 
     void Worker();
     void HandleMessage(std::unique_ptr <BaseMessage> message);

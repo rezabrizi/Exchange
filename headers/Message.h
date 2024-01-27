@@ -19,8 +19,9 @@ struct OrderMessage : public BaseMessage {
     std::string clientId;
     std::string instrumentId;
 
-    OrderMessage(int msgId, const std::string& type, long long timestamp, const std::string& clientId, const std::string& instrumentId)
-            : BaseMessage(msgId, type, timestamp), clientId(clientId), instrumentId(instrumentId) {}
+
+    OrderMessage(int msgId, const std::string& msgType, long long timestamp, const std::string& clientId, const std::string& instrumentId)
+            : BaseMessage(msgId, msgType, timestamp), clientId(clientId), instrumentId(instrumentId) {}
 };
 
 struct AddOrderMessage : public OrderMessage {
@@ -33,13 +34,11 @@ struct AddOrderMessage : public OrderMessage {
             : OrderMessage(msgId, msgType, timestamp, clientId, instrumentId), bidOrAsk(bidAsk), limit(limit), quantity(quantity), orderType(orderType) {}
 };
 
-//@TODO Fix the parameter names from here on out
-
 struct CancelOrderMessage : public OrderMessage {
     int orderId;
 
-    CancelOrderMessage(int id, const std::string& type, long long ts, const std::string& client, const std::string& instrument, int order)
-            : OrderMessage(id, type, ts, client, instrument), orderId(order) {}
+    CancelOrderMessage(int msgId, const std::string& msgType, long long timestamp, const std::string& clientId, const std::string& instrumentId, int orderId)
+            : OrderMessage(msgId, msgType, timestamp, clientId, instrumentId), orderId(orderId) {}
 };
 
 struct TradeExecutionMessage : public BaseMessage {
@@ -49,15 +48,15 @@ struct TradeExecutionMessage : public BaseMessage {
     double price;
     int quantity;
 
-    TradeExecutionMessage(int id, const std::string& type, long long ts, int order, const std::string& client, const std::string& instrument, double pr, int qty)
-            : BaseMessage(id, type, ts), orderId(order), clientId(client), instrumentId(instrument), price(pr), quantity(qty) {}
+    TradeExecutionMessage(int msgId, const std::string& msgType, long long timestamp, int orderId, const std::string& clientId, const std::string& instrumentId, double price, int quantity)
+            : BaseMessage(msgId, msgType, timestamp), orderId(orderId), clientId(clientId), instrumentId(instrumentId), price(price), quantity(quantity) {}
 };
 
 struct OrderConfirmationMessage : public AddOrderMessage {
     int orderId;
 
-    OrderConfirmationMessage(int id, const std::string& msgType, long long ts, const std::string& client, const std::string& instrument, bool bidAsk, double lim, int qty, const std::string& tp, int order)
-            : AddOrderMessage(id, msgType, ts, client, instrument, bidAsk, lim, qty, tp), orderId(order) {}
+    OrderConfirmationMessage(int msgId, const std::string& msgType, long long timestamp, const std::string& clientId, const std::string& instrumentId, bool bidAsk, double limit, int quantity, const std::string& orderType, int orderId)
+            : AddOrderMessage(msgId, msgType, timestamp, clientId, instrumentId, bidAsk, limit, quantity, orderType), orderId(orderId) {}
 };
 
 struct SystemMessage : public BaseMessage {
@@ -65,8 +64,8 @@ struct SystemMessage : public BaseMessage {
     std::string alert;
     std::string description;
 
-    SystemMessage(int id, const std::string& type, long long ts, const std::string& instrument, const std::string& alrt, const std::string& desc)
-            : BaseMessage(id, type, ts), instrumentId(instrument), alert(alrt), description(desc) {}
+    SystemMessage(int msgId, const std::string& msgType, long long timestamp, const std::string& instrumentId, const std::string& alert, const std::string& description)
+            : BaseMessage(msgId, msgType, timestamp), instrumentId(instrumentId), alert(alert), description(description) {}
 };
 
 #endif //LIMITORDERBOOK_MESSAGE_H

@@ -1,7 +1,3 @@
-//
-// Created by Reza Tabrizi on 11/23/23.
-//
-
 #include "../headers/Limit.h"
 
 void Limit::AddOrder(Order *order) {

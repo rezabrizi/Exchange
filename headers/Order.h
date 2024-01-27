@@ -1,6 +1,3 @@
-//
-// Created by Reza Tabrizi on 11/23/23.
-//
 #include <string>
 #include <utility>
 #ifndef LIMITORDERBOOK_ORDER_H
@@ -8,16 +5,37 @@
 
 class Order{
 public:
+    // order id unique for individual instruments
     int orderId;
+
+    // tradable asset
     std::string instrumentId;
+
+    // client placing the order
     std::string clientId;
+
+    // the type of the order: market or limit
     std::string type;
+
+    // whether the order is a buy or sell order
     bool bidOrAsk;
+
+    // quantity of the order
     int quantity;
+
+    // price of the order
     double price;
+
+    // order placement time
     long long entryTime;
+
+    // order cancel time
     long long cancelTime;
+
+    // next order
     Order* nextOrder;
+
+    //prev order
     Order* prevOrder;
 
 

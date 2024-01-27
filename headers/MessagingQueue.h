@@ -11,15 +11,38 @@
 #ifndef LIMITORDERBOOK_MESSAGINGQUEUE_H
 #define LIMITORDERBOOK_MESSAGINGQUEUE_H
 
-class MessagingQueue{
-    std::queue <std::unique_ptr<BaseMessage>> queue;
+template<typename T>
+class MessagingQueue {
+    std::queue<T> queue;
     std::mutex mtx;
     std::condition_variable cv;
 
 public:
-    void push (std::unique_ptr<BaseMessage> message);
-    bool pop(std::unique_ptr<BaseMessage>& message);
-    bool empty();
+    // Inline definition of push method
+    void push(T message) {
+        std::lock_guard<std::mutex> lock(mtx);
+        queue.push(std::move(message));
+        cv.notify_one();
+    }
+
+    // Inline definition of pop method
+    bool pop(T& message) {
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [this]{ return !queue.empty(); });
+
+        if (!queue.empty()) {
+            message = std::move(queue.front());
+            queue.pop();
+            return true;
+        }
+        return false;
+    }
+
+    // Inline definition of empty method
+    bool empty() {
+        std::lock_guard<std::mutex> lock(mtx);
+        return queue.empty();
+    }
 };
 
 #endif //LIMITORDERBOOK_MESSAGINGQUEUE_H

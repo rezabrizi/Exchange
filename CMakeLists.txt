@@ -26,11 +26,12 @@ add_executable(LimitOrderBook main.cpp
         headers/CentralMessageSystem.h
         headers/MessagingQueue.h
         headers/Message.h
-        src/MessagingQueue.cpp
         src/CentralMessageSystem.cpp
         headers/Execution.h
         headers/DBConnection.h
         src/DBConnection.cpp
+        headers/Connection.h
+        headers/Client.h
 )
 
 # Link the PostgreSQL and libpqxx libraries
