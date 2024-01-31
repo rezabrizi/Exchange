@@ -32,6 +32,9 @@ add_executable(LimitOrderBook main.cpp
         src/DBConnection.cpp
         headers/Connection.h
         headers/Client.h
+        headers/NetMessage.h
+        headers/NetCommon.h
+        headers/NetConnection.h
 )
 
 # Link the PostgreSQL and libpqxx libraries
