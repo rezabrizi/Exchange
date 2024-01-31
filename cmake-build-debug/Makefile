@@ -177,6 +177,30 @@ src/CentralMessageSystem.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.s
 .PHONY : src/CentralMessageSystem.cpp.s
 
+src/DBConnection.o: src/DBConnection.cpp.o
+.PHONY : src/DBConnection.o
+
+# target to build an object file
+src/DBConnection.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.o
+.PHONY : src/DBConnection.cpp.o
+
+src/DBConnection.i: src/DBConnection.cpp.i
+.PHONY : src/DBConnection.i
+
+# target to preprocess a source file
+src/DBConnection.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.i
+.PHONY : src/DBConnection.cpp.i
+
+src/DBConnection.s: src/DBConnection.cpp.s
+.PHONY : src/DBConnection.s
+
+# target to generate assembly for a file
+src/DBConnection.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.s
+.PHONY : src/DBConnection.cpp.s
+
 src/LOB.o: src/LOB.cpp.o
 .PHONY : src/LOB.o
 
@@ -225,30 +249,6 @@ src/Limit.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.s
 .PHONY : src/Limit.cpp.s
 
-src/MessagingQueue.o: src/MessagingQueue.cpp.o
-.PHONY : src/MessagingQueue.o
-
-# target to build an object file
-src/MessagingQueue.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/MessagingQueue.cpp.o
-.PHONY : src/MessagingQueue.cpp.o
-
-src/MessagingQueue.i: src/MessagingQueue.cpp.i
-.PHONY : src/MessagingQueue.i
-
-# target to preprocess a source file
-src/MessagingQueue.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/MessagingQueue.cpp.i
-.PHONY : src/MessagingQueue.cpp.i
-
-src/MessagingQueue.s: src/MessagingQueue.cpp.s
-.PHONY : src/MessagingQueue.s
-
-# target to generate assembly for a file
-src/MessagingQueue.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/MessagingQueue.cpp.s
-.PHONY : src/MessagingQueue.cpp.s
-
 src/OrderBookManager.o: src/OrderBookManager.cpp.o
 .PHONY : src/OrderBookManager.o
 
@@ -288,15 +288,15 @@ help:
 	@echo "... src/CentralMessageSystem.o"
 	@echo "... src/CentralMessageSystem.i"
 	@echo "... src/CentralMessageSystem.s"
+	@echo "... src/DBConnection.o"
+	@echo "... src/DBConnection.i"
+	@echo "... src/DBConnection.s"
 	@echo "... src/LOB.o"
 	@echo "... src/LOB.i"
 	@echo "... src/LOB.s"
 	@echo "... src/Limit.o"
 	@echo "... src/Limit.i"
 	@echo "... src/Limit.s"
-	@echo "... src/MessagingQueue.o"
-	@echo "... src/MessagingQueue.i"
-	@echo "... src/MessagingQueue.s"
 	@echo "... src/OrderBookManager.o"
 	@echo "... src/OrderBookManager.i"
 	@echo "... src/OrderBookManager.s"

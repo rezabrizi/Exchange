@@ -24,6 +24,9 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/opt/homebrew/include/postgresql@14"/>
+					<Add directory="/opt/homebrew/include/postgresql@14/server"/>
+					<Add directory="/opt/homebrew/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
@@ -43,6 +46,9 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/opt/homebrew/include/postgresql@14"/>
+					<Add directory="/opt/homebrew/include/postgresql@14/server"/>
+					<Add directory="/opt/homebrew/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
@@ -79,6 +85,15 @@
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/CentralMessageSystem.h">
 			<Option target="LimitOrderBook"/>
 		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Client.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Connection.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/DBConnection.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Exchange.h">
 			<Option target="LimitOrderBook"/>
 		</Unit>
@@ -103,6 +118,15 @@
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/MessagingQueue.h">
 			<Option target="LimitOrderBook"/>
 		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/NetCommon.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/NetConnection.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/NetMessage.h">
+			<Option target="LimitOrderBook"/>
+		</Unit>
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/headers/Order.h">
 			<Option target="LimitOrderBook"/>
 		</Unit>
@@ -115,13 +139,13 @@
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/CentralMessageSystem.cpp">
 			<Option target="LimitOrderBook"/>
 		</Unit>
+		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/DBConnection.cpp">
+			<Option target="LimitOrderBook"/>
+		</Unit>
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/LOB.cpp">
 			<Option target="LimitOrderBook"/>
 		</Unit>
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/Limit.cpp">
-			<Option target="LimitOrderBook"/>
-		</Unit>
-		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/MessagingQueue.cpp">
 			<Option target="LimitOrderBook"/>
 		</Unit>
 		<Unit filename="/Users/rezatabrizi/Repos/Exchange/src/OrderBookManager.cpp">
