@@ -1,9 +1,10 @@
 //
 // Created by Reza Tabrizi on 12/24/23.
 //
+
 #include "../headers/OrderBookManager.h"
 
-OrderBookManager::OrderBookManager(CentralMessageSystem &CMS) : CMS(CMS) {
+OrderBookManager::OrderBookManager(CentralMessageSystem &CMS) : cms(CMS) {
     StartUpOrderBook();
     CMS.Subscribe("AddOrderMessage", [this](const BaseMessage& message) {
         this->ProcessMessage(message);
@@ -16,7 +17,7 @@ OrderBookManager::OrderBookManager(CentralMessageSystem &CMS) : CMS(CMS) {
 
 
 void OrderBookManager::StartUpOrderBook() {
-    std::lock_guard<std::mutex> lock(orderBookMutex);
+    //std::lock_guard<std::mutex> lock(orderBookMutex);
     std::string ordersQuery = R"(SELECT o.orderid,
                                     o.quantity,
                                     o.clientid,
@@ -64,8 +65,6 @@ void OrderBookManager::StartUpOrderBook() {
     }
 
 
-
-
     for (const auto& item: currOrderIds){
         LOB* currentLOB = orderBook[item.first];
         currentLOB->UpdateCurrentOrderId(item.second);
@@ -75,6 +74,7 @@ void OrderBookManager::StartUpOrderBook() {
 
 
 void OrderBookManager::ProcessMessage(const BaseMessage &message) {
+    std::cout << "ORDER BOOK MANAGER - PROCESS () \n";
 
     if (message.messageType == "AddOrderMessage") {
         // we use a pointer to not have to worry about exception checking as the cast will result in a nullptr
@@ -94,14 +94,14 @@ void OrderBookManager::ProcessMessage(const BaseMessage &message) {
 
 
             std::unique_ptr<BaseMessage> confirmedOrderMessage = AddOrder(newOrderMessage);
-            CMS.Publish(std::move(confirmedOrderMessage));
+            cms.Publish(std::move(confirmedOrderMessage));
 
             std::vector<std::unique_ptr<TradeExecutionMessage>> executionMessages = CheckForMatch(
                     newOrderMessage->instrumentId, newOrderMessage->orderType);
 
             for (std::unique_ptr<TradeExecutionMessage> &execution: executionMessages) {
                 std::unique_ptr<BaseMessage> executionMessage = std::move(execution);
-                CMS.Publish(std::move(executionMessage));
+                cms.Publish(std::move(executionMessage));
             }
         }
     }
@@ -109,7 +109,7 @@ void OrderBookManager::ProcessMessage(const BaseMessage &message) {
     else if (message.messageType == "CancelOrderMessage"){
         if (const CancelOrderMessage* cancelOrderMessage = dynamic_cast<const CancelOrderMessage*> (&message)){
             std::unique_ptr<BaseMessage> cancellationConfirmationMessage = CancelOrder(cancelOrderMessage->instrumentId, cancelOrderMessage->orderId);
-            CMS.Publish(std::move(cancellationConfirmationMessage));
+            cms.Publish(std::move(cancellationConfirmationMessage));
         }
     }
 }
@@ -120,7 +120,7 @@ std::unique_ptr<OrderConfirmationMessage> OrderBookManager::AddOrder(const AddOr
     Order* newOrder = currentLOB->AddOrder(message->instrumentId, message->orderType, message->clientId, message->bidOrAsk, message->quantity, message->limit, message->timestamp);
     WriteOrderToDB(newOrder);
     std::unique_ptr<OrderConfirmationMessage> confirmedOrderMessage = std::make_unique<OrderConfirmationMessage>(
-            CMS.AssignMessageId(), // int
+            cms.AssignMessageId(), // int
             "OrderConfirmationMessage", // std::string
             LOB::GetTimeStamp(), // long long
             newOrder->clientId, // std::string
@@ -129,7 +129,8 @@ std::unique_ptr<OrderConfirmationMessage> OrderBookManager::AddOrder(const AddOr
             newOrder->price, // double
             newOrder->quantity, // int
             newOrder->type, // std::string
-            newOrder->orderId // int
+            newOrder->orderId,// int
+            -1
     );
     return confirmedOrderMessage;
 }
@@ -143,7 +144,7 @@ std::unique_ptr<OrderConfirmationMessage> OrderBookManager::CancelOrder(const st
         // Perform additional operations if the order is successfully canceled
         CancelOrderInDB(instrumentId, orderId, canceledOrder->cancelTime);
         std::unique_ptr<OrderConfirmationMessage> cancellationConfirmationMessage = std::make_unique<OrderConfirmationMessage>(
-                CMS.AssignMessageId(), // int
+                cms.AssignMessageId(), // int
                 "OrderConfirmationMessage", // std::string
                 LOB::GetTimeStamp(), // long long
                 canceledOrder->clientId, // std::string
@@ -152,7 +153,8 @@ std::unique_ptr<OrderConfirmationMessage> OrderBookManager::CancelOrder(const st
                 canceledOrder->price, // double
                 canceledOrder->quantity, // int
                 canceledOrder->type, // std::string
-                canceledOrder->orderId // int
+                canceledOrder->orderId, // int
+                canceledOrder->cancelTime
         );
         delete canceledOrder;
         return cancellationConfirmationMessage;
@@ -176,7 +178,7 @@ std::vector<std::unique_ptr<TradeExecutionMessage>> OrderBookManager::CheckForMa
     for (Execution* const& execution: executions){
         WriteExecutionToDB(execution);
         executionMessages.push_back(std::make_unique<TradeExecutionMessage>(
-                CMS.AssignMessageId(),
+                cms.AssignMessageId(),
                 "execution",
                 execution->GetTimestamp(),
                 execution->GetOrderId(),

@@ -1,18 +1,12 @@
-//
-// Created by Reza Tabrizi on 1/5/24.
-//
-
-#include <pqxx/pqxx>
-#include <mutex>
-
-#ifndef LIMITORDERBOOK_DBCONNECTION_H
-#define LIMITORDERBOOK_DBCONNECTION_H
+#pragma once
+#include "exchange_common.h"
 
 class DBConnection {
 private:
     pqxx::connection conn;
-    static std::unique_ptr<DBConnection> instance;
-    static std::mutex mutex;
+    static inline std::unique_ptr<DBConnection> instance;
+    static inline std::mutex instanceMux;
+    std:: mutex queryMux;
 
     DBConnection(const std::string& connectionString) : conn(connectionString){}
 
@@ -22,9 +16,19 @@ public:
     DBConnection& operator=(DBConnection const&) = delete;
     DBConnection& operator=(DBConnection &&) = delete;
 
-    static DBConnection& getInstance (const std::string& connectionString);
-
-    pqxx::result query(const std::string& sql);
+    static DBConnection& getInstance(const std::string& connectionString) {
+        std::lock_guard<std::mutex> lock(instanceMux);
+        if (instance == nullptr) {
+            instance.reset(new DBConnection(connectionString));
+        }
+        return *instance;
+    }
+    pqxx::result query(const std::string& sql) {
+        std::lock_guard<std::mutex> lock (queryMux);
+        pqxx::work txn(conn);
+        pqxx::result res = txn.exec(sql);
+        txn.commit();
+        return res;
+    }
 };
 
-#endif //LIMITORDERBOOK_DBCONNECTION_H

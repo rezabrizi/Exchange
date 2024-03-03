@@ -1,10 +1,6 @@
-//
-// Created by Reza Tabrizi on 12/25/23.
-//
+#pragma once
+#include "exchange_common.h"
 
-#include <string>
-#ifndef LIMITORDERBOOK_MESSAGE_H
-#define LIMITORDERBOOK_MESSAGE_H
 struct BaseMessage {
     int messageId;
     std::string messageType;
@@ -54,9 +50,10 @@ struct TradeExecutionMessage : public BaseMessage {
 
 struct OrderConfirmationMessage : public AddOrderMessage {
     int orderId;
+    long long cancelTime;
 
-    OrderConfirmationMessage(int msgId, const std::string& msgType, long long timestamp, const std::string& clientId, const std::string& instrumentId, bool bidAsk, double limit, int quantity, const std::string& orderType, int orderId)
-            : AddOrderMessage(msgId, msgType, timestamp, clientId, instrumentId, bidAsk, limit, quantity, orderType), orderId(orderId) {}
+    OrderConfirmationMessage(int msgId, const std::string& msgType, long long timestamp, const std::string& clientId, const std::string& instrumentId, bool bidAsk, double limit, int quantity, const std::string& orderType, int orderId, long long cancelTime)
+            : AddOrderMessage(msgId, msgType, timestamp, clientId, instrumentId, bidAsk, limit, quantity, orderType), orderId(orderId), cancelTime(cancelTime){}
 };
 
 struct SystemMessage : public BaseMessage {
@@ -68,4 +65,4 @@ struct SystemMessage : public BaseMessage {
             : BaseMessage(msgId, msgType, timestamp), instrumentId(instrumentId), alert(alert), description(description) {}
 };
 
-#endif //LIMITORDERBOOK_MESSAGE_H
+

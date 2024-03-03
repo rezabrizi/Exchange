@@ -1,10 +1,7 @@
-//
-// Created by Reza Tabrizi on 11/23/23.
-//
+#pragma once
 #include "Order.h"
 
-#ifndef LIMITORDERBOOK_LIMIT_H
-#define LIMITORDERBOOK_LIMIT_H
+
 
 class Limit{
     double limitPrice;
@@ -24,4 +21,3 @@ public:
     Order* GetTopOrder() const;
 };
 
-#endif //LIMITORDERBOOK_LIMIT_H

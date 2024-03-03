@@ -1,25 +1,10 @@
-//
-// Created by Reza Tabrizi on 11/23/23.
-//
-#include <unordered_map>
-#include <map>
-#include <queue>
-#include <stdexcept>
-#include <algorithm>
-#include <iostream>
-#include <cstdlib>
-#include <utility>
-#include <chrono>
-#include <iomanip>
-
+#pragma once
+#include "exchange_common.h"
 #include "DBConnection.h"
 #include "Message.h"
 #include "Limit.h"
 #include "Execution.h"
 
-
-#ifndef LIMITORDERBOOK_LOB_H
-#define LIMITORDERBOOK_LOB_H
 
 
 /**
@@ -148,7 +133,7 @@ class LOB{
      */
     static Limit* FindNextHighestLimit(const std::map<double, Limit*>& tree, const double& bestPrice);
 
-    void LoadLOBFromDB();
+
 public:
 
     /**
@@ -221,5 +206,3 @@ public:
     void PrintBidBook ();
     void PrintAskBook ();
 };
-
-#endif //LIMITORDERBOOK_LOB_H

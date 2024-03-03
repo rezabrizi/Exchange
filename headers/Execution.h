@@ -1,11 +1,7 @@
-//
-// Created by Reza Tabrizi on 12/30/23.
-//
-#include <string>
-#include <utility>
+#pragma once
+#include "exchange_common.h"
 
-#ifndef LIMITORDERBOOK_EXECUTION_H
-#define LIMITORDERBOOK_EXECUTION_H
+
 
 class Execution{
     int executionId;
@@ -29,10 +25,6 @@ public:
     int GetQuantity() const {return quantity;}
     long long GetTimestamp() const {return timestamp;}
 
-
-
-
 };
 
 
-#endif //LIMITORDERBOOK_EXECUTION_H

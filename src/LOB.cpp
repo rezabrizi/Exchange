@@ -1,8 +1,4 @@
-//
-// Created by Reza Tabrizi on 11/23/23.
-//
 #include "../headers/LOB.h"
-
 
 ActiveLOBMapAndTree LOB::GetActiveMapAndTree(bool bidOrAsk){
     ActiveLOBMapAndTree mat{};
@@ -70,20 +66,23 @@ Order* LOB::AddOrder(std::string instrumentId, std::string type, std::string cli
     }
 
     // For printing purposes
-    std::cout << "-------ADDING--------" << std::endl;
-    std::string type_of_order = (bidOrAsk) ? "bid" : "ask";
-    std::cout << "ID:   " << newOrder->orderId << "    " << newOrder->clientId << "   " << newOrder->type << "    " << type_of_order << "    $" << limitPrice << "    " << quantity << "  shares    order time " << entryTime << std::endl;
-    if (bestBid != nullptr) {
-        std::cout << "BEST BID: $" << bestBid->GetLimitPrice() << " by "  << bestBid->GetTopOrder()->clientId << std::endl;
-    }else {
-        std::cout << "EMPTY BID BOOK"<< std::endl;
-    }
-    if (bestAsk != nullptr) {
-        std::cout << "BEST ASK: $" << bestAsk->GetLimitPrice() << std::endl;
-    }else {
-        std::cout << "EMPTY ASK BOOK"<< std::endl;
-    }
-    std::cout << "--------DONE---------" << std::endl;
+
+        std::cout << "-------ADDING--------" << std::endl;
+        std::string type_of_order = (bidOrAsk) ? "bid" : "ask";
+        std::cout << "ID:   " << newOrder->orderId << "    " << newOrder->clientId << "   " << newOrder->type << "    " << type_of_order << "    $" << limitPrice << "    " << quantity << "  shares    order time " << entryTime << std::endl;
+        if (bestBid != nullptr) {
+            std::cout << "BEST BID: $" << bestBid->GetLimitPrice() << " by "  << bestBid->GetTopOrder()->clientId << std::endl;
+        }else {
+            std::cout << "EMPTY BID BOOK"<< std::endl;
+        }
+        if (bestAsk != nullptr) {
+            std::cout << "BEST ASK: $" << bestAsk->GetLimitPrice() << std::endl;
+        }else {
+            std::cout << "EMPTY ASK BOOK"<< std::endl;
+        }
+        std::cout << "--------DONE---------" << std::endl;
+
+
 
     return newOrder;
 }
@@ -246,14 +245,11 @@ void LOB::MatchLimitOrders(std::vector<Execution*> &executions) {
         Order* topBidOrder = bestBid->GetTopOrder();
         Order* topAskOrder = bestAsk->GetTopOrder();
 
-        Limit* topBidLimit = buyTree[topBidOrder->price];
-        Limit* topAskLimit = sellTree[topAskOrder->price];
-
 
         WalkBook(&topBidOrder, &topAskOrder);
 
-        topBidLimit = buyTree[topBidOrder->price];
-        topAskLimit = sellTree[topAskOrder->price];
+        Limit* topBidLimit = buyTree[topBidOrder->price];
+        Limit* topAskLimit = sellTree[topAskOrder->price];
 
         if ((topBidOrder->clientId == topAskOrder->clientId )|| topBidOrder->price< topAskOrder->price){
             break;
@@ -268,15 +264,19 @@ void LOB::MatchLimitOrders(std::vector<Execution*> &executions) {
         executions.push_back(bidLimitExecution);
         executions.push_back(askLimitExecution);
         // Here there is a match and an execution needs to be created
-        if (topBidOrder->quantity > topAskOrder->quantity){
+        if (topBidOrder->quantity > topAskOrder->quantity)
+        {
             topBidLimit->ReduceOrder(topBidOrder, topAskOrder->quantity);
             RemoveLimitOrder(topAskOrder->orderId);
         }
-        else if (topBidOrder->quantity < topAskOrder->quantity){
+        else if (topBidOrder->quantity < topAskOrder->quantity)
+        {
             topAskLimit->ReduceOrder(topAskOrder, topBidOrder->quantity);
             RemoveLimitOrder(topBidOrder->orderId);
 
-        }else{
+        }
+        else
+        {
             RemoveLimitOrder(topBidOrder->orderId);
             RemoveLimitOrder(topAskOrder->orderId);
         }
@@ -445,19 +445,6 @@ Limit* LOB::FindNextHighestLimit(const std::map<double, Limit*>& tree, const dou
     // Move to the previous element (which exists since it is not at the beginning)
     --it;
     return it->second; // Return the Limit* for the next lowest price
-}
-
-
-void LOB::LoadLOBFromDB(){
-    /**
-     * 0- OrderBookManager reads the entire database
-     * 1- has the order been fully executed yet ?
-     * 2- if yes --> just increment the LOB's currentOrderId
-     * 3- if no --> do an AddOrder on the instrument's LOB
-     * 4- find the limit in the
-     *  create an order object,
-     * add it to the correct limit list
-     */
 }
 
 

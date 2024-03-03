@@ -1,10 +1,14 @@
-#include <string>
-#include <utility>
-#ifndef LIMITORDERBOOK_ORDER_H
-#define LIMITORDERBOOK_ORDER_H
+#pragma once
+#include "exchange_common.h"
+
 
 class Order{
 public:
+
+    Order(int orderId, std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limit,
+          long long entryTime, long long cancelTime): orderId(orderId), instrumentId(std::move(instrumentId)), type(std::move(type)),
+                                                      clientId(std::move(clientId)), bidOrAsk(bidOrAsk), quantity(quantity), price(limit), entryTime(entryTime),
+                                                      cancelTime(cancelTime), nextOrder(nullptr), prevOrder(nullptr){};
     // order id unique for individual instruments
     int orderId;
 
@@ -37,12 +41,4 @@ public:
 
     //prev order
     Order* prevOrder;
-
-
-    Order(int orderId, std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limit,
-          long long entryTime, long long cancelTime): orderId(orderId), instrumentId(std::move(instrumentId)), type(std::move(type)),
-                                                      clientId(std::move(clientId)), bidOrAsk(bidOrAsk), quantity(quantity), price(limit), entryTime(entryTime),
-                                                      cancelTime(cancelTime), nextOrder(nullptr), prevOrder(nullptr){};
 };
-
-#endif //LIMITORDERBOOK_ORDER_H

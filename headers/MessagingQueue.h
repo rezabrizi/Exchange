@@ -1,15 +1,8 @@
-//
-// Created by Reza Tabrizi on 12/24/23.
-//
-#include <queue>
-#include <mutex>
-#include <condition_variable>
-
+#pragma once
+#include "exchange_common.h"
 #include "Message.h"
 
 
-#ifndef LIMITORDERBOOK_MESSAGINGQUEUE_H
-#define LIMITORDERBOOK_MESSAGINGQUEUE_H
 
 template<typename T>
 class MessagingQueue {
@@ -44,5 +37,3 @@ public:
         return queue.empty();
     }
 };
-
-#endif //LIMITORDERBOOK_MESSAGINGQUEUE_H

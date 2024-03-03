@@ -39,7 +39,7 @@ include CMakeFiles/rules.ninja
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = /Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug/
+cmake_ninja_workdir = /Users/rezatabrizi/dev/CLionProjects/Exchangeold/cmake-build-debug/
 # =============================================================================
 # Object build statements for EXECUTABLE target LimitOrderBook
 
@@ -49,45 +49,43 @@ cmake_ninja_workdir = /Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debu
 
 build cmake_object_order_depends_target_LimitOrderBook: phony || CMakeFiles/LimitOrderBook.dir
 
-build CMakeFiles/LimitOrderBook.dir/main.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/Exchange/main.cpp || cmake_object_order_depends_target_LimitOrderBook
-  DEP_FILE = CMakeFiles/LimitOrderBook.dir/main.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/opt/homebrew/include
+build CMakeFiles/LimitOrderBook.dir/exchange_drive.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/dev/CLionProjects/Exchangeold/exchange_drive.cpp || cmake_object_order_depends_target_LimitOrderBook
+  DEFINES = -DASIO_STANDALONE
+  DEP_FILE = CMakeFiles/LimitOrderBook.dir/exchange_drive.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/Users/rezatabrizi/dev/sdk/asio/include -I/opt/homebrew/include -I/Users/rezatabrizi/dev/CLionProjects/Exchangeold/../Net/include
   OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
   OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir
 
-build CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/Exchange/src/Limit.cpp || cmake_object_order_depends_target_LimitOrderBook
+build CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/dev/CLionProjects/Exchangeold/src/Limit.cpp || cmake_object_order_depends_target_LimitOrderBook
+  DEFINES = -DASIO_STANDALONE
   DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/opt/homebrew/include
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/Users/rezatabrizi/dev/sdk/asio/include -I/opt/homebrew/include -I/Users/rezatabrizi/dev/CLionProjects/Exchangeold/../Net/include
   OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
   OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
 
-build CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/Exchange/src/LOB.cpp || cmake_object_order_depends_target_LimitOrderBook
+build CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/dev/CLionProjects/Exchangeold/src/LOB.cpp || cmake_object_order_depends_target_LimitOrderBook
+  DEFINES = -DASIO_STANDALONE
   DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/opt/homebrew/include
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/Users/rezatabrizi/dev/sdk/asio/include -I/opt/homebrew/include -I/Users/rezatabrizi/dev/CLionProjects/Exchangeold/../Net/include
   OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
   OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
 
-build CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/Exchange/src/OrderBookManager.cpp || cmake_object_order_depends_target_LimitOrderBook
+build CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/dev/CLionProjects/Exchangeold/src/OrderBookManager.cpp || cmake_object_order_depends_target_LimitOrderBook
+  DEFINES = -DASIO_STANDALONE
   DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/opt/homebrew/include
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/Users/rezatabrizi/dev/sdk/asio/include -I/opt/homebrew/include -I/Users/rezatabrizi/dev/CLionProjects/Exchangeold/../Net/include
   OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
   OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
 
-build CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/Exchange/src/CentralMessageSystem.cpp || cmake_object_order_depends_target_LimitOrderBook
+build CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/dev/CLionProjects/Exchangeold/src/CentralMessageSystem.cpp || cmake_object_order_depends_target_LimitOrderBook
+  DEFINES = -DASIO_STANDALONE
   DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/opt/homebrew/include
-  OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
-  OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
-
-build CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.o: CXX_COMPILER__LimitOrderBook_unscanned_Debug /Users/rezatabrizi/CLionProjects/Exchange/src/DBConnection.cpp || cmake_object_order_depends_target_LimitOrderBook
-  DEP_FILE = CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/opt/homebrew/include
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/Users/rezatabrizi/dev/sdk/asio/include -I/opt/homebrew/include -I/Users/rezatabrizi/dev/CLionProjects/Exchangeold/../Net/include
   OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
   OBJECT_FILE_DIR = CMakeFiles/LimitOrderBook.dir/src
 
@@ -99,8 +97,8 @@ build CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.o: CXX_COMPILER__LimitO
 #############################################
 # Link the executable LimitOrderBook
 
-build LimitOrderBook: CXX_EXECUTABLE_LINKER__LimitOrderBook_Debug CMakeFiles/LimitOrderBook.dir/main.cpp.o CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.o | /opt/homebrew/lib/postgresql@14/libpq.dylib
-  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
+build LimitOrderBook: CXX_EXECUTABLE_LINKER__LimitOrderBook_Debug CMakeFiles/LimitOrderBook.dir/exchange_drive.cpp.o CMakeFiles/LimitOrderBook.dir/src/Limit.cpp.o CMakeFiles/LimitOrderBook.dir/src/LOB.cpp.o CMakeFiles/LimitOrderBook.dir/src/OrderBookManager.cpp.o CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.o | /opt/homebrew/lib/postgresql@14/libpq.dylib
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk
   LINK_LIBRARIES = -Wl,-rpath,/opt/homebrew/lib  /opt/homebrew/lib/postgresql@14/libpq.dylib  -lpqxx
   LINK_PATH = -L/opt/homebrew/lib
   OBJECT_DIR = CMakeFiles/LimitOrderBook.dir
@@ -109,12 +107,46 @@ build LimitOrderBook: CXX_EXECUTABLE_LINKER__LimitOrderBook_Debug CMakeFiles/Lim
   TARGET_FILE = LimitOrderBook
   TARGET_PDB = LimitOrderBook.dbg
 
+# =============================================================================
+# Object build statements for EXECUTABLE target Client
+
+
+#############################################
+# Order-only phony target for Client
+
+build cmake_object_order_depends_target_Client: phony || CMakeFiles/Client.dir
+
+build CMakeFiles/Client.dir/test_client.cpp.o: CXX_COMPILER__Client_unscanned_Debug /Users/rezatabrizi/dev/CLionProjects/Exchangeold/test_client.cpp || cmake_object_order_depends_target_Client
+  DEFINES = -DASIO_STANDALONE
+  DEP_FILE = CMakeFiles/Client.dir/test_client.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/include/postgresql@14 -I/opt/homebrew/include/postgresql@14/server -I/Users/rezatabrizi/dev/sdk/asio/include -I/opt/homebrew/include -I/Users/rezatabrizi/dev/CLionProjects/Exchangeold/../Net/include
+  OBJECT_DIR = CMakeFiles/Client.dir
+  OBJECT_FILE_DIR = CMakeFiles/Client.dir
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target Client
+
+
+#############################################
+# Link the executable Client
+
+build Client: CXX_EXECUTABLE_LINKER__Client_Debug CMakeFiles/Client.dir/test_client.cpp.o
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk
+  LINK_PATH = -L/opt/homebrew/lib
+  OBJECT_DIR = CMakeFiles/Client.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = Client
+  TARGET_PDB = Client.dbg
+
 
 #############################################
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  COMMAND = cd /Users/rezatabrizi/dev/CLionProjects/Exchangeold/cmake-build-debug && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -125,7 +157,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S/Users/rezatabrizi/CLionProjects/Exchange -B/Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug
+  COMMAND = cd /Users/rezatabrizi/dev/CLionProjects/Exchangeold/cmake-build-debug && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S/Users/rezatabrizi/dev/CLionProjects/Exchangeold -B/Users/rezatabrizi/dev/CLionProjects/Exchangeold/cmake-build-debug
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -141,9 +173,9 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 
 #############################################
-# Folder: /Users/rezatabrizi/CLionProjects/Exchange/cmake-build-debug
+# Folder: /Users/rezatabrizi/dev/CLionProjects/Exchangeold/cmake-build-debug
 
-build all: phony LimitOrderBook
+build all: phony LimitOrderBook Client
 
 # =============================================================================
 # Built-in targets
@@ -152,14 +184,14 @@ build all: phony LimitOrderBook
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPostgreSQL.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/SelectLibraryConfigurations.cmake /Users/rezatabrizi/CLionProjects/Exchange/CMakeLists.txt CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPostgreSQL.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/SelectLibraryConfigurations.cmake /Users/rezatabrizi/dev/CLionProjects/Exchangeold/CMakeLists.txt CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPostgreSQL.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/SelectLibraryConfigurations.cmake /Users/rezatabrizi/CLionProjects/Exchange/CMakeLists.txt CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake: phony
+build /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/FindPostgreSQL.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/Platform/UnixPaths.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.26/Modules/SelectLibraryConfigurations.cmake /Users/rezatabrizi/dev/CLionProjects/Exchangeold/CMakeLists.txt CMakeCache.txt CMakeFiles/3.26.4/CMakeCCompiler.cmake CMakeFiles/3.26.4/CMakeCXXCompiler.cmake CMakeFiles/3.26.4/CMakeSystem.cmake: phony
 
 
 #############################################

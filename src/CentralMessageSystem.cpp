@@ -2,7 +2,7 @@
 // Created by Reza Tabrizi on 12/29/23.
 //
 #include "../headers/CentralMessageSystem.h"
-#include <iostream>
+
 
 CentralMessageSystem::CentralMessageSystem() : queueEmpty(false), currentId(0){
     subscribers["AddOrderMessage"];
@@ -87,6 +87,7 @@ void CentralMessageSystem::HandleMessage(std::unique_ptr<BaseMessage> message) {
 
 
 void CentralMessageSystem::Publish(std::unique_ptr<BaseMessage> message) {
+    std::cout << "CENTRAL MESSAGING SYSTEM - PUBLISH () \n";
     std::string messageType = message->messageType;
     auto messageSubscribers = subscribers.find(messageType);
 

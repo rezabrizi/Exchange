@@ -1,8 +1,0 @@
-//
-// Created by Reza Tabrizi on 11/25/23.
-//
-
-#ifndef LIMITORDERBOOK_EXCHANGE_H
-#define LIMITORDERBOOK_EXCHANGE_H
-
-#endif //LIMITORDERBOOK_EXCHANGE_H

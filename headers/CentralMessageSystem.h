@@ -1,13 +1,10 @@
-//
-// Created by Reza Tabrizi on 12/24/23.
-//
+#pragma once
+
+
+#include "exchange_common.h"
 #include "MessagingQueue.h"
 #include "Message.h"
-#include <thread>
 
-
-#ifndef LIMITORDERBOOK_CENTRALMESSAGESYSTEM_H
-#define LIMITORDERBOOK_CENTRALMESSAGESYSTEM_H
 
 using SubscriberCallback = std::function<void (const BaseMessage& message)>;
 
@@ -33,4 +30,3 @@ public:
     void Subscribe (const std::string& topic, const SubscriberCallback& callback);
     void Shutdown();
 };
-#endif //LIMITORDERBOOK_CENTRALMESSAGESYSTEM_H

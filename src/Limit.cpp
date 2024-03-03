@@ -43,7 +43,6 @@ void Limit::RemoveOrder(Order *order) {
     }
     volume -= order->quantity;
     size--;
-
 }
 
 double Limit::GetLimitPrice()const{
