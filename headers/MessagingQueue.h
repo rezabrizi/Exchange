@@ -6,34 +6,46 @@
 
 template<typename T>
 class MessagingQueue {
-    std::queue<T> queue;
-    std::mutex mtx;
-    std::condition_variable cv;
 
 public:
-    // Inline definition of push method
+
     void push(T message) {
-        std::lock_guard<std::mutex> lock(mtx);
-        queue.push(std::move(message));
-        cv.notify_one();
+       std::scoped_lock lock(muxQueue);
+       queue.emplace(std::move(message));
+
+       std::unique_lock<std::mutex> ul(muxBlocking);
+       cvBlocking.notify_one();
     }
 
-    // Inline definition of pop method
-    bool pop(T& message) {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [this]{ return !queue.empty(); });
+    T pop() {
+        std::scoped_lock lock(muxQueue);
+        auto t = std::move(queue.front());
 
-        if (!queue.empty()) {
-            message = std::move(queue.front());
-            queue.pop();
-            return true;
-        }
-        return false;
+        queue.pop();
+        return t;
     }
 
     // Inline definition of empty method
     bool empty() {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::scoped_lock<std::mutex> lock(muxQueue);
         return queue.empty();
     }
+
+    void wait()
+    {
+        while (empty())
+        {
+            std::unique_lock<std::mutex> ul (muxBlocking);
+            cvBlocking.wait(ul);
+        }
+    }
+
+
+private:
+    std::queue<T> queue;
+    std::mutex muxQueue;
+
+
+    std::condition_variable cvBlocking;
+    std::mutex muxBlocking;
 };

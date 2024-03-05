@@ -33,10 +33,11 @@ void OrderBookManager::StartUpOrderBook() {
                                 GROUP BY o.orderkey
                                 ORDER BY o.entrytime ASC)";
 
-    pqxx::result R = db.query(ordersQuery);
+
+    pqxx::result order_db_result = db.query(ordersQuery);
     std::unordered_map<std::string, int> currOrderIds;
 
-    for (auto row: R){
+    for (auto row: order_db_result){
         int orderId = row["orderid"].as<int>();
         std::string instrumentId = row["instrumentid"].as<std::string>();
         std::string clientId = row["clientid"].as<std::string>();
@@ -64,10 +65,29 @@ void OrderBookManager::StartUpOrderBook() {
         currOrderIds[instrumentId] = std::max(currOrderIds[instrumentId], orderId);
     }
 
+    std::string execution_query = "SELECT o.InstrumentID, MAX(e.ExecutionID) AS LastExecutionID "
+                                  "FROM Executions e JOIN Orders o ON e.OrderKey = o.OrderKey "
+                                  "GROUP BY o.InstrumentID;";
+    pqxx::result execution_db_result = db.query (execution_query);
+    std::unordered_map<std::string, int> currExecutionIds;
+
+    for (auto row: execution_db_result)
+    {
+        std::string instrument_id = row["InstrumentID"].as<std::string>();
+        int lastExecution_id = row["LastExecutionID"].as<int>();
+        currExecutionIds[instrument_id] = lastExecution_id;
+    }
 
     for (const auto& item: currOrderIds){
         LOB* currentLOB = orderBook[item.first];
         currentLOB->UpdateCurrentOrderId(item.second);
+
+        // if there are any executions for the current instrument id then update the execution id
+        if (currExecutionIds.find(item.first) != currExecutionIds.end())
+        {
+            currentLOB->UpdateCurrentExecutionId(currExecutionIds[item.first]);
+        }
+        std::cout << "Instrument " << item.first << " - Current Execution ID: " << currentLOB->GetCurrExecId() << "\n";
     }
 
 }
@@ -108,6 +128,8 @@ void OrderBookManager::ProcessMessage(const BaseMessage &message) {
 
     else if (message.messageType == "CancelOrderMessage"){
         if (const CancelOrderMessage* cancelOrderMessage = dynamic_cast<const CancelOrderMessage*> (&message)){
+            // TODO before cancelling check if such an order book even exists
+            // TODO Provide the client id who sent the cancellation so we can check in the LOB if it matches that order
             std::unique_ptr<BaseMessage> cancellationConfirmationMessage = CancelOrder(cancelOrderMessage->instrumentId, cancelOrderMessage->orderId);
             cms.Publish(std::move(cancellationConfirmationMessage));
         }
@@ -116,6 +138,7 @@ void OrderBookManager::ProcessMessage(const BaseMessage &message) {
 
 
 std::unique_ptr<OrderConfirmationMessage> OrderBookManager::AddOrder(const AddOrderMessage *message) {
+    //TODO need to check if such an instrument exists so we need some sort of a set from the database
     LOB* currentLOB = orderBook[message->instrumentId];
     Order* newOrder = currentLOB->AddOrder(message->instrumentId, message->orderType, message->clientId, message->bidOrAsk, message->quantity, message->limit, message->timestamp);
     WriteOrderToDB(newOrder);
@@ -169,6 +192,7 @@ std::unique_ptr<OrderConfirmationMessage> OrderBookManager::CancelOrder(const st
 
 
 std::vector<std::unique_ptr<TradeExecutionMessage>> OrderBookManager::CheckForMatch(const std::string& instrumentId, const std::string& type) {
+    std::cout << "ORDER BOOK MANAGER - CHEKFORMATCH() \n";
     LOB* currentLOB = orderBook[instrumentId];
     bool isLimit = (type == "limit");
     std::vector<Execution*> executions = currentLOB->Execute(isLimit);

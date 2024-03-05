@@ -120,13 +120,13 @@ void LOB::RemoveLimitOrder(int orderId) {
 
 
 std::vector<Execution*> LOB::Execute(bool isLimit = true){
+    std::cout << "LOB - EXECUTE() \n";
     std::vector<Execution*> executions;
 
     MatchMarketOrders(executions);
     if (isLimit){
         MatchLimitOrders(executions);
     }
-
     return executions;
 }
 
@@ -152,6 +152,11 @@ void LOB::UpdateCurrentOrderId(int orderId) {
 }
 
 
+void LOB::UpdateCurrentExecutionId(int executionId) {
+    currentExecutionId = executionId+1;
+}
+
+
 void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
     while(!marketOrderBuyQueue.empty() && bestAsk != nullptr){
         Order* currentMarketOrder = marketOrderBuyQueue.front();
@@ -164,7 +169,6 @@ void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
             continue;
         }
         Order* topLimitOrder = bestAsk->GetTopOrder();
-        std::cout << topLimitOrder->clientId<< std::endl;
         WalkOneBook(false, &topLimitOrder, currentMarketOrder);
         Limit* topLimit = sellTree[topLimitOrder->price];
 
@@ -174,8 +178,6 @@ void LOB::MatchMarketOrders(std::vector<Execution*> &executions){
         // execution is possible now
 
         int executionQuantity = (currentMarketOrder->quantity > topLimitOrder->quantity) ?  topLimitOrder->quantity : currentMarketOrder->quantity;
-        std::cout << topLimitOrder->quantity << std::endl;
-        std::cout << executionQuantity << std::endl;
         long long executionTimeStamp = GetTimeStamp();
         Execution* marketExecution = new Execution(currentExecutionId, currentMarketOrder->orderId, currentMarketOrder->instrumentId, currentMarketOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
         Execution* limitExecution = new Execution(currentExecutionId, topLimitOrder->orderId, topLimitOrder->instrumentId, topLimitOrder->clientId, topLimitOrder->price, executionQuantity, executionTimeStamp);
@@ -244,6 +246,10 @@ void LOB::MatchLimitOrders(std::vector<Execution*> &executions) {
     while (bestBid != nullptr && bestAsk != nullptr){
         Order* topBidOrder = bestBid->GetTopOrder();
         Order* topAskOrder = bestAsk->GetTopOrder();
+
+        std::cout << "TOP BID: $" << std::to_string(topBidOrder->price) << "\n";
+        std::cout << "TOP ASK: $" <<  std::to_string(topAskOrder->price) << "\n";
+
 
 
         WalkBook(&topBidOrder, &topAskOrder);

@@ -4,7 +4,7 @@
 #include "../headers/CentralMessageSystem.h"
 
 
-CentralMessageSystem::CentralMessageSystem() : queueEmpty(false), currentId(0){
+CentralMessageSystem::CentralMessageSystem() : shouldShutdown(false), currentId(0){
     subscribers["AddOrderMessage"];
     subscribers["CancelOrderMessage"];
     subscribers["TradeExecutionMessage"];
@@ -27,7 +27,7 @@ void CentralMessageSystem::Shutdown() {
 
     {
         std::unique_lock<std::mutex> lock(mtx);
-        queueEmpty = true;
+        shouldShutdown = true;
         cv.notify_one();
     }
 
@@ -46,23 +46,30 @@ int CentralMessageSystem::AssignMessageId() {
 void CentralMessageSystem::Worker(){
     while (true){
         std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [this]{
-            return !systemQueue.empty() || queueEmpty;
+        cv.wait(lock, [this] {
+            return !systemQueue.empty() || shouldShutdown;
         });
 
-        if (queueEmpty && systemQueue.empty()){
-            break;
-        }
+        // If shutdown signal received, exit the loop
+        if (shouldShutdown) break;
 
-        std::unique_ptr<BaseMessage> message;
-        if (systemQueue.pop(message)){
+
+        systemQueue.wait();
+
+        while (!systemQueue.empty())
+        {
+            std::unique_ptr<BaseMessage> message;
+            message = systemQueue.pop();
             HandleMessage(std::move(message));
         }
+
     }
 }
 
 
 void CentralMessageSystem::HandleMessage(std::unique_ptr<BaseMessage> message) {
+    std::cout << "CENTRAL MESSAGING SYSTEM - HANDLE MESSAGE () \n";
+
     BaseMessage* messageToSend = nullptr;
 
     if (message->messageType == "AddOrderMessage"){
@@ -87,13 +94,15 @@ void CentralMessageSystem::HandleMessage(std::unique_ptr<BaseMessage> message) {
 
 
 void CentralMessageSystem::Publish(std::unique_ptr<BaseMessage> message) {
-    std::cout << "CENTRAL MESSAGING SYSTEM - PUBLISH () \n";
     std::string messageType = message->messageType;
+    std::cout << "CENTRAL MESSAGING SYSTEM - PUBLISH () - " << message->messageType << "\n";
     auto messageSubscribers = subscribers.find(messageType);
 
     if (messageSubscribers != subscribers.end()){
         systemQueue.push(std::move(message));
     }
+
+    cv.notify_one();
 }
 
 

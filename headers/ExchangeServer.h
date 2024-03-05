@@ -73,6 +73,8 @@ private:
     {
         if (message.messageType == "TradeExecutionMessage")
         {
+            std::cout << "There is an execution \n";
+
             const TradeExecutionMessage *trade_execution_message = dynamic_cast <const TradeExecutionMessage *>(&message);
 
             if (trade_execution_message != nullptr)
@@ -102,7 +104,7 @@ private:
         else if (message.messageType == "OrderConfirmationMessage")
         {
             const OrderConfirmationMessage* order_confirmation_message = dynamic_cast <const OrderConfirmationMessage *> (&message);
-
+            std::cout << "There is a confirmation \n";
             if (order_confirmation_message != nullptr)
             {
                 try
@@ -158,7 +160,6 @@ private:
                 catch (const std::exception& e)
                 {
                     std::cerr << "Server failed while sending a system message to all clients " << e.what() << "\n";
-
                 }
             }
         }
@@ -195,6 +196,7 @@ private:
 
     virtual void OnMessage(std::shared_ptr<net::connection<ExchangeMessages>> client, net::message<ExchangeMessages>& msg)
     {
+        //TODO Message Validation
         std::cout << "Message Type: " << static_cast<int>(msg.header.id) << std::endl;
 
         switch(msg.header.id)
@@ -203,7 +205,6 @@ private:
             {
                 std::string client_name;
                 msg >> client_name;
-
 
                 if (client_connections.find(client_name) != client_connections.end())
                 {
@@ -285,6 +286,7 @@ private:
 
     std::unordered_set <std::string> white_list;
 
+    std::unordered_set <std::string> tradable_instruments;
 
     std::unordered_map<uint32_t, std::string> clients;
 

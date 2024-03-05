@@ -38,6 +38,8 @@ class LOB{
     std::map <double, Limit*> buyTree;
     std::map <double, Limit*> sellTree;
 
+
+
     /**
      * @brief provide the respective binary tree and hashmap for limit orders
      * @param bidOrAsk
@@ -141,6 +143,10 @@ public:
      */
     LOB(): currentOrderId(0), currentExecutionId(0), bestBid(nullptr), bestAsk(nullptr){};
 
+    int GetCurrExecId ()
+    {
+        return currentExecutionId;
+    }
     /**
      *
      * @param instrumentId
@@ -176,6 +182,8 @@ public:
 
 
     void UpdateCurrentOrderId(int orderId);
+
+    void UpdateCurrentExecutionId(int executionId);
 
 
     /**

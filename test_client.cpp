@@ -41,10 +41,14 @@ void send_add_order(ClientTest& ct) {
     double price;
     int quantity;
 
+    /**
+     * TODO Input validation
+     */
+
     std::cout << "Instrument ID: ";
     std::getline(std::cin, instrument_id);
 
-    std::cout << "Bid or Ask (0 for bid, 1 for ask): ";
+    std::cout << "Bid or Ask (1 for bid, 0 for ask): ";
     std::cin >> bid_or_ask;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the newline character from the stream
 
@@ -68,26 +72,27 @@ int main() {
     std::getline(std::cin, client_name);
 
     ClientTest ct(client_name);
-    if (!ct.Connect("127.0.0.1", 60000)) {
+    if (!ct.Connect("127.0.0.1", 60000))
+    {
         std::cout << "Failed to connect to server.\n";
         return 1;
     }
 
-    ct.register_company(); // Register upon connecting
+    ct.register_company();
 
     bool bQuit = false;
     while (!bQuit) {
         if (ct.IsConnected()) {
             while (!ct.Incoming().empty()) {
                 auto msg = ct.Incoming().pop_front().msg;
-
+                std::cout << "there is a message \n";
                 switch (msg.header.id) {
                     case ExchangeMessages::OrderConfirmation: {
                         std::string client_id, instrument_id, order_type;
                         int order_id;
                         long long cancel_time;
 
-                        msg >> client_id >> instrument_id >> order_id >> cancel_time;
+                        msg >> cancel_time >> order_id >> instrument_id >> client_id;
                         std::cout << "Order Confirmation - Client ID: " << client_id << ", Instrument ID: " << instrument_id
                                   << ", Order ID: " << order_id << ", Cancel Time: " << cancel_time << std::endl;
                         break;
@@ -98,15 +103,15 @@ int main() {
                         double price;
                         long long executionTime;
 
-                        msg >> client_id >> instrument_id >> order_id >> price >> quantity >> executionTime;
+                        msg >> executionTime >> quantity >> price >> order_id >> instrument_id >> client_name;
                         std::cout << "Execution - Client ID: " << client_id << ", Instrument ID: " << instrument_id
                                   << ", Order ID: " << order_id << ", Price: " << price << ", Quantity: " << quantity
                                   << ", Execution Time: " << executionTime << std::endl;
                         break;
                     }
-                        // Handle other cases as needed
                 }
             }
+
         } else {
             std::cout << "Server Down\n";
             bQuit = true;
@@ -116,9 +121,13 @@ int main() {
         std::cout << "Enter command (add, quit): ";
         std::getline(std::cin, cmd);
 
-        if (cmd == "add") {
+        if (cmd == "add")
+        {
             send_add_order(ct);
-        } else if (cmd == "quit") {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        else if (cmd == "quit")
+        {
             bQuit = true;
         }
     }

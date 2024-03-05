@@ -14,7 +14,7 @@ class CentralMessageSystem{
     int currentId;
     MessagingQueue<std::unique_ptr<BaseMessage>> systemQueue;
     std::unordered_map <std::string, std::vector<SubscriberCallback>> subscribers;
-    bool queueEmpty;
+    bool shouldShutdown;
     std::mutex mtx;
     std::condition_variable cv;
 
