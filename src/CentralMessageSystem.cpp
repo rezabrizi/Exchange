@@ -53,7 +53,6 @@ void CentralMessageSystem::Worker(){
         // If shutdown signal received, exit the loop
         if (shouldShutdown) break;
 
-
         systemQueue.wait();
 
         while (!systemQueue.empty())
@@ -62,7 +61,6 @@ void CentralMessageSystem::Worker(){
             message = systemQueue.pop();
             HandleMessage(std::move(message));
         }
-
     }
 }
 
@@ -98,6 +96,7 @@ void CentralMessageSystem::Publish(std::unique_ptr<BaseMessage> message) {
     std::cout << "CENTRAL MESSAGING SYSTEM - PUBLISH () - " << message->messageType << "\n";
     auto messageSubscribers = subscribers.find(messageType);
 
+    std::cout << "pushed the message";
     if (messageSubscribers != subscribers.end()){
         systemQueue.push(std::move(message));
     }

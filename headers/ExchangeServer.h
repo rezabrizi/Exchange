@@ -9,9 +9,10 @@
 #include "CentralMessageSystem.h"
 #include "DBConnection.h"
 
+
 enum class ExchangeMessages : uint32_t
 {
-    Connect,
+    Authenticate,
     AddOrder,
     CancelOrder,
     Execution,
@@ -19,29 +20,36 @@ enum class ExchangeMessages : uint32_t
     AlertMessage
 };
 
+struct Client
+{
+    std::string client_id;
+    std::string ip;
+    std::string pass_key;
+};
+
 
 class ExchangeServer : public net::server_interface<ExchangeMessages>
 {
 public:
 
-    ExchangeServer(uint16_t nPort, CentralMessageSystem& cms, std::unordered_set<std::string>& wl) : net::server_interface<ExchangeMessages> (nPort), cms(cms), white_list(std::move(wl))
+    ExchangeServer(uint16_t nPort, CentralMessageSystem& cms) : net::server_interface<ExchangeMessages> (nPort), cms(cms)
     {
         fill_registered_clients();
+        fill_instruments();
 
-        cms.Subscribe("TradeExecutionMessage", [this](const BaseMessage& message) {
+        cms.Subscribe("TradeExecutionMessage", [this](const BaseMessage &message) {
             this->ProcessMessage(message);
         });
 
-        cms.Subscribe("OrderConfirmationMessage", [this](const BaseMessage& message) {
+        cms.Subscribe("OrderConfirmationMessage", [this](const BaseMessage &message) {
             this->ProcessMessage(message);
         });
 
-        cms.Subscribe("AlertMessage", [this](const BaseMessage& message) {
+        cms.Subscribe("AlertMessage", [this](const BaseMessage &message) {
             this->ProcessMessage(message);
         });
 
     }
-
 
 private:
 
@@ -65,7 +73,24 @@ private:
         for (auto row: R)
         {
             auto client_id = row["ID"].as<std::string>();
-            client_connections[client_id] = nullptr;
+            auto name = row["name"].as<std::string>();
+            auto ip = row["TCPIPAddress"].as<std::string>();
+            auto pass_key = row["Passkey"].as<std::string>();
+            Client new_client = {client_id, ip, pass_key};
+            clients[client_id] = new_client;
+            white_list.insert(ip);
+        }
+    }
+
+    void fill_instruments()
+    {
+        std::string instrument_query = "Select * from Instruments";
+        pqxx::result R = db.query(instrument_query);
+
+        for (auto row: R)
+        {
+            auto instrument_id = row["ID"].as<std::string>();
+            tradable_instruments.insert(instrument_id);
         }
     }
 
@@ -73,8 +98,7 @@ private:
     {
         if (message.messageType == "TradeExecutionMessage")
         {
-            std::cout << "There is an execution \n";
-
+            std::cout << " there is trade execution\n";
             const TradeExecutionMessage *trade_execution_message = dynamic_cast <const TradeExecutionMessage *>(&message);
 
             if (trade_execution_message != nullptr)
@@ -104,7 +128,6 @@ private:
         else if (message.messageType == "OrderConfirmationMessage")
         {
             const OrderConfirmationMessage* order_confirmation_message = dynamic_cast <const OrderConfirmationMessage *> (&message);
-            std::cout << "There is a confirmation \n";
             if (order_confirmation_message != nullptr)
             {
                 try
@@ -159,7 +182,7 @@ private:
                 }
                 catch (const std::exception& e)
                 {
-                    std::cerr << "Server failed while sending a system message to all clients " << e.what() << "\n";
+                    std::cerr << "Server failed while sending a system message to all connection_ids " << e.what() << "\n";
                 }
             }
         }
@@ -177,10 +200,10 @@ private:
 
     virtual void OnClientDisconnect(std::shared_ptr<net::connection<ExchangeMessages>> client)
     {
-        if (clients.find(client->GetID()) != clients.end())
+        if (connection_ids.find(client->GetID()) != connection_ids.end())
         {
-            std::string client_name = clients[client->GetID()];
-            client_connections[client_name] = nullptr;
+            std::string client_name = connection_ids[client->GetID()];
+            client_connections.erase(client_name);
             for (auto& pair: client_interest)
             {
 
@@ -189,29 +212,25 @@ private:
                     pair.second.erase(client_name);
                 }
             }
-            clients.erase(client->GetID());
+            connection_ids.erase(client->GetID());
         }
     }
 
 
     virtual void OnMessage(std::shared_ptr<net::connection<ExchangeMessages>> client, net::message<ExchangeMessages>& msg)
     {
-        //TODO Message Validation
-        std::cout << "Message Type: " << static_cast<int>(msg.header.id) << std::endl;
-
+        //TODO Connection Authentication validation
         switch(msg.header.id)
         {
-            case ExchangeMessages::Connect:
+            case ExchangeMessages::Authenticate:
             {
                 std::string client_name;
                 msg >> client_name;
 
-                if (client_connections.find(client_name) != client_connections.end())
+                if (clients.find(client_name) != clients.end())
                 {
-                    clients[client->GetID()] = client_name;
+                    connection_ids[client->GetID()] = client_name;
                     client_connections[client_name] = client;
-
-                    std::cout << "Client " << client_name << " is registered!\n";/**/
                 }
                 break;
             }
@@ -220,42 +239,55 @@ private:
 
             case ExchangeMessages::AddOrder:
             {
-                if (clients.find(client->GetID()) != clients.end() && client_connections[clients[client->GetID()]] != nullptr)
+                if (connection_ids.find(client->GetID()) != connection_ids.end() && client_connections.find(connection_ids[client->GetID()]) != client_connections.end())
                 {
-                    std::string client_name = clients[client->GetID()];
+                    std::string client_name = connection_ids[client->GetID()];
                     std::string instrument_id;
                     bool bid_or_ask;
                     double price;
                     int quantity;
                     std::string order_type;
 
-                    msg >> instrument_id >> bid_or_ask >> price >> quantity >> order_type;
+                    msg >> instrument_id >> bid_or_ask >> order_type >> quantity;
 
-                    client_interest[instrument_id].insert(client_name);
-                    std::cout << "Order Confirmation - Client ID: " << client_name << ", Instrument ID: " << instrument_id
-                    << ", price: $" << price << ", quantity: " << quantity << ", order type: " << order_type << "\n";
-                    std::unique_ptr<BaseMessage> add_order_message = std::make_unique<AddOrderMessage>(
-                            cms.AssignMessageId(),
-                            "AddOrderMessage",
-                            GetCurrentTimeStamp(),
-                            client_name,
-                            instrument_id,
-                            bid_or_ask,
-                            price,
-                            quantity,
-                            order_type
-                    );
 
-                    cms.Publish(std::move(add_order_message));
+                    if (tradable_instruments.find(instrument_id) != tradable_instruments.end() && quantity > 0 && order_type == "market" || order_type == "limit")
+                    {
+                        if (order_type == "limit")
+                        {
+                            msg >> price;
+                        }
+                        else
+                        {
+                            price = -1;
+                        }
+                        client_interest[instrument_id].insert(client_name);
+                        /**std::cout << "Order Confirmation - Client ID: " << client_name << ", Instrument ID: " << instrument_id
+                                  << ", price: $" << price << ", quantity: " << quantity << ", order type: " << order_type << "\n";*/
+                        std::unique_ptr<BaseMessage> add_order_message = std::make_unique<AddOrderMessage>(
+                                cms.AssignMessageId(),
+                                "AddOrderMessage",
+                                GetCurrentTimeStamp(),
+                                client_name,
+                                instrument_id,
+                                bid_or_ask,
+                                price,
+                                quantity,
+                                order_type
+                        );
+
+                        cms.Publish(std::move(add_order_message));
+                    }
+
                 }
                 break;
             }
 
             case ExchangeMessages::CancelOrder:
             {
-                if (clients.find(client->GetID()) != clients.end() && client_connections[clients[client->GetID()]] != nullptr)
+                if (connection_ids.find(client->GetID()) != connection_ids.end() && client_connections.find(connection_ids[client->GetID()]) != client_connections.end())
                 {
-                    std::string client_name = clients[client->GetID()];
+                    std::string client_name = connection_ids[client->GetID()];
                     std::string instrument_id;
                     bool bid_or_ask;
                     double price;
@@ -288,8 +320,13 @@ private:
 
     std::unordered_set <std::string> tradable_instruments;
 
-    std::unordered_map<uint32_t, std::string> clients;
+    // Store client information
+    std::unordered_map <std::string, Client> clients;
 
+    // Store connection ids and which client owns it
+    std::unordered_map<uint32_t, std::string> connection_ids;
+
+    // Store the client connection objects
     std::unordered_map<std::string, std::shared_ptr<net::connection<ExchangeMessages>>> client_connections;
 
     std::unordered_map <std::string, std::unordered_set<std::string>> client_interest;

@@ -5,7 +5,7 @@
 #include <limits>
 
 enum class ExchangeMessages : uint32_t {
-    Connect,
+    Authenticate,
     AddOrder,
     CancelOrder,
     Execution,
@@ -19,7 +19,7 @@ public:
 
     void register_company() {
         net::message<ExchangeMessages> msg;
-        msg.header.id = ExchangeMessages::Connect;
+        msg.header.id = ExchangeMessages::Authenticate;
         msg << client_name;
         Send(msg);
     }
@@ -27,7 +27,11 @@ public:
     void send_order(const std::string& instrument_id, bool bid_or_ask, double price, int quantity, const std::string& order_type) {
         net::message<ExchangeMessages> msg;
         msg.header.id = ExchangeMessages::AddOrder;
-        msg << order_type << quantity << price << bid_or_ask << instrument_id;
+        msg << quantity << order_type << bid_or_ask << instrument_id;
+        if (price != -1)
+        {
+            msg << price;
+        }
         Send(msg);
     }
 
@@ -37,31 +41,50 @@ private:
 
 void send_add_order(ClientTest& ct) {
     std::string instrument_id, order_type;
+    int bid_or_ask_input;
     bool bid_or_ask;
-    double price;
+    double price = -1; // Default to -1 for limit orders
     int quantity;
-
-    /**
-     * TODO Input validation
-     */
 
     std::cout << "Instrument ID: ";
     std::getline(std::cin, instrument_id);
 
+    std::cout << "Order Type (limit/market): ";
+    while (true) {
+        std::getline(std::cin, order_type);
+        if (order_type != "limit" && order_type != "market") {
+            std::cout << "Invalid input. Please enter either 'limit' or 'market' for order type.\n";
+        } else {
+            break; // Valid input
+        }
+    }
+
     std::cout << "Bid or Ask (1 for bid, 0 for ask): ";
-    std::cin >> bid_or_ask;
+    while (!(std::cin >> bid_or_ask_input) || (bid_or_ask_input != 1 && bid_or_ask_input != 0)) {
+        std::cout << "Invalid input. Please enter 1 for bid or 0 for ask.\n";
+        std::cin.clear(); // Clear error flags
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard the input
+    }
+    bid_or_ask = static_cast<bool>(bid_or_ask_input);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the newline character from the stream
 
-    std::cout << "Price: ";
-    std::cin >> price;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the newline character from the stream
+    if (order_type == "limit") {
+        std::cout << "Price: ";
+        while (!(std::cin >> price) || price <= 0) {
+            std::cout << "Invalid input. Please enter a positive number for price.\n";
+            std::cin.clear(); // Clear error flags
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard the input
+        }
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the newline character from the stream
+    }
 
     std::cout << "Quantity: ";
-    std::cin >> quantity;
+    while (!(std::cin >> quantity) || quantity <= 0) {
+        std::cout << "Invalid input. Please enter a positive integer for quantity.\n";
+        std::cin.clear(); // Clear error flags
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard the input
+    }
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the newline character from the stream
-
-    std::cout << "Order Type: ";
-    std::getline(std::cin, order_type);
 
     ct.send_order(instrument_id, bid_or_ask, price, quantity, order_type);
 }

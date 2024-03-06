@@ -40,7 +40,7 @@
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 39,
+				"line" : 38,
 				"parent" : 0
 			},
 			{
@@ -195,8 +195,7 @@
 				10,
 				12,
 				13,
-				14,
-				15
+				14
 			]
 		}
 	],
@@ -275,11 +274,6 @@
 		{
 			"backtrace" : 1,
 			"path" : "headers/DBConnection.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "headers/Client.h",
 			"sourceGroupIndex" : 1
 		},
 		{

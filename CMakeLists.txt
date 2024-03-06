@@ -29,11 +29,10 @@ add_executable(LimitOrderBook exchange_drive.cpp
         src/CentralMessageSystem.cpp
         headers/Execution.h
         headers/DBConnection.h
-        headers/Client.h
         headers/ExchangeServer.h
 )
 
-add_executable(Client test_client.cpp)
+add_executable(Client marketParticipant.cpp)
 
 # Link the PostgreSQL and libpqxx libraries
 target_link_libraries(LimitOrderBook ${PostgreSQL_LIBRARIES} pqxx)
