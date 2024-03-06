@@ -37,7 +37,7 @@ public:
         fill_registered_clients();
         fill_instruments();
 
-        cms.Subscribe("TradeExecutionMessage", [this](const BaseMessage &message) {
+        cms.Subscribe("execution", [this](const BaseMessage &message) {
             this->ProcessMessage(message);
         });
 
@@ -96,7 +96,7 @@ private:
 
     void ProcessMessage(const BaseMessage& message)
     {
-        if (message.messageType == "TradeExecutionMessage")
+        if (message.messageType == "execution")
         {
             std::cout << " there is trade execution\n";
             const TradeExecutionMessage *trade_execution_message = dynamic_cast <const TradeExecutionMessage *>(&message);
@@ -112,12 +112,16 @@ private:
                     int quantity = trade_execution_message->quantity;
                     long long timestamp = trade_execution_message->timestamp;
 
-                    net::message<ExchangeMessages> msg;
-                    msg.header.id = ExchangeMessages::Execution;
+                    if (client_connections.find(client_name) != client_connections.end())
+                    {
+                        net::message<ExchangeMessages> msg;
+                        msg.header.id = ExchangeMessages::Execution;
 
-                    msg << client_name << instrument_id << order_id << price << quantity << timestamp;
+                        msg << client_name << instrument_id << order_id << price << quantity << timestamp;
 
-                    MessageClient(client_connections[client_name], msg);
+
+                        MessageClient(client_connections[client_name], msg);
+                    }
                 }
                 catch (const std::exception& e)
                 {
@@ -231,53 +235,54 @@ private:
                 {
                     connection_ids[client->GetID()] = client_name;
                     client_connections[client_name] = client;
+                    std::cout << "client connected\n";
                 }
                 break;
             }
 
 
-
             case ExchangeMessages::AddOrder:
             {
-                if (connection_ids.find(client->GetID()) != connection_ids.end() && client_connections.find(connection_ids[client->GetID()]) != client_connections.end())
-                {
-                    std::string client_name = connection_ids[client->GetID()];
-                    std::string instrument_id;
-                    bool bid_or_ask;
-                    double price;
-                    int quantity;
-                    std::string order_type;
+                try {
 
-                    msg >> instrument_id >> bid_or_ask >> order_type >> quantity;
-
-
-                    if (tradable_instruments.find(instrument_id) != tradable_instruments.end() && quantity > 0 && order_type == "market" || order_type == "limit")
+                    if (connection_ids.find(client->GetID()) != connection_ids.end() && client_connections.find(connection_ids[client->GetID()]) != client_connections.end())
                     {
-                        if (order_type == "limit")
-                        {
-                            msg >> price;
-                        }
-                        else
-                        {
-                            price = -1;
-                        }
-                        client_interest[instrument_id].insert(client_name);
-                        /**std::cout << "Order Confirmation - Client ID: " << client_name << ", Instrument ID: " << instrument_id
-                                  << ", price: $" << price << ", quantity: " << quantity << ", order type: " << order_type << "\n";*/
-                        std::unique_ptr<BaseMessage> add_order_message = std::make_unique<AddOrderMessage>(
-                                cms.AssignMessageId(),
-                                "AddOrderMessage",
-                                GetCurrentTimeStamp(),
-                                client_name,
-                                instrument_id,
-                                bid_or_ask,
-                                price,
-                                quantity,
-                                order_type
-                        );
 
-                        cms.Publish(std::move(add_order_message));
+                        std::string client_name = connection_ids[client->GetID()];
+
+                        std::string instrument_id;
+                        bool bid_or_ask;
+                        double price;
+                        int quantity;
+                        std::string order_type;
+
+                        msg >> price >> instrument_id >>  bid_or_ask >> order_type >> quantity;
+
+                        if (tradable_instruments.find(instrument_id) != tradable_instruments.end() && quantity > 0 && order_type == "market" || order_type == "limit")
+                        {
+
+                            client_interest[instrument_id].insert(client_name);
+                            /**std::cout << "Order Confirmation - Client ID: " << client_name << ", Instrument ID: " << instrument_id
+                                      << ", price: $" << price << ", quantity: " << quantity << ", order type: " << order_type << "\n";*/
+                            std::unique_ptr<BaseMessage> add_order_message = std::make_unique<AddOrderMessage>(
+                                    cms.AssignMessageId(),
+                                    "AddOrderMessage",
+                                    GetCurrentTimeStamp(),
+                                    client_name,
+                                    instrument_id,
+                                    bid_or_ask,
+                                    price,
+                                    quantity,
+                                    order_type
+                            );
+
+                            cms.Publish(std::move(add_order_message));
+                        }
+
                     }
+
+                } catch (std::exception& e){
+                    std::cout << e.what () << "\n";
 
                 }
                 break;

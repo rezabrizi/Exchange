@@ -27,11 +27,7 @@ public:
     void send_order(const std::string& instrument_id, bool bid_or_ask, double price, int quantity, const std::string& order_type) {
         net::message<ExchangeMessages> msg;
         msg.header.id = ExchangeMessages::AddOrder;
-        msg << quantity << order_type << bid_or_ask << instrument_id;
-        if (price != -1)
-        {
-            msg << price;
-        }
+        msg << quantity << order_type << bid_or_ask << instrument_id << price;
         Send(msg);
     }
 
@@ -118,6 +114,7 @@ int main() {
                         msg >> cancel_time >> order_id >> instrument_id >> client_id;
                         std::cout << "Order Confirmation - Client ID: " << client_id << ", Instrument ID: " << instrument_id
                                   << ", Order ID: " << order_id << ", Cancel Time: " << cancel_time << std::endl;
+                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
                         break;
                     }
                     case ExchangeMessages::Execution: {
@@ -130,9 +127,11 @@ int main() {
                         std::cout << "Execution - Client ID: " << client_id << ", Instrument ID: " << instrument_id
                                   << ", Order ID: " << order_id << ", Price: " << price << ", Quantity: " << quantity
                                   << ", Execution Time: " << executionTime << std::endl;
+                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
                         break;
                     }
                 }
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
 
         } else {

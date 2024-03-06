@@ -111,7 +111,7 @@ int main() {
     std::cout << "Server is running. Press enter to quit...\n";
     std::cin.get();
 
-    server.Stop(); // Ensure you have a Stop function to cleanly shutdown the server
+    server.Stop();
 
     if (serverThread.joinable()) {
         serverThread.join();

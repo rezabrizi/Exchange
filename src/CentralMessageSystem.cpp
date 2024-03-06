@@ -4,10 +4,10 @@
 #include "../headers/CentralMessageSystem.h"
 
 
-CentralMessageSystem::CentralMessageSystem() : shouldShutdown(false), currentId(0){
+CentralMessageSystem::CentralMessageSystem() : shouldShutdown(false), id(0){
     subscribers["AddOrderMessage"];
     subscribers["CancelOrderMessage"];
-    subscribers["TradeExecutionMessage"];
+    subscribers["execution"];
     subscribers["OrderConfirmationMessage"];
     subscribers["AlertMessage"];
 
@@ -39,26 +39,30 @@ void CentralMessageSystem::Shutdown() {
 
 
 int CentralMessageSystem::AssignMessageId() {
-    return currentId++;
+    return id++;
 }
 
 
 void CentralMessageSystem::Worker(){
     while (true){
+       /**
         std::unique_lock<std::mutex> lock(mtx);
+
         cv.wait(lock, [this] {
             return !systemQueue.empty() || shouldShutdown;
         });
+        lock.unlock();
 
         // If shutdown signal received, exit the loop
-        if (shouldShutdown) break;
+        //if (shouldShutdown) break;
 
-        systemQueue.wait();
-
-        while (!systemQueue.empty())
+        //systemQueue.wait();
+        */
+        if (!systemQueue.empty())
         {
             std::unique_ptr<BaseMessage> message;
             message = systemQueue.pop();
+            std::cout << message->messageType << "\n";
             HandleMessage(std::move(message));
         }
     }
@@ -74,7 +78,7 @@ void CentralMessageSystem::HandleMessage(std::unique_ptr<BaseMessage> message) {
         messageToSend = dynamic_cast<AddOrderMessage*>(message.get());
     } else if (message->messageType == "CancelOrderMessage"){
         messageToSend = dynamic_cast<CancelOrderMessage*>(message.get());
-    } else if (message->messageType == "TradeExecutionMessage"){
+    } else if (message->messageType == "execution"){
         messageToSend = dynamic_cast<TradeExecutionMessage*>(message.get());
     } else if (message->messageType == "OrderConfirmationMessage"){
         messageToSend = dynamic_cast<OrderConfirmationMessage*>(message.get());
@@ -92,16 +96,19 @@ void CentralMessageSystem::HandleMessage(std::unique_ptr<BaseMessage> message) {
 
 
 void CentralMessageSystem::Publish(std::unique_ptr<BaseMessage> message) {
+
+
+    //std::unique_lock<std::mutex> lock(mtx);
     std::string messageType = message->messageType;
-    std::cout << "CENTRAL MESSAGING SYSTEM - PUBLISH () - " << message->messageType << "\n";
     auto messageSubscribers = subscribers.find(messageType);
 
-    std::cout << "pushed the message";
-    if (messageSubscribers != subscribers.end()){
+    if (messageSubscribers != subscribers.end()) {
+        std::cout << messageType << "\n";
         systemQueue.push(std::move(message));
     }
 
-    cv.notify_one();
+
+    //cv.notify_one();
 }
 
 

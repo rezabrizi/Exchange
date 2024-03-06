@@ -57,10 +57,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/rezatabrizi/Repos/Exchange
+CMAKE_SOURCE_DIR = /Users/rezatabrizi/dev/CLionProjects/Exchange
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/rezatabrizi/Repos/Exchange/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/rezatabrizi/dev/CLionProjects/Exchange/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/rezatabrizi/Repos/Exchange/cmake-build-debug/CMakeFiles /Users/rezatabrizi/Repos/Exchange/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/rezatabrizi/dev/CLionProjects/Exchange/cmake-build-debug/CMakeFiles /Users/rezatabrizi/dev/CLionProjects/Exchange/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/rezatabrizi/Repos/Exchange/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/rezatabrizi/dev/CLionProjects/Exchange/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -129,29 +129,66 @@ LimitOrderBook/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/build
 .PHONY : LimitOrderBook/fast
 
-main.o: main.cpp.o
-.PHONY : main.o
+#=============================================================================
+# Target rules for targets named Client
+
+# Build rule for target.
+Client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Client
+.PHONY : Client
+
+# fast build rule for target.
+Client/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/build
+.PHONY : Client/fast
+
+exchange_drive.o: exchange_drive.cpp.o
+.PHONY : exchange_drive.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/main.cpp.o
-.PHONY : main.cpp.o
+exchange_drive.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/exchange_drive.cpp.o
+.PHONY : exchange_drive.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+exchange_drive.i: exchange_drive.cpp.i
+.PHONY : exchange_drive.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/main.cpp.i
-.PHONY : main.cpp.i
+exchange_drive.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/exchange_drive.cpp.i
+.PHONY : exchange_drive.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+exchange_drive.s: exchange_drive.cpp.s
+.PHONY : exchange_drive.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/main.cpp.s
-.PHONY : main.cpp.s
+exchange_drive.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/exchange_drive.cpp.s
+.PHONY : exchange_drive.cpp.s
+
+marketParticipant.o: marketParticipant.cpp.o
+.PHONY : marketParticipant.o
+
+# target to build an object file
+marketParticipant.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/marketParticipant.cpp.o
+.PHONY : marketParticipant.cpp.o
+
+marketParticipant.i: marketParticipant.cpp.i
+.PHONY : marketParticipant.i
+
+# target to preprocess a source file
+marketParticipant.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/marketParticipant.cpp.i
+.PHONY : marketParticipant.cpp.i
+
+marketParticipant.s: marketParticipant.cpp.s
+.PHONY : marketParticipant.s
+
+# target to generate assembly for a file
+marketParticipant.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/marketParticipant.cpp.s
+.PHONY : marketParticipant.cpp.s
 
 src/CentralMessageSystem.o: src/CentralMessageSystem.cpp.o
 .PHONY : src/CentralMessageSystem.o
@@ -176,30 +213,6 @@ src/CentralMessageSystem.s: src/CentralMessageSystem.cpp.s
 src/CentralMessageSystem.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/CentralMessageSystem.cpp.s
 .PHONY : src/CentralMessageSystem.cpp.s
-
-src/DBConnection.o: src/DBConnection.cpp.o
-.PHONY : src/DBConnection.o
-
-# target to build an object file
-src/DBConnection.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.o
-.PHONY : src/DBConnection.cpp.o
-
-src/DBConnection.i: src/DBConnection.cpp.i
-.PHONY : src/DBConnection.i
-
-# target to preprocess a source file
-src/DBConnection.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.i
-.PHONY : src/DBConnection.cpp.i
-
-src/DBConnection.s: src/DBConnection.cpp.s
-.PHONY : src/DBConnection.s
-
-# target to generate assembly for a file
-src/DBConnection.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/LimitOrderBook.dir/build.make CMakeFiles/LimitOrderBook.dir/src/DBConnection.cpp.s
-.PHONY : src/DBConnection.cpp.s
 
 src/LOB.o: src/LOB.cpp.o
 .PHONY : src/LOB.o
@@ -281,16 +294,17 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... Client"
 	@echo "... LimitOrderBook"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... exchange_drive.o"
+	@echo "... exchange_drive.i"
+	@echo "... exchange_drive.s"
+	@echo "... marketParticipant.o"
+	@echo "... marketParticipant.i"
+	@echo "... marketParticipant.s"
 	@echo "... src/CentralMessageSystem.o"
 	@echo "... src/CentralMessageSystem.i"
 	@echo "... src/CentralMessageSystem.s"
-	@echo "... src/DBConnection.o"
-	@echo "... src/DBConnection.i"
-	@echo "... src/DBConnection.s"
 	@echo "... src/LOB.o"
 	@echo "... src/LOB.i"
 	@echo "... src/LOB.s"

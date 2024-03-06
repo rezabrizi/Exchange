@@ -12,10 +12,13 @@ public:
     void push(T message) {
        std::scoped_lock lock(muxQueue);
        queue.emplace(std::move(message));
-
+        std::cout << int(queue.size()) << "\n";
+       /**
        std::unique_lock<std::mutex> ul(muxBlocking);
        cvBlocking.notify_one();
+        */
     }
+
 
     T pop() {
         std::scoped_lock lock(muxQueue);
@@ -25,7 +28,7 @@ public:
         return t;
     }
 
-    // Inline definition of empty method
+
     bool empty() {
         std::scoped_lock<std::mutex> lock(muxQueue);
         return queue.empty();
@@ -44,7 +47,6 @@ public:
 private:
     std::queue<T> queue;
     std::mutex muxQueue;
-
 
     std::condition_variable cvBlocking;
     std::mutex muxBlocking;
