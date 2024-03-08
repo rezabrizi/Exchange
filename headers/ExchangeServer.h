@@ -37,15 +37,15 @@ public:
         fill_registered_clients();
         fill_instruments();
 
-        cms.Subscribe("execution", [this](const BaseMessage &message) {
+        cms.subscribe("TradeExecutionMessage", [this](const BaseMessage &message) {
             this->ProcessMessage(message);
         });
 
-        cms.Subscribe("OrderConfirmationMessage", [this](const BaseMessage &message) {
+        cms.subscribe("OrderConfirmationMessage", [this](const BaseMessage &message) {
             this->ProcessMessage(message);
         });
 
-        cms.Subscribe("AlertMessage", [this](const BaseMessage &message) {
+        cms.subscribe("AlertMessage", [this](const BaseMessage &message) {
             this->ProcessMessage(message);
         });
 
@@ -96,10 +96,9 @@ private:
 
     void ProcessMessage(const BaseMessage& message)
     {
-        if (message.messageType == "execution")
+        if (message.messageType == "TradeExecutionMessage")
         {
-            std::cout << " there is trade execution\n";
-            const TradeExecutionMessage *trade_execution_message = dynamic_cast <const TradeExecutionMessage *>(&message);
+            const auto *trade_execution_message = dynamic_cast <const TradeExecutionMessage *>(&message);
 
             if (trade_execution_message != nullptr)
             {
@@ -118,9 +117,8 @@ private:
                         msg.header.id = ExchangeMessages::Execution;
 
                         msg << client_name << instrument_id << order_id << price << quantity << timestamp;
-
-
                         MessageClient(client_connections[client_name], msg);
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
                     }
                 }
                 catch (const std::exception& e)
@@ -131,7 +129,7 @@ private:
         }
         else if (message.messageType == "OrderConfirmationMessage")
         {
-            const OrderConfirmationMessage* order_confirmation_message = dynamic_cast <const OrderConfirmationMessage *> (&message);
+            const auto* order_confirmation_message = dynamic_cast <const OrderConfirmationMessage *> (&message);
             if (order_confirmation_message != nullptr)
             {
                 try
@@ -147,18 +145,18 @@ private:
 
                     msg << client_name << instrument_id << order_id << cancel_time;
                     MessageClient(client_connections[client_name], msg);
-
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
                 catch (const std::exception& e)
                 {
                     std::cerr << "Server failed while sending an order confirmation message to " << order_confirmation_message->clientId << " " << e.what() << "\n";
                 }
             }
-
         }
-        else if (message.messageType == "SystemMessage")
+        else if (message.messageType == "AlertMessage")
         {
-            const SystemMessage* system_message = dynamic_cast <const SystemMessage*> (&message);
+            std::cout << " there is a system emssage\n";
+            const auto* system_message = dynamic_cast <const SystemMessage*> (&message);
 
             if (system_message != nullptr)
             {
@@ -179,6 +177,7 @@ private:
                             msg << instrument_id << alert << description;
 
                             MessageClient(client_connections[client_name], msg);
+                            std::this_thread::sleep_for(std::chrono::milliseconds(10));
                         }
 
                     }
@@ -190,19 +189,16 @@ private:
                 }
             }
         }
-
-
-
     }
 
-    virtual bool OnClientConnect(std::shared_ptr<net::connection<ExchangeMessages>> client, std::string ip)
+    bool OnClientConnect(std::shared_ptr<net::connection<ExchangeMessages>> client, std::string ip) override
     {
         if (white_list.find(ip) != white_list.end())
             return true;
         return false;
     }
 
-    virtual void OnClientDisconnect(std::shared_ptr<net::connection<ExchangeMessages>> client)
+    void OnClientDisconnect(std::shared_ptr<net::connection<ExchangeMessages>> client) override
     {
         if (connection_ids.find(client->GetID()) != connection_ids.end())
         {
@@ -221,21 +217,20 @@ private:
     }
 
 
-    virtual void OnMessage(std::shared_ptr<net::connection<ExchangeMessages>> client, net::message<ExchangeMessages>& msg)
+    void OnMessage(std::shared_ptr<net::connection<ExchangeMessages>> client, net::message<ExchangeMessages>& msg) override
     {
-        //TODO Connection Authentication validation
         switch(msg.header.id)
         {
             case ExchangeMessages::Authenticate:
             {
                 std::string client_name;
                 msg >> client_name;
+                transform(client_name.begin(), client_name.end(), client_name.begin(), ::toupper);
 
                 if (clients.find(client_name) != clients.end())
                 {
                     connection_ids[client->GetID()] = client_name;
                     client_connections[client_name] = client;
-                    std::cout << "client connected\n";
                 }
                 break;
             }
@@ -244,7 +239,6 @@ private:
             case ExchangeMessages::AddOrder:
             {
                 try {
-
                     if (connection_ids.find(client->GetID()) != connection_ids.end() && client_connections.find(connection_ids[client->GetID()]) != client_connections.end())
                     {
 
@@ -258,14 +252,13 @@ private:
 
                         msg >> price >> instrument_id >>  bid_or_ask >> order_type >> quantity;
 
-                        if (tradable_instruments.find(instrument_id) != tradable_instruments.end() && quantity > 0 && order_type == "market" || order_type == "limit")
-                        {
+                        transform(instrument_id.begin(), instrument_id.end(), instrument_id.begin(), ::toupper);
 
+                        if (tradable_instruments.find(instrument_id) != tradable_instruments.end() && quantity > 0 && (order_type == "market" || order_type == "limit"))
+                        {
                             client_interest[instrument_id].insert(client_name);
-                            /**std::cout << "Order Confirmation - Client ID: " << client_name << ", Instrument ID: " << instrument_id
-                                      << ", price: $" << price << ", quantity: " << quantity << ", order type: " << order_type << "\n";*/
                             std::unique_ptr<BaseMessage> add_order_message = std::make_unique<AddOrderMessage>(
-                                    cms.AssignMessageId(),
+                                    cms.assign_messaging_id(),
                                     "AddOrderMessage",
                                     GetCurrentTimeStamp(),
                                     client_name,
@@ -276,14 +269,13 @@ private:
                                     order_type
                             );
 
-                            cms.Publish(std::move(add_order_message));
+                            cms.publish(std::move(add_order_message));
                         }
-
                     }
 
-                } catch (std::exception& e){
-                    std::cout << e.what () << "\n";
-
+                } catch (std::exception& e)
+                {
+                    std::cerr << e.what () << "\n";
                 }
                 break;
             }
@@ -294,46 +286,46 @@ private:
                 {
                     std::string client_name = connection_ids[client->GetID()];
                     std::string instrument_id;
-                    bool bid_or_ask;
-                    double price;
-                    int quantity;
-                    std::string order_type;
                     int orderId;
 
-                    msg >> instrument_id >> bid_or_ask >> price >> quantity >> order_type >> orderId;
+                    msg >> instrument_id  >> orderId;
+                    transform(instrument_id.begin(), instrument_id.end(), instrument_id.begin(), ::toupper);
 
-                    std::unique_ptr<BaseMessage> cancel_order_message = std::make_unique<CancelOrderMessage>(
-                            cms.AssignMessageId(),
-                            "CancelOrderMessage",
-                            GetCurrentTimeStamp(),
-                            client_name,
-                            instrument_id,
-                            orderId
-                    );
-                    cms.Publish(std::move(cancel_order_message));
-
+                    if (tradable_instruments.find(instrument_id) != tradable_instruments.end() && orderId > -1)
+                    {
+                        std::unique_ptr<BaseMessage> cancel_order_message = std::make_unique<CancelOrderMessage>(
+                                cms.assign_messaging_id(),
+                                "CancelOrderMessage",
+                                GetCurrentTimeStamp(),
+                                client_name,
+                                instrument_id,
+                                orderId
+                        );
+                        cms.publish(std::move(cancel_order_message));
+                    }
                 }
                 break;
             }
-
         }
     }
 
 
-
+    // client IP white list
     std::unordered_set <std::string> white_list;
 
+    // instruments that can be traded
     std::unordered_set <std::string> tradable_instruments;
 
-    // Store client information
+    // client information
     std::unordered_map <std::string, Client> clients;
 
-    // Store connection ids and which client owns it
+    // connection ids and who owns it
     std::unordered_map<uint32_t, std::string> connection_ids;
 
-    // Store the client connection objects
+    // client connection objects
     std::unordered_map<std::string, std::shared_ptr<net::connection<ExchangeMessages>>> client_connections;
 
+    // client interest list based on instruments
     std::unordered_map <std::string, std::unordered_set<std::string>> client_interest;
 
     CentralMessageSystem& cms;

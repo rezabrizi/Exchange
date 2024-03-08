@@ -31,6 +31,14 @@ public:
         Send(msg);
     }
 
+    void cancel_order(const std::string& instrument_id, int order_id)
+    {
+        net::message<ExchangeMessages> msg;
+        msg.header.id = ExchangeMessages::CancelOrder;
+        msg << order_id << instrument_id;
+        Send(msg);
+    }
+
 private:
     std::string client_name;
 };
@@ -85,6 +93,34 @@ void send_add_order(ClientTest& ct) {
     ct.send_order(instrument_id, bid_or_ask, price, quantity, order_type);
 }
 
+
+void send_cancel_order(ClientTest& ct) {
+    std::string instrument_id;
+    int order_id;
+
+    std::cout << "Instrument ID: ";
+    while (true) {
+        std::getline(std::cin, instrument_id);
+        if (!instrument_id.empty()) {
+            break; // Valid input
+        } else {
+            std::cout << "Instrument ID cannot be empty. Please enter a valid Instrument ID: ";
+        }
+    }
+
+    std::cout << "Order ID: ";
+    while (!(std::cin >> order_id) || order_id < 0) {
+        std::cout << "Invalid input. Please enter an integer that is 0 or more for order ID.\n";
+        std::cin.clear(); // Clear error flags
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard the input
+    }
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the newline character from the stream
+
+    ct.cancel_order(instrument_id, order_id);
+}
+
+
+
 int main() {
     std::string client_name;
     std::cout << "Enter client name: ";
@@ -114,7 +150,7 @@ int main() {
                         msg >> cancel_time >> order_id >> instrument_id >> client_id;
                         std::cout << "Order Confirmation - Client ID: " << client_id << ", Instrument ID: " << instrument_id
                                   << ", Order ID: " << order_id << ", Cancel Time: " << cancel_time << std::endl;
-                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(20));
                         break;
                     }
                     case ExchangeMessages::Execution: {
@@ -123,11 +159,24 @@ int main() {
                         double price;
                         long long executionTime;
 
-                        msg >> executionTime >> quantity >> price >> order_id >> instrument_id >> client_name;
+                        msg >> executionTime >> quantity >> price >> order_id >> instrument_id >> client_id;
                         std::cout << "Execution - Client ID: " << client_id << ", Instrument ID: " << instrument_id
                                   << ", Order ID: " << order_id << ", Price: " << price << ", Quantity: " << quantity
                                   << ", Execution Time: " << executionTime << std::endl;
-                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+                        break;
+                    }
+                    case ExchangeMessages::AlertMessage: {
+                        std::string instrument_id, alert, description;
+                        int order_id, quantity;
+                        double price;
+                        long long executionTime;
+
+                        msg >> description >> alert >> instrument_id;
+
+                        std::cout << "ALERT: " << alert << " -- Instrument: " << instrument_id << " -- Description: " << description << "\n";
+
+                        std::this_thread::sleep_for(std::chrono::milliseconds(20));
                         break;
                     }
                 }
@@ -140,18 +189,19 @@ int main() {
         }
 
         std::string cmd;
-        std::cout << "Enter command (add, quit): ";
+        std::cout << "Enter command (add, cancel, quit): ";
         std::getline(std::cin, cmd);
 
-        if (cmd == "add")
-        {
+        if (cmd == "add") {
             send_add_order(ct);
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        }
-        else if (cmd == "quit")
-        {
+        } else if (cmd == "cancel") {
+            send_cancel_order(ct);
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        } else if (cmd == "quit") {
             bQuit = true;
         }
+
     }
 
     return 0;

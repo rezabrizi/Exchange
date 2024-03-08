@@ -178,10 +178,11 @@ public:
      * @param orderId the id of the order to cancel
      * @return the order object that was cancelled
      */
-    Order* CancelOrder(int orderId, long long cancelTime);
+    Order* CancelOrder(int orderId, const std::string& client_id, long long cancelTime);
 
 
     void UpdateCurrentOrderId(int orderId);
+
 
     void UpdateCurrentExecutionId(int executionId);
 

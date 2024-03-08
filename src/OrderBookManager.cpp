@@ -1,16 +1,12 @@
-//
-// Created by Reza Tabrizi on 12/24/23.
-//
-
 #include "../headers/OrderBookManager.h"
 
 OrderBookManager::OrderBookManager(CentralMessageSystem &CMS) : cms(CMS) {
     StartUpOrderBook();
-    CMS.Subscribe("AddOrderMessage", [this](const BaseMessage& message) {
+    CMS.subscribe("AddOrderMessage", [this](const BaseMessage &message) {
         this->ProcessMessage(message);
     });
 
-    CMS.Subscribe("CancelOrderMessage", [this](const BaseMessage& message) {
+    CMS.subscribe("CancelOrderMessage", [this](const BaseMessage &message) {
         this->ProcessMessage(message);
     });
 }
@@ -55,11 +51,11 @@ void OrderBookManager::StartUpOrderBook() {
 
         LOB* currentLOB = orderBook[instrumentId];
 
-        if (cancelTime == 0){
-            if (executedQuantity < quantity){
-
+        if (cancelTime == 0)
+        {
+            if (executedQuantity < quantity)
+            {
                 currentLOB->AddOrder(instrumentId, type, clientId, bidOrAsk, quantity-executedQuantity, limit, entryTime, orderId);
-
             }
         }
         currOrderIds[instrumentId] = std::max(currOrderIds[instrumentId], orderId);
@@ -88,6 +84,8 @@ void OrderBookManager::StartUpOrderBook() {
             currentLOB->UpdateCurrentExecutionId(currExecutionIds[item.first]);
         }
         std::cout << "Instrument " << item.first << " - Current Execution ID: " << currentLOB->GetCurrExecId() << "\n";
+        currentLOB->PrintAskBook();
+        currentLOB->PrintBidBook();
     }
 
 }
@@ -97,9 +95,6 @@ void OrderBookManager::ProcessMessage(const BaseMessage &message) {
     std::cout << "ORDER BOOK MANAGER - PROCESS () \n";
 
     if (message.messageType == "AddOrderMessage") {
-        // we use a pointer to not have to worry about exception checking as the cast will result in a nullptr
-        // if it is not valid
-        // alternatively we could use a reference but we have to use a try catch blocks in case of a failed cast
         const AddOrderMessage *newOrderMessage = dynamic_cast <const AddOrderMessage *>(&message);
 
         if (newOrderMessage != nullptr) {
@@ -114,36 +109,36 @@ void OrderBookManager::ProcessMessage(const BaseMessage &message) {
 
 
             std::unique_ptr<BaseMessage> confirmedOrderMessage = AddOrder(newOrderMessage);
-            cms.Publish(std::move(confirmedOrderMessage));
+            cms.publish(std::move(confirmedOrderMessage));
 
             std::vector<std::unique_ptr<TradeExecutionMessage>> executionMessages = CheckForMatch(
                     newOrderMessage->instrumentId, newOrderMessage->orderType);
 
             for (std::unique_ptr<TradeExecutionMessage> &execution: executionMessages) {
                 std::unique_ptr<BaseMessage> executionMessage = std::move(execution);
-                cms.Publish(std::move(executionMessage));
+                cms.publish(std::move(executionMessage));
             }
         }
     }
 
     else if (message.messageType == "CancelOrderMessage"){
         if (const CancelOrderMessage* cancelOrderMessage = dynamic_cast<const CancelOrderMessage*> (&message)){
-            // TODO before cancelling check if such an order book even exists
-            // TODO Provide the client id who sent the cancellation so we can check in the LOB if it matches that order
-            std::unique_ptr<BaseMessage> cancellationConfirmationMessage = CancelOrder(cancelOrderMessage->instrumentId, cancelOrderMessage->orderId);
-            cms.Publish(std::move(cancellationConfirmationMessage));
+            std::unique_ptr<BaseMessage> cancellationConfirmationMessage = CancelOrder(cancelOrderMessage->instrumentId, cancelOrderMessage->clientId, cancelOrderMessage->orderId);
+            if (cancellationConfirmationMessage != nullptr)
+            {
+                cms.publish(std::move(cancellationConfirmationMessage));
+            }
         }
     }
 }
 
 
 std::unique_ptr<OrderConfirmationMessage> OrderBookManager::AddOrder(const AddOrderMessage *message) {
-    //TODO need to check if such an instrument exists so we need some sort of a set from the database
     LOB* currentLOB = orderBook[message->instrumentId];
     Order* newOrder = currentLOB->AddOrder(message->instrumentId, message->orderType, message->clientId, message->bidOrAsk, message->quantity, message->limit, message->timestamp);
     WriteOrderToDB(newOrder);
     std::unique_ptr<OrderConfirmationMessage> confirmedOrderMessage = std::make_unique<OrderConfirmationMessage>(
-            cms.AssignMessageId(), // int
+            cms.assign_messaging_id(), // int
             "OrderConfirmationMessage", // std::string
             LOB::GetTimeStamp(), // long long
             newOrder->clientId, // std::string
@@ -159,15 +154,21 @@ std::unique_ptr<OrderConfirmationMessage> OrderBookManager::AddOrder(const AddOr
 }
 
 
-std::unique_ptr<OrderConfirmationMessage> OrderBookManager::CancelOrder(const std::string& instrumentId, int orderId) {
+std::unique_ptr<OrderConfirmationMessage> OrderBookManager::CancelOrder(const std::string& instrumentId, const std::string& client_id, int orderId) {
     try {
+        if (orderBook.find(instrumentId) == orderBook.end())
+        {
+            return nullptr;
+        }
         LOB* currentLOB = orderBook[instrumentId];
-        Order* canceledOrder = currentLOB->CancelOrder(orderId, LOB::GetTimeStamp());
+        Order* canceledOrder = currentLOB->CancelOrder(orderId, client_id, LOB::GetTimeStamp());
+        if (canceledOrder == nullptr)
+            return nullptr;
 
         // Perform additional operations if the order is successfully canceled
         CancelOrderInDB(instrumentId, orderId, canceledOrder->cancelTime);
         std::unique_ptr<OrderConfirmationMessage> cancellationConfirmationMessage = std::make_unique<OrderConfirmationMessage>(
-                cms.AssignMessageId(), // int
+                cms.assign_messaging_id(), // int
                 "OrderConfirmationMessage", // std::string
                 LOB::GetTimeStamp(), // long long
                 canceledOrder->clientId, // std::string
@@ -202,8 +203,8 @@ std::vector<std::unique_ptr<TradeExecutionMessage>> OrderBookManager::CheckForMa
     for (Execution* const& execution: executions){
         WriteExecutionToDB(execution);
         executionMessages.push_back(std::make_unique<TradeExecutionMessage>(
-                cms.AssignMessageId(),
-                "execution",
+                cms.assign_messaging_id(),
+                "TradeExecutionMessage",
                 execution->GetTimestamp(),
                 execution->GetOrderId(),
                 execution->GetClientId(),

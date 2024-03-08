@@ -131,12 +131,14 @@ std::vector<Execution*> LOB::Execute(bool isLimit = true){
 }
 
 
-Order* LOB::CancelOrder(int orderId, long long cancelTime) {
+Order* LOB::CancelOrder(int orderId, const std::string& client_id, long long cancelTime) {
     if (orders.find(orderId) == orders.end()) {
         throw std::runtime_error("Order not found");
     }
 
     Order* orderToCancel = orders[orderId];
+    if (client_id != orderToCancel->clientId)
+        return nullptr;
     orderToCancel->cancelTime = cancelTime;
     Order* orderCopy = new Order (*orderToCancel);
 
