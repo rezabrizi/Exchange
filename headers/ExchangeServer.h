@@ -32,8 +32,8 @@ class ExchangeServer : public net::server_interface<ExchangeMessages>
 {
 public:
 
-    ExchangeServer(uint16_t nPort, CentralMessageSystem& cms) : net::server_interface<ExchangeMessages> (nPort), cms(cms)
-    {
+    ExchangeServer(uint16_t nPort, CentralMessageSystem &cms, DBConnection &db)
+            : net::server_interface<ExchangeMessages> (nPort), cms(cms), db(db) {
         fill_registered_clients();
         fill_instruments();
 
@@ -330,5 +330,5 @@ private:
 
     CentralMessageSystem& cms;
 
-    DBConnection& db = DBConnection::getInstance("dbname=exchange user=rezatabrizi password=1123 host=localhost port=5432");
+    DBConnection& db;
 };

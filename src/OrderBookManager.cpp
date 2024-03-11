@@ -1,6 +1,6 @@
 #include "../headers/OrderBookManager.h"
 
-OrderBookManager::OrderBookManager(CentralMessageSystem &CMS) : cms(CMS) {
+OrderBookManager::OrderBookManager(CentralMessageSystem &CMS, DBConnection& db) : cms(CMS), db(db){
     StartUpOrderBook();
     CMS.subscribe("AddOrderMessage", [this](const BaseMessage &message) {
         this->ProcessMessage(message);

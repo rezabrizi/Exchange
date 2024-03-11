@@ -5,9 +5,18 @@
 #include <thread>
 #include <iostream>
 
-DBConnection& DB = DBConnection::getInstance("dbname=exchange user=rezatabrizi password=1123 host=localhost port=5432");
 
-bool register_instrument(const std::string& instrument, const std::string& name, const std::string& type) {
+
+DBConnection& setup_db (const std::string& db_name, const std::string& user, const std::string& pass, const std::string& host, const std::string& port)
+{
+    std::string connectionString = "dbname=" + db_name + " user=" + user + " password=" + pass + " host=" + host + " port=" + port;
+    return DBConnection::getInstance(connectionString);
+}
+
+DBConnection& DB = setup_db("exchange", "rezatabrizi", "1123", "localhost", "5432");
+
+
+bool register_instrument(const std::string& instrument, const std::string& name, const std::string& type, DBConnection& DB) {
     try {
         // Get the current system time as UNIX timestamp for ListingDate
         auto now = std::chrono::system_clock::now();
@@ -30,7 +39,7 @@ bool register_instrument(const std::string& instrument, const std::string& name,
 }
 
 
-bool register_mkt_ptc(const std::string& mkt_ptc, const std::string& id, const std::string& ip, const std::string& pass) {
+bool register_mkt_ptc(const std::string& mkt_ptc, const std::string& id, const std::string& ip, const std::string& pass, DBConnection& DB) {
     try {
         // Create the SQL query
         std::string sql = "INSERT INTO Clients (ID, Name, TCPIPAddress, Passkey) VALUES ('" +
@@ -63,6 +72,7 @@ void send_alert(CentralMessageSystem &cms, const std::string& instrument_id, con
 
 
 void show_menu() {
+    std::cout << "0. Set up database connection\n";
     std::cout << "1. Register new market participant\n";
     std::cout << "2. Register new instrument\n";
     std::cout << "3. Start the server\n";
@@ -74,10 +84,12 @@ void show_menu() {
 int main() {
     std::string input;
     bool server_started = false;
+    bool db_set_up = false;
+    DBConnection* DBPtr = nullptr; // Use a pointer to delay the construction
 
     CentralMessageSystem cms;
-    OrderBookManager obm(cms);
-    ExchangeServer server(60000, cms);
+    std::unique_ptr<OrderBookManager> obm;
+    std::unique_ptr<ExchangeServer> server; // Use a unique_ptr to delay the instantiation
     std::thread serverThread; // Declare the thread but don't start it immediately
 
     while (true) {
@@ -86,8 +98,30 @@ int main() {
         int choice = std::stoi(input);
 
         switch (choice) {
+            case 0:
+                if (!db_set_up) {
+                    std::string db_name, user, pass, host, port;
+                    std::cout << "Enter database name: ";
+                    std::getline(std::cin, db_name);
+                    std::cout << "Enter user: ";
+                    std::getline(std::cin, user);
+                    std::cout << "Enter password: ";
+                    std::getline(std::cin, pass);
+                    std::cout << "Enter host: ";
+                    std::getline(std::cin, host);
+                    std::cout << "Enter port: ";
+                    std::getline(std::cin, port);
+                    DBPtr = &setup_db(db_name, user, pass, host, port);
+                    db_set_up = true;
+                    std::cout << "Database connection setup complete.\n";
+                } else {
+                    std::cout << "Database connection has already been set up.\n";
+                }
+                break;
+
+
             case 1:
-                if (!server_started) {
+                if (!server_started && db_set_up) {
                     std::string name, id, ip, pass;
                     std::cout << "Enter market participant name: ";
                     std::getline(std::cin, name);
@@ -97,13 +131,13 @@ int main() {
                     std::getline(std::cin, ip);
                     std::cout << "Enter market participant Passkey: ";
                     std::getline(std::cin, pass);
-                    register_mkt_ptc(name, id, ip, pass);
+                    register_mkt_ptc(name, id, ip, pass, *DBPtr);
                 } else {
                     std::cout << "Operation not allowed while the server is running.\n";
                 }
                 break;
             case 2:
-                if (!server_started) {
+                if (!server_started && db_set_up) {
                     std::string instrument, name, type;
                     std::cout << "Enter instrument ID: ";
                     std::getline(std::cin, instrument);
@@ -111,19 +145,21 @@ int main() {
                     std::getline(std::cin, name);
                     std::cout << "Enter instrument Type: ";
                     std::getline(std::cin, type);
-                    register_instrument(instrument, name, type);
+                    register_instrument(instrument, name, type, *DBPtr);
                 } else {
                     std::cout << "Operation not allowed while the server is running.\n";
                 }
                 break;
             case 3:
-                if (!server_started) {
+                if (!server_started && db_set_up) {
                     // Start the server in a separate thread if not already started
+                    obm = std::make_unique<OrderBookManager>(cms, *DBPtr);
+                    server = std::make_unique<ExchangeServer>(60000, cms, *DBPtr);
                     server_started = true;
                     serverThread = std::thread([&server]() {
-                        server.Start();
+                        server->Start();
                         while (true) {
-                            server.Update(-1, true);
+                            server->Update(-1, true);
                         }
                     });
                     std::cout << "Server is running. Operations 1 and 2 are now disabled.\n";
@@ -145,7 +181,7 @@ int main() {
                 break;
             case 5:
                 if (server_started) {
-                    server.Stop();
+                    server->Stop();
                     if (serverThread.joinable()) {
                         serverThread.join();
                     }
