@@ -80,26 +80,26 @@ void CentralMessageSystem::worker()
 void CentralMessageSystem::handle_message(std::unique_ptr<BaseMessage> message)
 {
     BaseMessage* messageToSend = nullptr;
-    if (message->messageType == "AddOrderMessage")
+    if (message->message_type == "AddOrderMessage")
     {
         messageToSend = dynamic_cast<AddOrderMessage*>(message.get());
-    } else if (message->messageType == "CancelOrderMessage")
+    } else if (message->message_type == "CancelOrderMessage")
     {
         messageToSend = dynamic_cast<CancelOrderMessage*>(message.get());
-    } else if (message->messageType == "TradeExecutionMessage")
+    } else if (message->message_type == "TradeExecutionMessage")
     {
         messageToSend = dynamic_cast<TradeExecutionMessage*>(message.get());
-    } else if (message->messageType == "OrderConfirmationMessage")
+    } else if (message->message_type == "OrderConfirmationMessage")
     {
         messageToSend = dynamic_cast<OrderConfirmationMessage*>(message.get());
-    } else if (message->messageType == "AlertMessage")
+    } else if (message->message_type == "AlertMessage")
     {
         messageToSend = dynamic_cast<SystemMessage*>(message.get());
     }
 
     if (messageToSend)
     {
-        auto it = subscribers.find(messageToSend->messageType);
+        auto it = subscribers.find(messageToSend->message_type);
         for (const auto& subscriber: it->second)
         {
             subscriber(*messageToSend);
@@ -110,10 +110,10 @@ void CentralMessageSystem::handle_message(std::unique_ptr<BaseMessage> message)
 
 void CentralMessageSystem::publish(std::unique_ptr<BaseMessage> message)
 {
-    std::string messageType = message->messageType;
+    std::string messageType = message->message_type;
     auto messageSubscribers = subscribers.find(messageType);
 
-    // If there is a subscription vector for messageType...
+    // If there is a subscription vector for message_type...
     if (messageSubscribers != subscribers.end())
     {
         // ... push the message to the queue

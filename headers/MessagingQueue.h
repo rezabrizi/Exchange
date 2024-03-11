@@ -1,27 +1,33 @@
 #pragma once
 #include "exchange_common.h"
-#include "Message.h"
 
-
+/**
+ * @class MessagingQueue
+ * @brief Tread-safe queue
+ * @tparam T type of the queue object
+ */
 
 template<typename T>
 class MessagingQueue {
 
 public:
 
+    /**
+     * @brief push an item to the queue
+     * @param message mesasge to push
+     */
     void push(T message) {
-       std::scoped_lock lock(muxQueue);
+       std::scoped_lock lock(mux_queue);
        queue.emplace(std::move(message));
-        std::cout << int(queue.size()) << "\n";
-       /**
-       std::unique_lock<std::mutex> ul(muxBlocking);
-       cvBlocking.notify_one();
-        */
     }
 
 
+    /**
+     * @brief pop an item from the queue
+     * @return the first in item in the queue
+     */
     T pop() {
-        std::scoped_lock lock(muxQueue);
+        std::scoped_lock lock(mux_queue);
         auto t = std::move(queue.front());
 
         queue.pop();
@@ -29,25 +35,17 @@ public:
     }
 
 
+    /**
+     * @brief check if the queue is empty
+     * @return whether the queue is empty
+     */
     bool empty() {
-        std::scoped_lock<std::mutex> lock(muxQueue);
+        std::scoped_lock<std::mutex> lock(mux_queue);
         return queue.empty();
-    }
-
-    void wait()
-    {
-        while (empty())
-        {
-            std::unique_lock<std::mutex> ul (muxBlocking);
-            cvBlocking.wait(ul);
-        }
     }
 
 
 private:
     std::queue<T> queue;
-    std::mutex muxQueue;
-
-    std::condition_variable cvBlocking;
-    std::mutex muxBlocking;
+    std::mutex mux_queue;
 };

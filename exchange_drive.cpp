@@ -27,7 +27,7 @@ bool register_instrument(const std::string& instrument, const std::string& name,
         std::string sql = "INSERT INTO Instruments (ID, Name, Type, ListingDate) VALUES ('" +
                           instrument + "', '" + name + "', '" + type + "', " + std::to_string(millis) + ");";
 
-        // Execute the query
+        // execute the query
         pqxx::result r = DB.query(sql);
 
         std::cout << "Instrument registered successfully: " << instrument << std::endl;
@@ -45,7 +45,7 @@ bool register_mkt_ptc(const std::string& mkt_ptc, const std::string& id, const s
         std::string sql = "INSERT INTO Clients (ID, Name, TCPIPAddress, Passkey) VALUES ('" +
                           id + "', '" + mkt_ptc + "', '" + ip + "', '" + pass + "');";
 
-        // Execute the query
+        // execute the query
         pqxx::result r = DB.query(sql);
 
         std::cout << "Market participant registered successfully: " << mkt_ptc << std::endl;

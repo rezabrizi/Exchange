@@ -19,7 +19,7 @@
 # configuration file:
 # doxygen -x [configFile]
 # Use doxygen to compare the used configuration file with the template
-# configuration file without replacing the environment variables or CMake orderType
+# configuration file without replacing the environment variables or CMake order_type
 # replacement variables:
 # doxygen -x_noenv [configFile]
 
@@ -336,7 +336,7 @@ OPTIMIZE_OUTPUT_SLICE  = NO
 # VHDL, Fortran (fixed format Fortran: FortranFixed, free formatted Fortran:
 # FortranFree, unknown formatted Fortran: Fortran. In the later case the parser
 # tries to guess whether the code is fixed or free formatted code, this is the
-# default for Fortran orderType files). For instance to make doxygen treat .inc files
+# default for Fortran order_type files). For instance to make doxygen treat .inc files
 # as Fortran files (default is PHP), and .f files as C (default is Fortran),
 # use: inc=Fortran f=C.
 #
@@ -416,7 +416,7 @@ SIP_SUPPORT            = NO
 # getter and setter methods for a property. Setting this option to YES will make
 # doxygen to replace the get and set methods by a property in the documentation.
 # This will only work if the methods are indeed getting or setting a simple
-# orderType. If this is not the case, or you want to show the methods anyway, you
+# order_type. If this is not the case, or you want to show the methods anyway, you
 # should set this option to NO.
 # The default value is: YES.
 
@@ -437,9 +437,9 @@ DISTRIBUTE_GROUP_DOC   = NO
 
 GROUP_NESTED_COMPOUNDS = NO
 
-# Set the SUBGROUPING tag to YES to allow class member groups of the same orderType
+# Set the SUBGROUPING tag to YES to allow class member groups of the same order_type
 # (for instance a group of public functions) to be put as a subgroup of that
-# orderType (e.g. under the Public Functions section). Set it to NO to prevent
+# order_type (e.g. under the Public Functions section). Set it to NO to prevent
 # subgrouping. Alternatively, this can be done per class using the
 # \nosubgrouping command.
 # The default value is: YES.
@@ -727,7 +727,7 @@ SORT_GROUP_NAMES       = NO
 SORT_BY_SCOPE_NAME     = NO
 
 # If the STRICT_PROTO_MATCHING option is enabled and doxygen fails to do proper
-# orderType resolution of all parameters of a function it will reject a match between
+# order_type resolution of all parameters of a function it will reject a match between
 # the prototype and the implementation of a member function even if there is
 # only one candidate or it is obvious which candidate to choose by doing a
 # simple string match. By disabling STRICT_PROTO_MATCHING doxygen will still
@@ -2006,7 +2006,7 @@ LATEX_MAKEINDEX_CMD    = makeindex
 
 COMPACT_LATEX          = NO
 
-# The PAPER_TYPE tag can be used to set the paper orderType that is used by the
+# The PAPER_TYPE tag can be used to set the paper order_type that is used by the
 # printer.
 # Possible values are: a4 (210 x 297 mm), letter (8.5 x 11 inches), legal (8.5 x
 # 14 inches) and executive (7.25 x 10.5 inches).
@@ -2601,7 +2601,7 @@ UML_LOOK               = NO
 # If the UML_LOOK tag is enabled, the fields and methods are shown inside the
 # class node. If there are many fields or methods and many nodes the graph may
 # become too big to be useful. The UML_LIMIT_NUM_FIELDS threshold limits the
-# number of items for each orderType to make the size more manageable. Set this to 0
+# number of items for each order_type to make the size more manageable. Set this to 0
 # for no limit. Note that the threshold may be exceeded by 50% before the limit
 # is enforced. So when you set the threshold to 10, up to 15 fields may appear,
 # but if the number exceeds 15, the total amount of fields shown is limited to
@@ -2613,7 +2613,7 @@ UML_LIMIT_NUM_FIELDS   = 10
 
 # If the DOT_UML_DETAILS tag is set to NO, doxygen will show attributes and
 # methods without types and arguments in the UML graphs. If the DOT_UML_DETAILS
-# tag is set to YES, doxygen will add orderType and arguments for attributes and
+# tag is set to YES, doxygen will add order_type and arguments for attributes and
 # methods in the UML graphs. If the DOT_UML_DETAILS tag is set to NONE, doxygen
 # will not generate fields with class member information in the UML graphs. The
 # class diagrams will look similar to the default class diagrams but using UML

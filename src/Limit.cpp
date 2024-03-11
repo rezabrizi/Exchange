@@ -5,8 +5,8 @@ void Limit::AddOrder(Order *order) {
         headOrder = order;
         tailOrder = order;
     }else{
-        tailOrder->nextOrder = order;
-        order->prevOrder = tailOrder;
+        tailOrder->next_order = order;
+        order->prev_order = tailOrder;
         tailOrder = order;
     }
     size++;
@@ -22,24 +22,24 @@ void Limit::ReduceOrder(Order *order, int reduceQuantity) {
 
 void Limit::RemoveOrder(Order *order) {
     if (order == nullptr) return;
-    if (order->prevOrder == nullptr && order->nextOrder == nullptr){
+    if (order->prev_order == nullptr && order->next_order == nullptr){
         headOrder = tailOrder = nullptr;
     }
 
-    else if (order->prevOrder == nullptr){
-        headOrder = order->nextOrder;
-        headOrder->prevOrder = nullptr;
+    else if (order->prev_order == nullptr){
+        headOrder = order->next_order;
+        headOrder->prev_order = nullptr;
     }
-    else if (order->nextOrder == nullptr){
-        tailOrder = order->prevOrder;
-        tailOrder->nextOrder = nullptr;
+    else if (order->next_order == nullptr){
+        tailOrder = order->prev_order;
+        tailOrder->next_order = nullptr;
     }
 
     else {
-        Order* prevNode = order->prevOrder;
-        Order* nextNode = order->nextOrder;
-        prevNode->nextOrder = nextNode;
-        nextNode->prevOrder = prevNode;
+        Order* prevNode = order->prev_order;
+        Order* nextNode = order->next_order;
+        prevNode->next_order = nextNode;
+        nextNode->prev_order = prevNode;
     }
     volume -= order->quantity;
     size--;

@@ -96,7 +96,7 @@ private:
 
     void ProcessMessage(const BaseMessage& message)
     {
-        if (message.messageType == "TradeExecutionMessage")
+        if (message.message_type == "TradeExecutionMessage")
         {
             const auto *trade_execution_message = dynamic_cast <const TradeExecutionMessage *>(&message);
 
@@ -104,9 +104,9 @@ private:
             {
                 try
                 {
-                    int order_id = trade_execution_message->orderId;
-                    std::string client_name = trade_execution_message->clientId;
-                    std::string instrument_id = trade_execution_message->instrumentId;
+                    int order_id = trade_execution_message->order_id;
+                    std::string client_name = trade_execution_message->client_id;
+                    std::string instrument_id = trade_execution_message->instrument_id;
                     double price = trade_execution_message->price;
                     int quantity = trade_execution_message->quantity;
                     long long timestamp = trade_execution_message->timestamp;
@@ -123,22 +123,22 @@ private:
                 }
                 catch (const std::exception& e)
                 {
-                    std::cerr << "Server failed while sending an execution message to " << trade_execution_message->clientId << " " << e.what() << "\n";
+                    std::cerr << "Server failed while sending an execution message to " << trade_execution_message->client_id << " " << e.what() << "\n";
                 }
             }
         }
-        else if (message.messageType == "OrderConfirmationMessage")
+        else if (message.message_type == "OrderConfirmationMessage")
         {
             const auto* order_confirmation_message = dynamic_cast <const OrderConfirmationMessage *> (&message);
             if (order_confirmation_message != nullptr)
             {
                 try
                 {
-                    int order_id = order_confirmation_message->orderId;
-                    std::string client_name = order_confirmation_message->clientId;
-                    std::string instrument_id = order_confirmation_message->instrumentId;
+                    int order_id = order_confirmation_message->order_id;
+                    std::string client_name = order_confirmation_message->client_id;
+                    std::string instrument_id = order_confirmation_message->instrument_id;
 
-                    long long cancel_time = order_confirmation_message->cancelTime;
+                    long long cancel_time = order_confirmation_message->cancel_time;
 
                     net::message<ExchangeMessages> msg;
                     msg.header.id = ExchangeMessages::OrderConfirmation;
@@ -149,11 +149,11 @@ private:
                 }
                 catch (const std::exception& e)
                 {
-                    std::cerr << "Server failed while sending an order confirmation message to " << order_confirmation_message->clientId << " " << e.what() << "\n";
+                    std::cerr << "Server failed while sending an order confirmation message to " << order_confirmation_message->client_id << " " << e.what() << "\n";
                 }
             }
         }
-        else if (message.messageType == "AlertMessage")
+        else if (message.message_type == "AlertMessage")
         {
             std::cout << " there is a system emssage\n";
             const auto* system_message = dynamic_cast <const SystemMessage*> (&message);
@@ -162,7 +162,7 @@ private:
             {
                 try
                 {
-                    std::string instrument_id = system_message->instrumentId;
+                    std::string instrument_id = system_message->instrument_id;
 
                     for (const auto& client_name: client_interest[instrument_id])
                     {

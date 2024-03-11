@@ -1,28 +1,32 @@
 #pragma once
 #include "exchange_common.h"
 
+/**
+ * @class Order
+ * @brief defines an order object
+ */
 
 class Order{
 public:
 
     Order(int orderId, std::string instrumentId, std::string type, std::string clientId, bool bidOrAsk, int quantity, double limit,
-          long long entryTime, long long cancelTime): orderId(orderId), instrumentId(std::move(instrumentId)), type(std::move(type)),
-                                                      clientId(std::move(clientId)), bidOrAsk(bidOrAsk), quantity(quantity), price(limit), entryTime(entryTime),
-                                                      cancelTime(cancelTime), nextOrder(nullptr), prevOrder(nullptr){};
+          long long entryTime, long long cancelTime): order_id(orderId), instrument_id(std::move(instrumentId)), type(std::move(type)),
+                                                      client_id(std::move(clientId)), bid_ask(bidOrAsk), quantity(quantity), price(limit), entry_time(entryTime),
+                                                      cancel_time(cancelTime), next_order(nullptr), prev_order(nullptr){};
     // order id unique for individual instruments
-    int orderId;
+    int order_id;
 
     // tradable asset
-    std::string instrumentId;
+    std::string instrument_id;
 
     // client placing the order
-    std::string clientId;
+    std::string client_id;
 
     // the type of the order: market or limit
     std::string type;
 
     // whether the order is a buy or sell order
-    bool bidOrAsk;
+    bool bid_ask;
 
     // quantity of the order
     int quantity;
@@ -31,14 +35,14 @@ public:
     double price;
 
     // order placement time
-    long long entryTime;
+    long long entry_time;
 
     // order cancel time
-    long long cancelTime;
+    long long cancel_time;
 
     // next order
-    Order* nextOrder;
+    Order* next_order;
 
     //prev order
-    Order* prevOrder;
+    Order* prev_order;
 };
