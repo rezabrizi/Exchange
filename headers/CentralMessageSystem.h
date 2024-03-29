@@ -5,10 +5,9 @@
 #include "Message.h"
 
 
-using SubscriberCallback = std::function<void (const BaseMessage& message)>;
+using SubscriberCallback = std::function<void(const BaseMessage &message)>;
 
-class CentralMessageSystem
-{
+class CentralMessageSystem {
 
 public:
     /**
@@ -34,7 +33,7 @@ public:
      * @brief publish a message to the system messaging queue
      * @param message message to be published
      */
-    void publish (std::unique_ptr<BaseMessage> message);
+    void publish(std::unique_ptr<BaseMessage> message);
 
 
     /**
@@ -42,7 +41,7 @@ public:
      * @param topic the messaging topic to subscribe to
      * @param callback the function to be called once there is a publication for that message type
      */
-    void subscribe (const std::string& topic, const SubscriberCallback& callback);
+    void subscribe(const std::string &topic, const SubscriberCallback &callback);
 
 
     /**
@@ -50,7 +49,7 @@ public:
      */
     void shutdown();
 
-    long long GetCurrentTimeStamp ();
+    long long GetCurrentTimeStamp();
 
 
 private:
@@ -64,13 +63,13 @@ private:
      * @brief dispatch messages to the subscribers
      * @param message message to dispatch
      */
-    void handle_message(std::unique_ptr <BaseMessage> message);
+    void handle_message(std::unique_ptr<BaseMessage> message);
 
 
     int id;
     bool b_shutdown;
     MessagingQueue<std::unique_ptr<BaseMessage>> m_system_queue;
-    std::unordered_map <std::string, std::vector<SubscriberCallback>> subscribers;
+    std::unordered_map<std::string, std::vector<SubscriberCallback>> subscribers;
     std::thread worker_thread;
     std::mutex m_id_mux;
     std::mutex blocking_mux;

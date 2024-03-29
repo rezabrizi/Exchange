@@ -1,4 +1,5 @@
 #pragma once
+
 #include "exchange_common.h"
 
 /**
@@ -17,8 +18,8 @@ public:
      * @param message mesasge to push
      */
     void push(T message) {
-       std::scoped_lock lock(mux_queue);
-       queue.emplace(std::move(message));
+        std::scoped_lock lock(mux_queue);
+        queue.emplace(std::move(message));
     }
 
 
