@@ -1,0 +1,49 @@
+1. Show database connection through the terminal 
+	1.1 Enter incorrect credentials to display the error, and how error handling works 
+	1.2 Enter correct credentials to successfully connect to the database 
+2. Display all the Database tables to show that they are empty without any registered market participants or instruments being listed 
+
+3. Register market participants 
+	3.1 Goldman Sachs 
+	3.2 JPMorgan Chase 
+	3.3 Fidelity Investments
+
+4. Register Instruments
+	4.1 AAPL - Apple 
+	4.2 TSLA - Tesla
+	4.3 Display database
+
+5. Start the Server  
+
+
+6. Start the client program
+
+
+7. Connect with GS
+
+8.  Connect with FID
+
+9. Send order with GS: AAPL: Limit: Bid: 200 shares: $150
+	9.1 Show order confirmation
+	9.2 Show database to verify
+	9.3 Show AAPL order book 
+
+10. Send order with FID: AAPL: Market: Ask: 20 shares
+	10.1 Show order confirmation 
+	10.2 Show execution confirmation
+	10.3 Show database to verify
+
+11. Show GS execution confirmation
+	11.1 Show database to verify
+
+12. Send order with FID: AAPL: Limit: Bid: 200 shares: $160 
+	12.1 Show order confirmation 
+	12.2 Show database to verify
+
+13. Send order with GS: AAPL: Limit: Ask: 50 shares: $140
+	13. Show order confirmation
+	13.2 Show execution with FID 
+	13.3 Show database to verify
+
+14. Send Alert for AAPL
+
