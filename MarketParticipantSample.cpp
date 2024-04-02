@@ -76,16 +76,16 @@ void send_add_order(ClientTest& ct) {
         std::cout << "Price: ";
         while (!(std::cin >> price) || price <= 0) {
             std::cout << "Invalid input. Please enter a positive number for price.\n";
-            std::cin.clear(); // Clear error flags
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard the input
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the newline character from the stream
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
     std::cout << "Quantity: ";
     while (!(std::cin >> quantity) || quantity <= 0) {
         std::cout << "Invalid input. Please enter a positive integer for quantity.\n";
-        std::cin.clear(); // Clear error flags
+        std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard the input
     }
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the newline character from the stream
@@ -163,7 +163,7 @@ int main() {
                         std::cout << "Execution - Client ID: " << client_id << ", Instrument ID: " << instrument_id
                                   << ", Order ID: " << order_id << ", Price: " << price << ", Quantity: " << quantity
                                   << ", Execution Time: " << executionTime << std::endl;
-                        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(50));
                         break;
                     }
                     case ExchangeMessages::AlertMessage: {

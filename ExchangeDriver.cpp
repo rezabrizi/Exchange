@@ -6,19 +6,15 @@
 #include <iostream>
 
 
-
 DBConnection& setup_db (const std::string& db_name, const std::string& user, const std::string& pass, const std::string& host, const std::string& port)
 {
     std::string connectionString = "dbname=" + db_name + " user=" + user + " password=" + pass + " host=" + host + " port=" + port;
     return DBConnection::getInstance(connectionString);
 }
 
-DBConnection& DB = setup_db("exchange", "rezatabrizi", "1123", "localhost", "5432");
-
 
 bool register_instrument(const std::string& instrument, const std::string& name, const std::string& type, DBConnection& DB) {
     try {
-        // Get the current system time as UNIX timestamp for ListingDate
         auto now = std::chrono::system_clock::now();
         auto duration = now.time_since_epoch();
         auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
@@ -41,11 +37,9 @@ bool register_instrument(const std::string& instrument, const std::string& name,
 
 bool register_mkt_ptc(const std::string& mkt_ptc, const std::string& id, const std::string& ip, const std::string& pass, DBConnection& DB) {
     try {
-        // Create the SQL query
         std::string sql = "INSERT INTO Clients (ID, Name, TCPIPAddress, Passkey) VALUES ('" +
                           id + "', '" + mkt_ptc + "', '" + ip + "', '" + pass + "');";
 
-        // execute the query
         pqxx::result r = DB.query(sql);
 
         std::cout << "Market participant registered successfully: " << mkt_ptc << std::endl;
@@ -76,8 +70,10 @@ void show_menu() {
     std::cout << "1. Register new market participant\n";
     std::cout << "2. Register new instrument\n";
     std::cout << "3. Start the server\n";
-    std::cout << "4. Send an alert\n"; // New option for sending alerts
-    std::cout << "Enter your choice (1-4): ";
+    std::cout << "4. Send an alert\n";
+    std::cout << "5. Stop the server \n";
+    std::cout << "6. Print Order Book \n";
+    std::cout << "Enter your choice (0-6): ";
 }
 
 
@@ -85,12 +81,12 @@ int main() {
     std::string input;
     bool server_started = false;
     bool db_set_up = false;
-    DBConnection* DBPtr = nullptr; // Use a pointer to delay the construction
+    DBConnection* DBPtr = nullptr;
 
     CentralMessageSystem cms;
     std::unique_ptr<OrderBookManager> obm;
-    std::unique_ptr<ExchangeServer> server; // Use a unique_ptr to delay the instantiation
-    std::thread serverThread; // Declare the thread but don't start it immediately
+    std::unique_ptr<ExchangeServer> server;
+    std::thread serverThread;
 
     while (true) {
         show_menu();
@@ -113,12 +109,11 @@ int main() {
                     std::getline(std::cin, port);
                     DBPtr = &setup_db(db_name, user, pass, host, port);
                     db_set_up = true;
-                    std::cout << "Database connection setup complete.\n";
+                    std::cout << "Database connection setup complete.\n\n";
                 } else {
-                    std::cout << "Database connection has already been set up.\n";
+                    std::cout << "Database connection has already been set up.\n\n";
                 }
                 break;
-
 
             case 1:
                 if (!server_started && db_set_up) {
@@ -132,10 +127,13 @@ int main() {
                     std::cout << "Enter market participant Passkey: ";
                     std::getline(std::cin, pass);
                     register_mkt_ptc(name, id, ip, pass, *DBPtr);
+                } else if (server_started) {
+                    std::cout << "Operation not allowed while the server is running.\n\n";
                 } else {
-                    std::cout << "Operation not allowed while the server is running.\n";
+                    std::cout << "Operation not allowed while the DB is not setup.\n\n";
                 }
                 break;
+
             case 2:
                 if (!server_started && db_set_up) {
                     std::string instrument, name, type;
@@ -146,13 +144,15 @@ int main() {
                     std::cout << "Enter instrument Type: ";
                     std::getline(std::cin, type);
                     register_instrument(instrument, name, type, *DBPtr);
+                } else if (server_started) {
+                    std::cout << "Operation not allowed while the server is running.\n\n";
                 } else {
-                    std::cout << "Operation not allowed while the server is running.\n";
+                    std::cout << "Operation not allowed while the DB is not setup.\n\n";
                 }
                 break;
+
             case 3:
                 if (!server_started && db_set_up) {
-                    // Start the server in a separate thread if not already started
                     obm = std::make_unique<OrderBookManager>(cms, *DBPtr);
                     server = std::make_unique<ExchangeServer>(60000, cms, *DBPtr);
                     server_started = true;
@@ -162,7 +162,9 @@ int main() {
                             server->Update(-1, true);
                         }
                     });
-                    std::cout << "Server is running. Operations 1 and 2 are now disabled.\n";
+                    std::cout << "Server is running. Operations 0 - 2 are now disabled.\n\n";
+                } else {
+                    std::cout << "Operation not allowed while the DB is not setup.\n\n";
                 }
                 break;
             case 4:
@@ -176,7 +178,7 @@ int main() {
                     std::getline(std::cin, description);
                     send_alert(cms, instrument_id, alert, description);
                 } else {
-                    std::cout << "Please start the server first (Option 3).\n";
+                    std::cout << "Please start the server first (Option 3).\n\n";
                 }
                 break;
             case 5:
@@ -185,11 +187,26 @@ int main() {
                     if (serverThread.joinable()) {
                         serverThread.join();
                     }
-                    std::cout << "Server stopped.\n";
+                    std::cout << "Server stopped.\n\n";
                 }
-                return 0; // Exit the application
+                return 0;
+                break;
+
+            case 6:
+                if (server && obm)
+                {
+                    std::string instrument_id;
+                    std::cout << "Enter Instrument ID to print LOB: ";
+                    std::getline(std::cin, instrument_id);
+                    if (!obm->print_LOB(instrument_id))
+                    {
+                        std::cout << "Order book for the given instrument doesn't exist." << std::endl;
+                    }
+                } else {
+                    std::cout << "Server must be started first before printing the order book" << std::endl;
+                }
             default:
-                std::cout << "Invalid choice. Please enter a number between 1 and 5.\n";
+                std::cout << "Invalid choice. Please enter a number between 0 and 6.\n\n";
         }
     }
 }

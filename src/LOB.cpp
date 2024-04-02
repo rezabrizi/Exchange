@@ -67,22 +67,28 @@ Order *LOB::add_order(std::string instrument_id, std::string type, std::string c
         add_limit_order(newOrder);
     }
 
-    // For printing purposes
 
     std::cout << "-------ADDING--------" << std::endl;
     std::string type_of_order = (bid_ask) ? "bid" : "ask";
     std::cout << "ID:   " << newOrder->order_id << "    " << newOrder->client_id << "   " << newOrder->type << "    "
               << type_of_order << "    $" << limit_price << "    " << quantity << "  shares    order time "
               << entry_time << std::endl;
-    if (best_bid != nullptr) {
+
+    if (best_bid != nullptr)
+    {
         std::cout << "BEST BID: $" << best_bid->get_limit_price() << " by " << best_bid->get_top_order()->client_id
                   << std::endl;
-    } else {
+    } else
+    {
         std::cout << "EMPTY BID BOOK" << std::endl;
     }
-    if (best_ask != nullptr) {
+
+    if (best_ask != nullptr)
+    {
         std::cout << "BEST ASK: $" << best_ask->get_limit_price() << std::endl;
-    } else {
+    }
+    else
+    {
         std::cout << "EMPTY ASK BOOK" << std::endl;
     }
     std::cout << "--------DONE---------" << std::endl;
@@ -261,10 +267,6 @@ void LOB::match_limit_orders(std::vector<Execution *> &executions) {
     while (best_bid != nullptr && best_ask != nullptr) {
         Order *topBidOrder = best_bid->get_top_order();
         Order *topAskOrder = best_ask->get_top_order();
-
-        std::cout << "TOP BID: $" << std::to_string(topBidOrder->price) << "\n";
-        std::cout << "TOP ASK: $" << std::to_string(topAskOrder->price) << "\n";
-
 
         walk_book(&topBidOrder, &topAskOrder);
 

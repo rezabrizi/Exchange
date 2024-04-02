@@ -13,7 +13,6 @@ OrderBookManager::OrderBookManager(CentralMessageSystem &CMS, DBConnection &db) 
 
 
 void OrderBookManager::start_up_order_book() {
-    //std::lock_guard<std::mutex> lock(order_book_mutex);
     std::string ordersQuery = R"(SELECT o.orderid,
                                     o.quantity,
                                     o.clientid,
@@ -80,25 +79,18 @@ void OrderBookManager::start_up_order_book() {
         if (currExecutionIds.find(item.first) != currExecutionIds.end()) {
             currentLOB->update_current_execution_id(currExecutionIds[item.first]);
         }
-        std::cout << "Instrument " << item.first << " - Current Execution ID: "
-                  << currentLOB->get_current_execution_id() << "\n";
-        currentLOB->print_ask_book();
-        currentLOB->print_bid_book();
     }
 
 }
 
 
 void OrderBookManager::process_message(const BaseMessage &message) {
-    std::cout << "ORDER BOOK MANAGER - PROCESS () \n";
-
     if (message.message_type == "AddOrderMessage") {
         const AddOrderMessage *newOrderMessage = dynamic_cast <const AddOrderMessage *>(&message);
 
         if (newOrderMessage != nullptr) {
             try {
                 if (order_book.find(newOrderMessage->instrument_id) == order_book.end()) {
-                    std::cout << newOrderMessage->instrument_id << std::endl;
                     order_book[newOrderMessage->instrument_id] = new LOB();
                 }
             } catch (const std::exception &e) {
@@ -268,4 +260,16 @@ void OrderBookManager::cancel_order_in_db(const std::string &instrument_id, int 
     } catch (const std::exception &e) {
         std::cerr << "Database query failed: " << e.what() << std::endl;
     }
+}
+
+
+bool OrderBookManager::print_LOB(const std::string instrument_id) {
+    std::cout << "----- " << instrument_id << " -----" << std::endl;
+    if (order_book.find(instrument_id) != order_book.end())
+    {
+        order_book[instrument_id]->print_bid_book();
+        order_book[instrument_id]->print_ask_book();
+        return true;
+    }
+    return false;
 }

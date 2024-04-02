@@ -9,13 +9,17 @@ find_package(PostgreSQL REQUIRED)
 include_directories(${PostgreSQL_INCLUDE_DIRS} ${ASIO_INCLUDE_DIR})
 
 # Manually set the include and library paths for libpqxx
-include_directories(/opt/homebrew/include) # replace with the actual path
-link_directories(/opt/homebrew/lib)       # replace with the actual path
+include_directories(/opt/homebrew/include)
+link_directories(/opt/homebrew/lib)
+
+# Including the Net Library
 include_directories(../Net/include)
+
+# Using ASIO without Boost
 add_compile_definitions(ASIO_STANDALONE)
 
 
-add_executable(LimitOrderBook exchange_drive.cpp
+add_executable(LimitOrderBook ExchangeDriver.cpp
         headers/Order.h
         headers/Limit.h
         src/Limit.cpp
@@ -32,7 +36,7 @@ add_executable(LimitOrderBook exchange_drive.cpp
         headers/ExchangeServer.h
 )
 
-add_executable(Client marketParticipant.cpp)
+add_executable(Client MarketParticipantSample.cpp)
 
 # Link the PostgreSQL and libpqxx libraries
 target_link_libraries(LimitOrderBook ${PostgreSQL_LIBRARIES} pqxx)
