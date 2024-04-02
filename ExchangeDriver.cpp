@@ -19,6 +19,11 @@ bool register_instrument(const std::string& instrument, const std::string& name,
         auto duration = now.time_since_epoch();
         auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 
+        if (instrument == "" || name == "" || type == "")
+        {
+            throw std::runtime_error("Instrument can't have null values.");
+        }
+
         // Create the SQL query
         std::string sql = "INSERT INTO Instruments (ID, Name, Type, ListingDate) VALUES ('" +
                           instrument + "', '" + name + "', '" + type + "', " + std::to_string(millis) + ");";
@@ -29,7 +34,7 @@ bool register_instrument(const std::string& instrument, const std::string& name,
         std::cout << "Instrument registered successfully: " << instrument << std::endl;
         return true;
     } catch (const std::exception& e) {
-        std::cerr << "An error occurred: " << e.what() << std::endl;
+        std::cerr << "[Registering Instrument] - " << e.what() << std::endl;
         return false;
     }
 }
@@ -37,6 +42,10 @@ bool register_instrument(const std::string& instrument, const std::string& name,
 
 bool register_mkt_ptc(const std::string& mkt_ptc, const std::string& id, const std::string& ip, const std::string& pass, DBConnection& DB) {
     try {
+        if (mkt_ptc == "" || id == "" || ip == "" || pass == "")
+        {
+            throw std::runtime_error("Market Participant can't have null values.");
+        }
         std::string sql = "INSERT INTO Clients (ID, Name, TCPIPAddress, Passkey) VALUES ('" +
                           id + "', '" + mkt_ptc + "', '" + ip + "', '" + pass + "');";
 
@@ -91,6 +100,12 @@ int main() {
     while (true) {
         show_menu();
         std::getline(std::cin, input);
+        if (input == "")
+        {
+            std::cerr << "Please enter valid command\n\n";
+            std::getline(std::cin, input);
+            continue;
+        }
         int choice = std::stoi(input);
 
         switch (choice) {
@@ -225,6 +240,8 @@ int main() {
                 }
                 std::cout << "Press Enter to return to the main menu...\n";
                 std::getline(std::cin, input);
+                break;
+
             default:
                 std::cerr << "Invalid choice. Please enter a number between 0 and 6.\n\n";
                 std::cout << "Press Enter to return to the main menu...\n";

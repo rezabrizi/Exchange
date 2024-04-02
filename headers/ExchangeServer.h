@@ -153,7 +153,6 @@ private:
                 }
             }
         } else if (message.message_type == "AlertMessage") {
-            std::cout << " there is a system emssage\n";
             const auto *system_message = dynamic_cast <const SystemMessage *> (&message);
 
             if (system_message != nullptr) {

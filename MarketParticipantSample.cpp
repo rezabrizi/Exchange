@@ -147,7 +147,7 @@ int main() {
                         long long cancel_time;
 
                         msg >> cancel_time >> order_id >> instrument_id >> client_id;
-                        std::cout << "[Order Confirmation]-Client ID: " << client_id << ", Instrument ID: " << instrument_id
+                        std::cout << "[Order Confirmation] -- Client ID: " << client_id << ", Instrument ID: " << instrument_id
                                   << ", Order ID: " << order_id << ", Cancel Time: " << cancel_time << std::endl;
                         std::this_thread::sleep_for(std::chrono::milliseconds(50));
                         break;
@@ -159,7 +159,7 @@ int main() {
                         long long executionTime;
 
                         msg >> executionTime >> quantity >> price >> order_id >> instrument_id >> client_id;
-                        std::cout << "[Execution]-Client ID: " << client_id << ", Instrument ID: " << instrument_id
+                        std::cout << "[Execution] -- Client ID: " << client_id << ", Instrument ID: " << instrument_id
                                   << ", Order ID: " << order_id << ", Price: " << price << ", Quantity: " << quantity
                                   << ", Execution Time: " << executionTime << std::endl;
                         std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -173,7 +173,7 @@ int main() {
 
                         msg >> description >> alert >> instrument_id;
 
-                        std::cout << "[ALERT]-" << alert << " -- Instrument: " << instrument_id << " -- Description: " << description << "\n";
+                        std::cout << "[ALERT] -- " << alert << " -- Instrument: " << instrument_id << "  Description: " << description << "\n";
 
                         std::this_thread::sleep_for(std::chrono::milliseconds(50));
                         break;
@@ -199,6 +199,9 @@ int main() {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         } else if (cmd == "quit") {
             bQuit = true;
+        }
+        else{
+            continue;
         }
 
     }
