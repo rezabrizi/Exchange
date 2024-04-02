@@ -44,10 +44,15 @@ public:
      */
     static DBConnection &getInstance(const std::string &connectionString) {
         std::lock_guard<std::mutex> lock(instanceMux);
-        if (instance == nullptr) {
-            instance.reset(new DBConnection(connectionString));
+        try {
+            if (instance == nullptr) {
+                instance.reset(new DBConnection(connectionString));
+            }
+            return *instance;
+        } catch (const std::exception& e)
+        {
+            throw std::invalid_argument("Incorrect Credentials");
         }
-        return *instance;
     }
 
 

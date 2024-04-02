@@ -45,7 +45,7 @@ bool register_mkt_ptc(const std::string& mkt_ptc, const std::string& id, const s
         std::cout << "Market participant registered successfully: " << mkt_ptc << std::endl;
         return true;
     } catch (const std::exception& e) {
-        std::cerr << "An error occurred: " << e.what() << std::endl;
+        std::cerr << "[Registering Market Participant] - " << e.what() << std::endl;
         return false;
     }
 }
@@ -107,12 +107,19 @@ int main() {
                     std::getline(std::cin, host);
                     std::cout << "Enter port: ";
                     std::getline(std::cin, port);
-                    DBPtr = &setup_db(db_name, user, pass, host, port);
-                    db_set_up = true;
-                    std::cout << "Database connection setup complete.\n\n";
+                    try{
+                        DBPtr = &setup_db(db_name, user, pass, host, port);
+                        std::cout << "Database connection setup complete.\n\n";
+                        db_set_up = true;
+                    } catch (const std::exception& e)
+                    {
+                        std::cerr << "[Set up DB Connection]: " << e.what() << "\n\n";
+                    }
                 } else {
-                    std::cout << "Database connection has already been set up.\n\n";
+                    std::cerr << "Database connection has already been set up.\n\n";
                 }
+                std::cout << "Press Enter to return to the main menu...\n";
+                std::getline(std::cin, input);
                 break;
 
             case 1:
@@ -128,10 +135,13 @@ int main() {
                     std::getline(std::cin, pass);
                     register_mkt_ptc(name, id, ip, pass, *DBPtr);
                 } else if (server_started) {
-                    std::cout << "Operation not allowed while the server is running.\n\n";
+                    std::cerr << "Operation not allowed while the server is running.\n\n";
                 } else {
-                    std::cout << "Operation not allowed while the DB is not setup.\n\n";
+                    std::cerr << "Operation not allowed while the DB is not setup.\n\n";
                 }
+                std::cout << "Press Enter to return to the main menu...\n";
+                std::getline(std::cin, input);
+
                 break;
 
             case 2:
@@ -149,6 +159,9 @@ int main() {
                 } else {
                     std::cout << "Operation not allowed while the DB is not setup.\n\n";
                 }
+
+                std::cout << "Press Enter to return to the main menu...\n";
+                std::getline(std::cin, input);
                 break;
 
             case 3:
@@ -166,6 +179,8 @@ int main() {
                 } else {
                     std::cout << "Operation not allowed while the DB is not setup.\n\n";
                 }
+                std::cout << "Press Enter to return to the main menu...\n";
+                std::getline(std::cin, input);
                 break;
             case 4:
                 if (server_started) {
@@ -180,6 +195,9 @@ int main() {
                 } else {
                     std::cout << "Please start the server first (Option 3).\n\n";
                 }
+
+                std::cout << "Press Enter to return to the main menu...\n";
+                std::getline(std::cin, input);
                 break;
             case 5:
                 if (server_started) {
@@ -200,13 +218,18 @@ int main() {
                     std::getline(std::cin, instrument_id);
                     if (!obm->print_LOB(instrument_id))
                     {
-                        std::cout << "Order book for the given instrument doesn't exist." << std::endl;
+                        std::cerr << "Order book for the given instrument doesn't exist." << std::endl;
                     }
                 } else {
-                    std::cout << "Server must be started first before printing the order book" << std::endl;
+                    std::cerr << "Server must be started first before printing the order book" << std::endl;
                 }
+                std::cout << "Press Enter to return to the main menu...\n";
+                std::getline(std::cin, input);
             default:
-                std::cout << "Invalid choice. Please enter a number between 0 and 6.\n\n";
+                std::cerr << "Invalid choice. Please enter a number between 0 and 6.\n\n";
+                std::cout << "Press Enter to return to the main menu...\n";
+                std::getline(std::cin, input);
+                break;
         }
     }
 }
